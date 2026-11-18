@@ -105,6 +105,36 @@ export async function retrieve(
       pieces.push(JSON.stringify(e));
       citations.push({ title: e.title, url: e.source_url, updated_at: e.updated_at });
     }
+    // Straightforward latest-event questions need no generative model.
+    // Compound questions still use full evidence synthesis.
+    if (
+      intent === 'completed_event' &&
+      selected[0] &&
+      /\\b(last|latest|most recent)\\b|آخرین/i.test(query) &&
+      !/\\b(and|between|versus|vs|fight between|compare)\\b|\\bو\\b|بین/i.test(query)
+    ) {
+      const e = selected[0];
+      const headliner = e.card?.find((bout) => bout.is_main);
+      const names = headliner && [headliner.fighter_a?.name, headliner.fighter_b?.name]
+        .filter(Boolean).join(' vs ');
+      const winner = headliner?.result?.winner_fighter_id;
+      const winnerName = winner === headliner?.fighter_a?.id
+        ? headliner?.fighter_a?.name
+        : winner === headliner?.fighter_b?.id
+          ? headliner?.fighter_b?.name
+          : null;
+      const result = winnerName
+        ? ` Main-event winner: ${winnerName} (${headliner?.result?.method || 'method unavailable'}).`
+        : '';
+      const date = new Date(e.starts_at).toLocaleDateString('en-US', {
+        timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric',
+      });
+      return {
+        text: pieces.join('\\n'),
+        citations,
+        deterministic: `The latest completed UFC event in the verified records is **${e.title}** (${date}, UTC).${names ? ` Main event: ${names}.` : ''}${result}\\n\\nSource: UFCalendar.`,
+      };
+    }
     if (intent === 'upcoming_event' && selected[0]) {
       const e = selected[0];
       return {
