@@ -12,8 +12,8 @@ const STORE = 'octagon-conversations-v1';
 // The source publisher is sufficient for readers; API URLs are not public article links.
 function publicAnswer(text: string) {
   return text
-    .replace(/\\[[^\\]]*\\]\\(https?:\\/\\/api\\.ufcalendar\\.com[^)\\s]*\\)/gi, 'UFCalendar')
-    .replace(/https?:\\/\\/api\\.ufcalendar\\.com\\/[^\\s)\\]】]*/gi, 'UFCalendar');
+    .replace(/\[[^\]]*\]\(https?:\/\/api\.ufcalendar\.com[^)\s]*\)/gi, 'UFCalendar')
+    .replace(/https?:\/\/api\.ufcalendar\.com\/[^\s)\]】]*/gi, 'UFCalendar');
 }
 const subscribe = (callback: () => void) => {
   window.addEventListener('storage', callback);
