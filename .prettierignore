@@ -1,0 +1,9 @@
+node_modules
+.next
+.npm-cache
+.playwright-browsers
+.model-cache
+package-lock.json
+docs/ufcalendar.openapi.json
+test-results
+playwright-report

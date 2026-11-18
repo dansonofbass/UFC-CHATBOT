@@ -1,0 +1,58 @@
+name: Verified data sync
+on:
+  schedule:
+    - cron: '20 5 * * 1,5'
+  workflow_dispatch:
+    inputs:
+      kind:
+        type: choice
+        options: [events, fighters, rankings, news, index]
+        default: events
+      limit:
+        default: '3'
+permissions:
+  contents: read
+concurrency:
+  group: verified-data-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      UFCALENDAR_API_KEY_1: ${{ secrets.UFCALENDAR_API_KEY_1 }}
+      UFCALENDAR_API_KEY_2: ${{ secrets.UFCALENDAR_API_KEY_2 }}
+      UFCALENDAR_API_KEY_3: ${{ secrets.UFCALENDAR_API_KEY_3 }}
+      UFCALENDAR_MAX_REQUESTS_PER_RUN: '2'
+      UFCALENDAR_MONTHLY_LOCAL_LIMIT: '60'
+      NEWS_FEEDS: ${{ secrets.NEWS_FEEDS }}
+      ENABLE_EMBEDDINGS: ${{ vars.ENABLE_EMBEDDINGS }}
+      JOB_KIND: ${{ inputs.kind || 'events' }}
+      JOB_LIMIT: ${{ inputs.limit || '3' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: .sync-state.json
+          key: sync-state-${{ github.run_id }}
+          restore-keys: sync-state-
+      - run: npm run ingest -- --kind="$JOB_KIND" --limit="$JOB_LIMIT" --resume
+      # Weekly roster and board refresh share the same persistent monthly budget.
+      - if: github.event_name == 'schedule' && github.event.schedule == '20 5 * * 1,5'
+        run: |
+          if [ "$(date -u +%u)" = "1" ]; then
+            npm run ingest -- --kind=fighters --limit=1 --resume
+            npm run ingest -- --kind=rankings
+            npm run ingest -- --kind=events --status=completed --limit=1
+          fi
+          npm run ingest -- --kind=news --limit=5
+          npm run ingest -- --kind=index --limit=5
+      - if: failure()
+        run: echo "::error::Verified import failed. Inspect sync_runs.error_code and provider quotas; no identity rotation is performed."

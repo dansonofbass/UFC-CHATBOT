@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.env*
+!.env.example
+.npm-cache/
+coverage/
+test-results/
+playwright-report/
+.vercel/
+.sync-state.json
+.model-cache/
+.playwright-browsers/
+*.tsbuildinfo
