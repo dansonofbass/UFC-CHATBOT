@@ -110,8 +110,8 @@ export async function retrieve(
     if (
       intent === 'completed_event' &&
       selected[0] &&
-      /\\b(last|latest|most recent)\\b|آخرین/i.test(query) &&
-      !/\\b(and|between|versus|vs|fight between|compare)\\b|\\bو\\b|بین/i.test(query)
+      /\b(last|latest|most recent)\b|آخرین/i.test(query) &&
+      !/\b(and|between|versus|vs|fight between|compare)\b|\bو\b|بین/i.test(query)
     ) {
       const e = selected[0];
       const headliner = e.card?.find((bout) => bout.is_main);
@@ -130,9 +130,9 @@ export async function retrieve(
         timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric',
       });
       return {
-        text: pieces.join('\\n'),
+        text: pieces.join('\n'),
         citations,
-        deterministic: `The latest completed UFC event in the verified records is **${e.title}** (${date}, UTC).${names ? ` Main event: ${names}.` : ''}${result}\\n\\nSource: UFCalendar.`,
+        deterministic: `The latest completed UFC event in the verified records is **${e.title}** (${date}, UTC).${names ? ` Main event: ${names}.` : ''}${result}\n\nSource: UFCalendar.`,
       };
     }
     if (intent === 'upcoming_event' && selected[0]) {
