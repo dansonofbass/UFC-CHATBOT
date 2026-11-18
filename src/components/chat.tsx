@@ -8,6 +8,13 @@ import { safeUrl, type Citation } from '@/lib/schemas';
 type ChatMessage = { role: 'user' | 'assistant'; content: string; sources?: Citation[] };
 type Conversation = { id: string; title: string; messages: ChatMessage[] };
 const STORE = 'octagon-conversations-v1';
+// Hide internal ingestion endpoints in chat output and legacy local history.
+// The source publisher is sufficient for readers; API URLs are not public article links.
+function publicAnswer(text: string) {
+  return text
+    .replace(/\\[[^\\]]*\\]\\(https?:\\/\\/api\\.ufcalendar\\.com[^)\\s]*\\)/gi, 'UFCalendar')
+    .replace(/https?:\\/\\/api\\.ufcalendar\\.com\\/[^\\s)\\]】]*/gi, 'UFCalendar');
+}
 const subscribe = (callback: () => void) => {
   window.addEventListener('storage', callback);
   return () => window.removeEventListener('storage', callback);
@@ -252,6 +259,7 @@ function ChatClient() {
                   components={{
                     a: ({ href, children }) =>
                       safeUrl(href || '') &&
+                      new URL(safeUrl(href || '')!).hostname !== 'api.ufcalendar.com' &&
                       (m.role === 'user' ||
                         m.sources?.some((s) => safeUrl(s.url) === safeUrl(href || ''))) ? (
                         <a href={safeUrl(href!)} target="_blank" rel="noopener noreferrer">
@@ -263,7 +271,7 @@ function ChatClient() {
                     img: () => null,
                   }}
                 >
-                  {m.content || (busy ? 'Retrieving verified context…' : 'No answer received.')}
+                  {publicAnswer(m.content) || (busy ? 'Retrieving verified context…' : 'No answer received.')}
                 </ReactMarkdown>
               </div>
               {m.role === 'assistant' && m.content && (
