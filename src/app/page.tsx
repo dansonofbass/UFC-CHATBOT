@@ -14,11 +14,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion';
-import { FighterCard, EventCard, NewsCard, Empty } from '@/components/data-ui';
-import { fighters, events, news } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 export default async function Home() {
-  const [f, e, n] = await Promise.all([fighters(), events(), news()]);
   return (
     <>
       <section className="hero">
@@ -44,7 +41,7 @@ export default async function Home() {
               </Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href="/fighters">Explore Fighters</Link>
+              <Link href="/chat?q=Tell%20me%20about%20UFC%20fighters">Ask about fighters</Link>
             </Button>
           </div>
           <div className="hero-note">
@@ -191,96 +188,6 @@ export default async function Home() {
             );
           })}
         </div>
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <div className="section-kicker">THE ATHLETES</div>
-            <h2>More than a name on the card.</h2>
-          </div>
-          <Link href="/fighters">Explore fighters</Link>
-        </div>
-        {f.items.length ? (
-          <div className="grid three">
-            {f.items.slice(0, 3).map((f) => (
-              <FighterCard key={f.id} fighter={f} />
-            ))}
-          </div>
-        ) : (
-          <Empty kind="fighter profiles" state={f.state} />
-        )}
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <div className="section-kicker">ON THE HORIZON</div>
-            <h2>The next chapter.</h2>
-          </div>
-          <Link href="/events">All events</Link>
-        </div>
-        {e.items.some((e) => ['announced', 'scheduled', 'live'].includes(e.status)) ? (
-          <div className="grid three">
-            {e.items
-              .filter((e) => ['announced', 'scheduled', 'live'].includes(e.status))
-              .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
-              .slice(0, 3)
-              .map((e) => (
-                <EventCard key={e.id} event={e} />
-              ))}
-          </div>
-        ) : (
-          <Empty kind="upcoming events" state={e.state} />
-        )}
-      </section>
-      <section className="section compare-teaser panel">
-        <div>
-          <div className="section-kicker">TWO FIGHTERS. A CLEARER PICTURE.</div>
-          <h2>
-            Let the details
-            <br />
-            do the talking.
-          </h2>
-          <p>
-            Put sourced records and available statistics side by side.
-            <br />
-            Then ask AI to explain the differences.
-          </p>
-          <Button asChild variant="secondary">
-            <Link href="/compare">Compare fighters</Link>
-          </Button>
-        </div>
-        <div className="compare-art">
-          <div>
-            <span>STRIKING</span>
-            <i style={{ width: '75%' }} />
-            <i style={{ width: '55%' }} />
-          </div>
-          <strong>VS</strong>
-          <div>
-            <span>GRAPPLING</span>
-            <i style={{ width: '50%' }} />
-            <i style={{ width: '80%' }} />
-          </div>
-          <small>Illustration · no fighter statistics shown</small>
-        </div>
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <div className="section-kicker">BEYOND THE HEADLINES</div>
-            <h2>Stay close to the story.</h2>
-          </div>
-          <Link href="/news">Latest news</Link>
-        </div>
-        {n.items.length ? (
-          <div className="grid three">
-            {n.items.slice(0, 3).map((n) => (
-              <NewsCard key={n.id} item={n} />
-            ))}
-          </div>
-        ) : (
-          <Empty kind="news articles" state={n.state} />
-        )}
       </section>
       <section className="section how-section">
         <div className="section-kicker">INTELLIGENCE YOU CAN TRACE</div>
