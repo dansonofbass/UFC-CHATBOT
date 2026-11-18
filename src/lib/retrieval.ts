@@ -3,6 +3,7 @@ import { fighters, events, news, rankings } from './data';
 import { identifyFighters, type Message, type Intent } from './router';
 import type { Citation } from './schemas';
 import { queryEmbedding } from './embeddings';
+import { latestCompletedEvent } from './latest-completed';
 export type Evidence = { text: string; citations: Citation[]; deterministic?: string };
 export async function retrieve(
   query: string,
@@ -82,6 +83,12 @@ export async function retrieve(
   }
   if (['upcoming_event', 'completed_event', 'fight_result'].includes(intent)) {
     const result = await events();
+    // When the initial import contains only future cards, fetch the latest
+    // completed event once using a shared, quota-limited server-side refresh.
+    if (intent === 'completed_event' && !result.items.some((e) => e.status === 'completed')) {
+      const fresh = await latestCompletedEvent();
+      if (fresh) result.items.push(fresh);
+    }
     const selected = result.items
       .filter((e) =>
         intent === 'upcoming_event'
