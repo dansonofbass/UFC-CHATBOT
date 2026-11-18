@@ -266,26 +266,6 @@ function ChatClient() {
                   {m.content || (busy ? 'Retrieving verified context…' : 'No answer received.')}
                 </ReactMarkdown>
               </div>
-              {m.sources && m.sources.length > 0 && (
-                <div className="citation-list">
-                  {m.sources.map(
-                    (s) =>
-                      safeUrl(s.url) && (
-                        <a
-                          key={s.url}
-                          href={safeUrl(s.url)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {s.title}
-                          <time dateTime={s.updated_at}>
-                            Verified {new Date(s.updated_at).toLocaleString()} · source timestamp
-                          </time>
-                        </a>
-                      ),
-                  )}
-                </div>
-              )}
               {m.role === 'assistant' && m.content && (
                 <div className="message-tools">
                   <button
