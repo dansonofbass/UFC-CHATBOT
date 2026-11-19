@@ -79,6 +79,12 @@ export function understand<T extends Identity>(query: string, history: Message[]
       if (matches.length) break;
     }
   }
+  // A bare fighter name after a statistics question refers to the same topic.
+  // Structured retrieval must still independently verify the named fighter.
+  const bareName = /^[\p{L}'’]+(?:[ -][\p{L}'’]+){0,3}$/u.test(query.trim()) &&
+    !/\b(?:explain|what|how|why|when|give|show|stats|statistics|record|fight|ufc|mma|compare|tell|latest|next|rules|are|is)\b/i.test(query);
+  const precedingUserQuestion = history.filter((message) => message.role === 'user').at(-1)?.content || '';
+  const statsFollowup = bareName && classify(precedingUserQuestion, [], names) === 'fight_statistics';
   const multiple = /\b(and|versus|vs|compare|both)\b/i.test(query);
   const ambiguous = matches.length > 1 && !multiple;
   const selected = ambiguous ? [] : matches.slice(0, 3).map((m) => m.fighter);
@@ -88,6 +94,7 @@ export function understand<T extends Identity>(query: string, history: Message[]
   if (/\b(last|latest|recent)\b.*\b(event|card)\b|what happened.*\bufc\b/i.test(query))
     intent = 'completed_event';
   if (/\bwho did\b.*\bfight\b|\blast (fight|opponent)\b/i.test(query)) intent = 'fighter_history';
+  if (statsFollowup) intent = 'fight_statistics';
   const intents: Intent[] = [intent];
   if (/\brecord|career|history\b/i.test(query) && !intents.includes('fighter_history'))
     intents.push('fighter_history');
@@ -97,7 +104,10 @@ export function understand<T extends Identity>(query: string, history: Message[]
   const subject = query
     .match(/(?:who is|tell me about|about|records? of|records? for|records? does|profile of|stats of|stats for)\s+([\p{L}'’ -]{3,65})/iu)?.[1]
     ?.replace(/\b(mma record|record|ufc|fighter|have|has|and|what|his|her|their)\b.*$/i, '')
-    .trim();
+    .trim() ||
+    (bareName && (statsFollowup || matches.length > 0 || intent !== 'out_of_scope')
+      ? query.trim()
+      : undefined);
   // A name-shaped question is unresolved, not automatically outside UFC scope.
   // Provider matching still has to establish an actual identity before any facts are used.
   if (
@@ -117,7 +127,7 @@ export function understand<T extends Identity>(query: string, history: Message[]
     fighters: selected,
     candidates: matches,
     ambiguous,
-    contextual,
+    contextual: contextual || statsFollowup,
     subject,
     query: selected.length
       ? `${query}\nSubjects: ${selected.map((f) => f.name).join(', ')}`
