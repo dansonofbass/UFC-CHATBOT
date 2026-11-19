@@ -82,7 +82,7 @@ test('corner section uses balanced columns, mobile stacking and 32px spacing', a
   });
 });
 
-test('visual stage balances three cards in one row without the tagline or logo card', async ({
+test('visual stage keeps three content cards beneath a separate centered UFC logo', async ({
   page,
 }, testInfo) => {
   await page.goto('/');
@@ -100,14 +100,22 @@ test('visual stage balances three cards in one row without the tagline or logo c
   await expect(cards[1]).toContainText('Ask anything about the octagon...');
   await expect(cards[2]).toContainText('Sources. Not speculation.');
   await expect(stage.locator('.chat-preview, .float-card')).toHaveCount(3);
-  await expect(stage.locator('.ufc-logo-anchor, .ufc-float-card, .stage-ufc-logo')).toHaveCount(0);
-  await expect(stage).not.toContainText('Built for UFC fans');
+  const logoCard = stage.locator('.ufc-fan-card');
+  await expect(logoCard).toBeVisible();
+  await expect(logoCard).toContainText('Built for UFC fans');
+  const logo = logoCard.getByRole('img', { name: 'UFC' });
+  await expect(logo).toBeVisible();
+  await expect.poll(() => logo.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   await expect(stage).not.toContainText('Beyond the record.');
   await expect(stage).not.toContainText('One conversation. Every angle.');
   await expect(stage.locator('.floating-pill')).toHaveCount(0);
   expect(await stage.evaluate((el) => getComputedStyle(el).marginTop)).toBe('32px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const logoBox = (await logoCard.boundingBox())!;
   const boxes = await Promise.all(cards.map((card) => card.boundingBox()));
+  for (const box of boxes) {
+    expect(logoBox.y + logoBox.height).toBeLessThanOrEqual(box!.y + 1);
+  }
   for (let i = 0; i < boxes.length; i++)
     for (let j = i + 1; j < boxes.length; j++) {
       const a = boxes[i]!,
@@ -120,12 +128,15 @@ test('visual stage balances three cards in one row without the tagline or logo c
       ).toBe(true);
     }
   if (page.viewportSize()!.width <= 1100) {
+    expect(await logoCard.evaluate((el) => getComputedStyle(el).position)).toBe('static');
     for (let i = 1; i < boxes.length; i++)
       expect(boxes[i]!.y).toBeGreaterThanOrEqual(boxes[i - 1]!.y + boxes[i - 1]!.height);
     for (const card of cards)
       expect(await card.evaluate((el) => getComputedStyle(el).position)).toBe('static');
   } else {
-    expect((await stage.boundingBox())!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    const stageBox = (await stage.boundingBox())!;
+    expect(stageBox.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    expect(Math.abs(logoBox.x + logoBox.width / 2 - (stageBox.x + stageBox.width / 2))).toBeLessThan(2);
     await expect
       .poll(async () => {
         const row = await Promise.all(cards.map((card) => card.boundingBox()));
