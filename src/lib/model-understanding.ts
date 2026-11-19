@@ -44,6 +44,10 @@ export async function queryPlan(
     c.CHAT_MODEL_UNDERSTANDING_ENABLED !== 'true' ||
     plan.ambiguous ||
     plan.fighters.length ||
+    // A clear identity + record request has a deterministic structured-data path.
+    // Do not spend a model call merely to restate the user's intent.
+    (plan.intent === 'fighter_history' &&
+      /\brecords?\s+(?:of|for)\b/i.test(query) && !!plan.subject) ||
     (!plan.subject &&
       !plan.contextual &&
       ![
