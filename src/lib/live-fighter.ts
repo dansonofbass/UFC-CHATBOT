@@ -14,11 +14,11 @@ const aliases: Record<string, string> = {
 function requestedName(query: string): string | undefined {
   const q = query.toLowerCase();
   for (const [alias, slug] of Object.entries(aliases))
-    if (new RegExp(`\\b${alias.replace(/ /g, '\\s+')}\\b`, 'i').test(q)) return slug;
+    if (new RegExp(`\\b${alias.replace(/ /g, '\s+')}\\b`, 'i').test(q)) return slug;
   // Restrict public live lookups to questions naming a UFC fighter.
-  const explicit = q.match(/(?:who is|tell me about|record(?:s)? of|profile of|about)\\s+([a-z]+(?:\\s+[a-z]+){1,2})/i);
+  const explicit = q.match(/(?:who is|tell me about|record(?:s)? of|profile of|about)\s+([a-z]+(?:\s+[a-z]+){1,2})/i);
   if (!explicit) return undefined;
-  return explicit[1].replace(/\\s+/g, ' ').trim();
+  return explicit[1].replace(/\s+/g, ' ').trim();
 }
 export async function liveFighter(query: string): Promise<Fighter | null> {
   const requested = requestedName(query);
