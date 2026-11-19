@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Russo+One&display=swap');
 @import 'tailwindcss';
 .mobile-chat-history {
   display: none;
@@ -44,7 +44,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--text);
-  font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -1606,7 +1606,7 @@ body {
   letter-spacing: 0.025em;
 }
 button, input, textarea, select, code, .markdown {
-  font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 input, textarea, .markdown {
   letter-spacing: 0.012em;
@@ -1652,4 +1652,40 @@ input, textarea, .markdown {
 .chat-messages::-webkit-scrollbar { width: 0; height: 0; }
 @media (max-width: 640px) {
   .hero-buttons .button { max-width: 100%; white-space: normal; text-align: center; }
+}
+
+/* Readable typography: Russo One is a display face, not a paragraph font. */
+:root {
+  --font-display: 'Russo One', 'Arial Black', sans-serif;
+  --font-reading: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+body, button, input, textarea, select, code, .markdown {
+  font-family: var(--font-reading);
+  letter-spacing: normal;
+  font-weight: 400;
+}
+h1, h2, h3, h4, .brand, .section-kicker, .section-heading h2,
+.chat-toolbar strong, .preview-top strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.22;
+}
+h1 { letter-spacing: -0.015em; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4.45rem); line-height: 1.15; }
+.chat-welcome h1 { font-size: clamp(1.8rem, 3vw, 2.3rem); }
+.brand { font-size: 1rem; letter-spacing: 0.025em; }
+.brand-ai { font-family: var(--font-reading); font-size: 0.65rem; }
+.button, .nav-links, .footer-links, .suggestions button, .message,
+.composer-box textarea, .chat-compose small, .message-tools,
+.status-card, .data-table, .history-item {
+  font-family: var(--font-reading);
+  letter-spacing: normal;
+}
+.button { font-weight: 600; }
+.markdown { font-size: 0.94rem; line-height: 1.75; }
+.markdown p, .chat-welcome p, .hero-copy, .ask-card p { line-height: 1.7; }
+@media (max-width: 640px) {
+  .hero h1 { font-size: clamp(2.05rem, 8vw, 3rem); }
+  .chat-welcome h1 { font-size: 1.8rem; }
 }
