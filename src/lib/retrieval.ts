@@ -33,6 +33,26 @@ export async function retrieve(
     pieces.push(JSON.stringify(f));
     citations.push({ title: f.name, url: f.source_url, updated_at: f.updated_at });
   }
+  // Direct record/profile questions have enough structured facts for a fast sourced reply.
+  // Leave multi-part career/history questions to the usual evidence synthesis.
+  if (
+    matched.length === 1 &&
+    ['fighter_history', 'fighter_profile'].includes(intent) &&
+    /\\brecords?\\b/i.test(query) &&
+    !/\\b(history|career timeline|last fight|latest fight|compare|versus)\\b/i.test(query)
+  ) {
+    const fighter = matched[0];
+    const record = fighter.records?.pro_mma || fighter.records?.ufc;
+    if (record?.value) {
+      const nickname = fighter.nickname ? ` (also known as "${fighter.nickname}")` : '';
+      const nationality = fighter.nationality ? ` from ${fighter.nationality}` : '';
+      return {
+        text: pieces.join('\\n'),
+        citations,
+        deterministic: `**${fighter.name}**${nickname} is a UFC mixed martial artist${nationality}. His recorded ${fighter.records?.pro_mma ? 'professional MMA' : 'UFC'} record is **${record.value}** (wins–losses–draws).\\n\\nSource: UFCalendar fighter profile.`,
+      };
+    }
+  }
   if (intent === 'fighter_history' && matched.length) {
     const client = db();
     if (client) {
