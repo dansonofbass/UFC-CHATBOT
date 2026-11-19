@@ -3,7 +3,14 @@ import { fighters, events, news, rankings } from './data';
 import { identifyFighters, type Message, type Intent } from './router';
 import type { Citation } from './schemas';
 import { queryEmbedding } from './embeddings';
-export type Evidence = { text: string; citations: Citation[]; deterministic?: string; cacheTtlMs?: number };
+import { latestCompletedEvent } from './latest-completed';
+import { liveFighter } from './live-fighter';
+export type Evidence = {
+  text: string;
+  citations: Citation[];
+  deterministic?: string;
+  cacheTtlMs?: number;
+};
 export async function retrieve(
   query: string,
   history: Message[],
@@ -12,19 +19,47 @@ export async function retrieve(
   const citations: Citation[] = [];
   const pieces: string[] = [];
   const fs = await fighters();
-  const matched = identifyFighters(
+  const normalizedQuery = query.replace(/\bjohn\s+jones\b/gi, 'jon jones');
+  let matched = identifyFighters(
     [
       ...history
         .filter((m) => m.role === 'user')
         .slice(-2)
         .map((m) => m.content),
-      query,
+      normalizedQuery,
     ].join(' '),
     fs.items,
   );
+  if (
+    !matched.length &&
+    ['fighter_profile', 'fighter_history', 'fight_statistics'].includes(intent)
+  ) {
+    const fresh = await liveFighter(query);
+    if (fresh) matched = [fresh];
+  }
   for (const f of matched.slice(0, 2)) {
     pieces.push(JSON.stringify(f));
     citations.push({ title: f.name, url: f.source_url, updated_at: f.updated_at });
+  }
+  // Direct record/profile questions have enough structured facts for a fast sourced reply.
+  // Leave multi-part career/history questions to the usual evidence synthesis.
+  if (
+    matched.length === 1 &&
+    ['fighter_history', 'fighter_profile'].includes(intent) &&
+    /\brecords?\b/i.test(query) &&
+    !/\b(history|career timeline|last fight|latest fight|compare|versus)\b/i.test(query)
+  ) {
+    const fighter = matched[0];
+    const record = fighter.records?.pro_mma || fighter.records?.ufc;
+    if (record?.value) {
+      const nickname = fighter.nickname ? ` (also known as "${fighter.nickname}")` : '';
+      const nationality = fighter.nationality ? ` from ${fighter.nationality}` : '';
+      return {
+        text: pieces.join('\n'),
+        citations,
+        deterministic: `**${fighter.name}**${nickname} is a UFC mixed martial artist${nationality}. His recorded ${fighter.records?.pro_mma ? 'professional MMA' : 'UFC'} record is **${record.value}** (wins–losses–draws).\n\nSource: UFCalendar fighter profile.`,
+      };
+    }
   }
   if (intent === 'fighter_history' && matched.length) {
     const client = db();
@@ -82,6 +117,12 @@ export async function retrieve(
   }
   if (['upcoming_event', 'completed_event', 'fight_result'].includes(intent)) {
     const result = await events();
+    // When the initial import contains only future cards, fetch the latest
+    // completed event once using a shared, quota-limited server-side refresh.
+    if (intent === 'completed_event' && !result.items.some((e) => e.status === 'completed')) {
+      const fresh = await latestCompletedEvent();
+      if (fresh) result.items.push(fresh);
+    }
     const selected = result.items
       .filter((e) =>
         intent === 'upcoming_event'
@@ -97,6 +138,41 @@ export async function retrieve(
     for (const e of selected) {
       pieces.push(JSON.stringify(e));
       citations.push({ title: e.title, url: e.source_url, updated_at: e.updated_at });
+    }
+    // Straightforward latest-event questions need no generative model.
+    // Compound questions still use full evidence synthesis.
+    if (
+      intent === 'completed_event' &&
+      selected[0] &&
+      /\b(last|latest|most recent)\b|آخرین/i.test(query) &&
+      !/\b(and|between|versus|vs|fight between|compare)\b|\bو\b|بین/i.test(query)
+    ) {
+      const e = selected[0];
+      const headliner = e.card?.find((bout) => bout.is_main);
+      const names =
+        headliner &&
+        [headliner.fighter_a?.name, headliner.fighter_b?.name].filter(Boolean).join(' vs ');
+      const winner = headliner?.result?.winner_fighter_id;
+      const winnerName =
+        winner === headliner?.fighter_a?.id
+          ? headliner?.fighter_a?.name
+          : winner === headliner?.fighter_b?.id
+            ? headliner?.fighter_b?.name
+            : null;
+      const result = winnerName
+        ? ` Main-event winner: ${winnerName} (${headliner?.result?.method || 'method unavailable'}).`
+        : '';
+      const date = new Date(e.starts_at).toLocaleDateString('en-US', {
+        timeZone: 'UTC',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      return {
+        text: pieces.join('\n'),
+        citations,
+        deterministic: `The latest completed UFC event in the verified records is **${e.title}** (${date}, UTC).${names ? ` Main event: ${names}.` : ''}${result}\n\nSource: UFCalendar.`,
+      };
     }
     if (intent === 'upcoming_event' && selected[0]) {
       const e = selected[0];

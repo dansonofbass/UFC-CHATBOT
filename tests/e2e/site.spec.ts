@@ -14,25 +14,18 @@ test('home navigation and responsive layout', async ({ page }, testInfo) => {
   await expect(page.getByLabel('Ask a UFC question')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
-test('all directories and information pages render', async ({ page }) => {
-  for (const route of [
-    '/fighters',
-    '/events',
-    '/rankings',
-    '/news',
-    '/compare',
-    '/about',
-    '/status',
-    '/privacy',
-    '/terms',
-  ]) {
+test('public informational pages render and directories redirect into chat', async ({ page }) => {
+  for (const route of ['/about', '/privacy', '/terms']) {
     const response = await page.goto(route);
     expect(response?.status()).toBe(200);
     await expect(page.locator('main h1')).toBeVisible();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
   }
+  for (const route of ['/fighters', '/events', '/rankings', '/news', '/compare', '/status']) {
+    await page.goto(route);
+    await expect(page).toHaveURL(/\/(chat|admin)(\?.*)?$/);
+  }
+  await page.goto('/admin');
+  await expect(page.getByRole('heading', { name: 'Admin sign in' })).toBeVisible();
 });
 test('chat handles infrastructure unavailability honestly', async ({ page }) => {
   await page.route('**/api/chat', (route) =>

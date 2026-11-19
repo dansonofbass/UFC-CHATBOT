@@ -34,6 +34,8 @@ export function classify(text: string, history: Message[] = [], knownNames: stri
     return 'out_of_scope';
   }
   const patterns: [Intent, RegExp][] = [
+    ['completed_event', /\b(last|latest|most recent|previous|recent)\s+(?:\w+\s+){0,3}(?:ufc\s+)?(?:event|card)\b|\b(?:ufc|event)\s+(?:last|most recent)\b|آخرین\s+(?:رویداد|مسابقه)/i],
+    ['fight_result', /fight between|fought (?:against|with)|\bvs\.?\b|\bversus\b|مبارزه\s+(?:بین|با)/i],
     ['recent_news', /news|latest|announc|today|خبر|اخبار|امروز|تغییر/i],
     ['fighter_comparison', /compar|versus|\bvs\b|مقایسه/i],
     ['rankings', /rank|champion|رنک|قهرمان/i],
@@ -51,11 +53,15 @@ export function identifyFighters<
   T extends { id: number; name: string; slug: string; nickname?: string | null },
 >(text: string, items: T[]) {
   const normalized = text.toLowerCase();
-  return items.filter((f) =>
-    [f.name, f.slug.replaceAll('-', ' '), f.nickname].some(
-      (n) => n && n.length > 2 && normalized.includes(n.toLowerCase()),
-    ),
-  );
+  const tokens = normalized.match(/[a-z]{4,}|[\u0600-\u06ff]{3,}/g) || [];
+  const matches = items.filter((f) => {
+    const names = [f.name, f.slug.replaceAll('-', ' '), f.nickname].filter(
+      (n): n is string => !!n && n.length > 2,
+    );
+    return names.some((n) => normalized.includes(n.toLowerCase())) ||
+      tokens.some((t) => names.some((n) => n.toLowerCase().split(/[\s-]+/).includes(t)));
+  });
+  return matches.slice(0, 10);
 }
 export function resolveIntent(query: string, history: Message[], names: string[] = []): Intent {
   const intent = classify(query, history, names);

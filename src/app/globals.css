@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
 @import 'tailwindcss';
 .mobile-chat-history {
   display: none;
@@ -43,7 +44,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Russo One', 'Arial Black', sans-serif;
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -1595,3 +1596,114 @@ select.field {
     scroll-behavior: auto !important;
   }
 }
+
+/* OCTAGON AI 2026 — restrained glass surfaces and branded scrolling. */
+html {
+  scrollbar-color: #8e191e #101013;
+  scrollbar-width: thin;
+}
+body {
+  letter-spacing: 0.025em;
+}
+button, input, textarea, select, code, .markdown {
+  font-family: 'Russo One', 'Arial Black', sans-serif;
+}
+input, textarea, .markdown {
+  letter-spacing: 0.012em;
+}
+.hero .feature-strip, .feature-strip {
+  margin-top: 32px;
+}
+.panel, .float-card, .chat-preview, .chat-layout, .message, .suggestions button, .composer-box {
+  background: linear-gradient(145deg, rgba(38, 36, 43, .67), rgba(12, 12, 17, .78));
+  border-color: rgba(255, 255, 255, .13);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .06), 0 12px 32px rgba(0, 0, 0, .17);
+}
+.message-user {
+  background: linear-gradient(140deg, rgba(102, 16, 23, .52), rgba(29, 14, 20, .7));
+  border-color: rgba(230, 41, 41, .22);
+}
+.chat-sidebar, .chat-compose {
+  background: rgba(16, 15, 19, .74);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.chat-main { min-height: 0; }
+.chat-messages {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.chat-messages::-webkit-scrollbar {
+  display: none;
+}
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: #101013; border-radius: 9px; }
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b52229, #531013);
+  border: 2px solid #101013;
+  border-radius: 12px;
+}
+*::-webkit-scrollbar-thumb:hover { background: #d52a32; }
+.chat-messages::-webkit-scrollbar { width: 0; height: 0; }
+@media (max-width: 640px) {
+  .hero-buttons .button { max-width: 100%; white-space: normal; text-align: center; }
+}
+
+/* One consistent sitewide typeface: Russo One for menus, chat, controls and content. */
+:root {
+  --font-display: 'Russo One', 'Arial Black', sans-serif;
+  --font-reading: 'Russo One', 'Arial Black', sans-serif;
+}
+body, button, input, textarea, select, code, .markdown {
+  font-family: var(--font-reading);
+  letter-spacing: normal;
+  font-weight: 400;
+}
+h1, h2, h3, h4, .brand, .section-kicker, .section-heading h2,
+.chat-toolbar strong, .preview-top strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.22;
+}
+h1 { letter-spacing: -0.015em; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4.45rem); line-height: 1.15; }
+.chat-welcome h1 { font-size: clamp(1.8rem, 3vw, 2.3rem); }
+.brand { font-size: 1rem; letter-spacing: 0.025em; }
+.brand-ai { font-family: var(--font-reading); font-size: 0.65rem; }
+.button, .nav-links, .footer-links, .suggestions button, .message,
+.composer-box textarea, .chat-compose small, .message-tools,
+.status-card, .data-table, .history-item {
+  font-family: var(--font-reading);
+  letter-spacing: normal;
+}
+.button { font-weight: 600; }
+.markdown { font-size: 0.94rem; line-height: 1.75; }
+.markdown p, .chat-welcome p, .hero-copy, .ask-card p { line-height: 1.7; }
+@media (max-width: 640px) {
+  .hero h1 { font-size: clamp(2.05rem, 8vw, 3rem); }
+  .chat-welcome h1 { font-size: 1.8rem; }
+}
+
+/* Explicitly unify embedded widgets, chat Markdown, menus, buttons and form controls. */
+:root { --font-display: 'Russo One', 'Arial Black', sans-serif; --font-reading: var(--font-display); }
+html, body, button, input, select, textarea,
+.nav, .nav-links, .footer, .footer-links,
+.chat-layout, .chat-sidebar, .chat-main, .chat-toolbar,
+.chat-messages, .markdown, .markdown *, .message,
+.chat-compose, .composer-box, .suggestions, .history-item,
+.status-card, .data-table, .data-table *,
+.panel, .panel *, .button, .button *,
+small, code, pre, label {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+.markdown, .markdown p { font-size: 0.88rem; line-height: 1.8; }
+.chat-compose textarea { font-size: 0.85rem; }
+.nav-links, .footer-links { font-size: 0.78rem; }
+.chat-messages .message-role { font-size: 0.62rem; }
