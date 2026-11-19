@@ -61,7 +61,7 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
   it('explains general UFC statistics with no roster, model or live requests', async () => {
     const result = await intelligentRetrieve('Explain UFC fight statistics', [], [], signal());
     expect(result.deterministic).toContain('SLpM');
-    expect(result.deterministic).toContain('Takedown accuracy');
+    expect(result.deterministic).toContain('TD Acc.');
     expect(result.deterministic).toContain('UFCStats');
     expect(result.text).toBe('');
     expect(request).not.toHaveBeenCalled();
