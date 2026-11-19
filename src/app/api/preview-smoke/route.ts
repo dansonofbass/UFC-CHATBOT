@@ -16,7 +16,8 @@ const questions: Record<string, string> = {
 };
 export async function GET(request: NextRequest) {
   if (process.env.VERCEL_ENV !== 'preview') return new Response('Not found', { status: 404 });
-  if (!(await clientLimit(request))) return new Response('Rate limited', { status: 429 });
+  const chatCase = ['chat','followup'].includes(request.nextUrl.searchParams.get('case') || 'typo');
+  if (!chatCase && !(await clientLimit(request))) return new Response('Rate limited', { status: 429 });
   const selected = request.nextUrl.searchParams.get('case') || 'typo';
   if (!Object.hasOwn(questions, selected)) return new Response('Unknown test', { status: 400 });
   const started = Date.now();
@@ -27,13 +28,13 @@ export async function GET(request: NextRequest) {
         ? [{role:'user',content:question}]
         : [{role:'user',content:'Who is Jon Jones?'},{role:'assistant',content:'Jon Jones is an MMA fighter.'},{role:'user',content:question}];
       const synthetic = new Request(new URL('/api/chat', request.url), {
-        method:'POST', headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})
+        method:'POST', headers:{'Content-Type':'application/json',...(request.headers.get('x-vercel-forwarded-for') ? {'x-vercel-forwarded-for':request.headers.get('x-vercel-forwarded-for')!} : {})},body:JSON.stringify({messages})
       });
       const result = await chatPOST(synthetic);
       const body = await result.text();
-      const frames = body.trim().split('\\n').filter(Boolean).flatMap(line=>{try{return [JSON.parse(line)]}catch{return []}});
+      const frames = body.trim().split('\n').filter(Boolean).flatMap(line=>{try{return [JSON.parse(line)]}catch{return []}});
       const answer = frames.filter((f:{type?:string;text?:string})=>f.type==='text').map((f:{text?:string})=>f.text||'').join('');
-      return Response.json({case:selected,status:result.status,frame_types:[...new Set(frames.map((f:{type?:string})=>f.type))],answer_excerpt:answer.slice(0,450),answer_length:answer.length,elapsed_ms:Date.now()-started}, {headers:{'Cache-Control':'no-store'}});
+      return Response.json({case:selected,status:result.status,frame_types:[...new Set(frames.map((f:{type?:string})=>f.type))],answer_excerpt:answer.slice(0,450),answer_length:answer.length,body_length:body.length,raw_excerpt:frames.length?undefined:body.slice(0,160),forwarded_header_present:!!request.headers.get('x-vercel-forwarded-for'),elapsed_ms:Date.now()-started}, {headers:{'Cache-Control':'no-store'}});
     }
     const signal = AbortSignal.timeout(28000);
     const fighters = await directory(signal);
