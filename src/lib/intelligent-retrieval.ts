@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isGeneralStatisticsQuestion, statisticsGuide } from './statistics-guide';
 import { db, checked } from './db';
 import { fighters, events, news, rankings } from './data';
 import { understand, candidates } from './understanding';
@@ -77,6 +78,13 @@ export async function intelligentRetrieve(
   preparedPlan?: ReturnType<typeof understand<Fighter>>,
 ): Promise<Evidence> {
   const plan = preparedPlan || understand(query, history, items);
+  if (isGeneralStatisticsQuestion(query))
+    return {
+      text: '',
+      citations: [],
+      deterministic: statisticsGuide,
+      cacheTtlMs: 86400000,
+    };
   if (plan.ambiguous)
     return {
       text: '',
@@ -253,6 +261,33 @@ export async function intelligentRetrieve(
       deterministic: `${f.name}${f.nickname ? ` (“${f.nickname}”)` : ''}${f.nationality ? ` · ${f.nationality}` : ''}.${records.length ? `\n\n${records.map((r) => `${r.scope}: ${r.value}`).join('; ')}.` : '\n\nA verified record is not available in this profile.'}\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: ${f.updated_at.slice(0, 10)} (UTC).`,
       cacheTtlMs: uncertain ? 0 : 60000,
     };
+  }
+  // Source-backed profile statistics can be rendered directly, avoiding a
+  // costly synthesis call and remaining usable when the AI budget is exhausted.
+  if (plan.intent === 'fight_statistics' && plan.intents.length === 1 && selected.length === 1) {
+    const fighter = selected[0];
+    const stats = fighter.stats;
+    const labels: [keyof NonNullable<typeof stats>, string][] = [
+      ['slpm', 'Significant strikes landed per minute'],
+      ['sapm', 'Significant strikes absorbed per minute'],
+      ['str_acc', 'Significant striking accuracy'],
+      ['str_def', 'Significant strike defense'],
+      ['td_avg', 'Takedowns per 15 minutes'],
+      ['td_acc', 'Takedown accuracy'],
+      ['td_def', 'Takedown defense'],
+      ['sub_avg', 'Submission attempts per 15 minutes'],
+    ];
+    const known = stats ? labels.flatMap(([key, title]) => {
+      const value = stats[key];
+      return typeof value === 'string' && value.trim() ? [`- **${title}:** ${value}`] : [];
+    }) : [];
+    if (known.length)
+      return {
+        text: pieces.join('\n'),
+        citations,
+        deterministic: `**${fighter.name} — verified profile statistics**\n\n${known.join('\n')}\n\nThese are the source's available career-profile statistics, not an invented current fight result.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Profile snapshot: ${fighter.updated_at.slice(0, 10)} (UTC).`,
+        cacheTtlMs: uncertain ? 0 : 60000,
+      };
   }
   const recordOnly =
     plan.intents.length === 1 &&
