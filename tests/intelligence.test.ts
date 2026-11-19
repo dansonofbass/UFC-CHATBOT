@@ -61,7 +61,11 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
   it('retrieves a missing comparison participant instead of discarding the named opponent', async () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
     const tom = { ...jon, id: 2, name: 'Tom Aspinall', slug: 'tom-aspinall', nickname: null };
-    request.mockResolvedValueOnce({ data: [tom] }).mockResolvedValueOnce({ data: tom });
+    // List endpoint provides identities, not full records. Parse the real contract.
+    const roster = { id: tom.id, name: tom.name, slug: tom.slug, nickname: null, nationality: null };
+    request
+      .mockImplementationOnce(async (_path, schema) => schema.parse({ data: [roster], meta: {} }))
+      .mockResolvedValueOnce({ data: tom });
     const result = await intelligentRetrieve(
       'Compare Jon Jones and Tom Aspinall records',
       [],
@@ -102,9 +106,9 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
   });
   it('continues from a missing local record to validated provider evidence', async () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
+    const roster = { id: jon.id, name: jon.name, slug: jon.slug, nickname: jon.nickname, nationality: null };
     request
-      .mockResolvedValue({ data: [jon] })
-      .mockResolvedValueOnce({ data: [jon] })
+      .mockImplementationOnce(async (_path, schema) => schema.parse({ data: [roster], meta: {} }))
       .mockResolvedValueOnce({ data: jon });
     const r = await intelligentRetrieve('Who is Jon Jons?', [], [], signal());
     expect(r.text).toContain('Jon Jones');
