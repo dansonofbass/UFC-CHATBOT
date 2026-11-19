@@ -50,6 +50,17 @@ export default async function Home() {
           <div className="red-glow" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
+          <div className="ufc-fan-card" aria-label="Built for UFC fans">
+            <Image
+              src="/images/logo.webp"
+              alt="UFC"
+              width={94}
+              height={94}
+              className="ufc-fan-logo"
+              sizes="94px"
+            />
+            <span>Built for UFC fans</span>
+          </div>
           <Reveal className="chat-preview">
             <div className="preview-top">
               <span className="preview-logo">
