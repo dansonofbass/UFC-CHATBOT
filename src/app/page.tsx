@@ -1,9 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Sparkles,
   ShieldCheck,
   Activity,
-  Layers,
   Search,
   MessageSquare,
   BookOpen,
@@ -50,19 +50,6 @@ export default async function Home() {
           <div className="red-glow" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
-          <div className="float-card float-left">
-            <div className="mini-icon">
-              <Activity size={18} />
-            </div>
-            <small>THE COMPLETE PICTURE</small>
-            <h4>Beyond the record.</h4>
-            <div className="stat-bars">
-              {[38, 63, 50, 85, 67, 94, 76, 100].map((v, i) => (
-                <i key={i} style={{ height: v + '%' }} />
-              ))}
-            </div>
-            <p>Fight history. In context.</p>
-          </div>
           <Reveal className="chat-preview">
             <div className="preview-top">
               <span className="preview-logo">
@@ -81,17 +68,19 @@ export default async function Home() {
                 <p className="muted">
                   Explore striking, grappling, fight history, and the sources behind every answer.
                 </p>
-                <div className="preview-chips">
-                  <span>
-                    <Check size={12} />
-                    Source-linked
-                  </span>
-                  <span>
-                    <Globe2 size={12} />
-                    ENGLISH
-                  </span>
-                </div>
               </div>
+            </div>
+          </Reveal>
+          <div className="float-card float-source">
+            <div className="preview-chips">
+              <span>
+                <Check size={12} />
+                Source-linked
+              </span>
+              <span>
+                <Globe2 size={12} />
+                ENGLISH
+              </span>
             </div>
             <div className="preview-input">
               <span>Ask anything about the octagon...</span>
@@ -99,7 +88,7 @@ export default async function Home() {
                 <CornerDownLeft size={17} />
               </Link>
             </div>
-          </Reveal>
+          </div>
           <div className="float-card float-right">
             <span className="mini-icon">
               <ShieldCheck size={19} />
@@ -117,10 +106,6 @@ export default async function Home() {
               <BookOpen size={14} />
               Verified context
             </div>
-          </div>
-          <div className="floating-pill">
-            <Layers size={15} />
-            One conversation. Every angle.
           </div>
         </div>
         <div className="feature-strip">
@@ -189,33 +174,48 @@ export default async function Home() {
       <section className="section how-section">
         <div className="section-kicker">INTELLIGENCE YOU CAN TRACE</div>
         <h2>A good answer has a corner.</h2>
-        <div className="grid three">
-          {[
-            [
-              BookOpen,
-              'Grounded in records',
-              'Database-first retrieval brings verified facts into the conversation.',
-            ],
-            [
-              ShieldCheck,
-              'Every source matters',
-              'Source links and timestamps show where an answer comes from.',
-            ],
-            [
-              Globe2,
-              'Your language. Your pace.',
-              'Ask your UFC questions and follow up without starting over.',
-            ],
-          ].map(([Icon, title, copy]) => {
-            const I = Icon as typeof Search;
-            return (
-              <div className="how-card" key={title as string}>
-                <I />
-                <h3>{title as string}</h3>
-                <p>{copy as string}</p>
-              </div>
-            );
-          })}
+        <div className="corner-layout">
+          <Reveal from="left" className="corner-content">
+            {[
+              [
+                BookOpen,
+                'Grounded in records',
+                'Verified fighter records and fight history give every answer a solid foundation.',
+              ],
+              [
+                ShieldCheck,
+                'Every source matters',
+                'Source links and timestamps show where an answer comes from.',
+              ],
+              [
+                Globe2,
+                'Your questions. Your pace.',
+                'Ask your UFC questions and follow up without starting over.',
+              ],
+            ].map(([Icon, title, copy]) => {
+              const I = Icon as typeof Search;
+              return (
+                <div className="how-card corner-card" key={title as string}>
+                  <I />
+                  <div>
+                    <h3>{title as string}</h3>
+                    <p>{copy as string}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </Reveal>
+          <figure className="corner-poster">
+            <Image
+              src="/images/poster.webp"
+              width={1080}
+              height={1350}
+              unoptimized
+              alt="Collage of MMA champions wearing championship belts"
+              className="champions-poster"
+              sizes="(max-width: 767px) calc(100vw - 40px), 500px"
+            />
+          </figure>
         </div>
       </section>
       <section className="final-cta">

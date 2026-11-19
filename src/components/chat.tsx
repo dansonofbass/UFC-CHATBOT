@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from './ui/button';
 import { safeUrl, type Citation } from '@/lib/schemas';
+import { TypingIndicator } from './typing-indicator';
 type ChatMessage = { role: 'user' | 'assistant'; content: string; sources?: Citation[] };
 type Conversation = { id: string; title: string; messages: ChatMessage[] };
 const STORE = 'octagon-conversations-v1';
@@ -220,7 +221,7 @@ function ChatClient() {
             Clear local history
           </button>
         </details>
-        <div ref={messagesPane} className="chat-messages" aria-live="polite" aria-busy={busy}>
+        <div ref={messagesPane} className="chat-messages" aria-live="polite">
           {!messages.length && (
             <div className="chat-welcome">
               <div className="chat-emblem">
@@ -254,7 +255,10 @@ function ChatClient() {
               dir={/[\u0600-\u06ff]/.test(m.content) ? 'rtl' : 'ltr'}
             >
               <div className="message-role">{m.role === 'user' ? 'You' : 'Octagon AI'}</div>
-              <div className="markdown">
+              <div
+                className="markdown"
+                aria-busy={busy && m.role === 'assistant' && i === messages.length - 1}
+              >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   skipHtml
@@ -273,9 +277,10 @@ function ChatClient() {
                     img: () => null,
                   }}
                 >
-                  {publicAnswer(m.content) || (busy ? 'Retrieving verified context…' : 'No answer received.')}
+                  {publicAnswer(m.content) || (busy ? '' : 'No answer received.')}
                 </ReactMarkdown>
               </div>
+              {busy && m.role === 'assistant' && i === messages.length - 1 && <TypingIndicator />}
               {m.role === 'assistant' && m.content && (
                 <div className="message-tools">
                   <button
