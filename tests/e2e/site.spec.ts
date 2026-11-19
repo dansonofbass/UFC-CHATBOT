@@ -82,7 +82,7 @@ test('corner section uses balanced columns, mobile stacking and 32px spacing', a
   });
 });
 
-test('visual stage keeps the three original cards without the UFC logo card', async ({
+test('visual stage balances three cards in one row without the tagline or logo card', async ({
   page,
 }, testInfo) => {
   await page.goto('/');
@@ -103,6 +103,8 @@ test('visual stage keeps the three original cards without the UFC logo card', as
   await expect(stage.locator('.ufc-logo-anchor, .ufc-float-card, .stage-ufc-logo')).toHaveCount(0);
   await expect(stage).not.toContainText('Built for UFC fans');
   await expect(stage).not.toContainText('Beyond the record.');
+  await expect(stage).not.toContainText('One conversation. Every angle.');
+  await expect(stage.locator('.floating-pill')).toHaveCount(0);
   expect(await stage.evaluate((el) => getComputedStyle(el).marginTop)).toBe('32px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const boxes = await Promise.all(cards.map((card) => card.boundingBox()));
@@ -124,9 +126,17 @@ test('visual stage keeps the three original cards without the UFC logo card', as
       expect(await card.evaluate((el) => getComputedStyle(el).position)).toBe('static');
   } else {
     expect((await stage.boundingBox())!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
-    expect(await cards[0].evaluate((el) => getComputedStyle(el).width)).toBe('510px');
-    expect(await cards[1].evaluate((el) => getComputedStyle(el).width)).toBe('206px');
-    expect(await cards[2].evaluate((el) => getComputedStyle(el).width)).toBe('218px');
+    await expect
+      .poll(async () => {
+        const row = await Promise.all(cards.map((card) => card.boundingBox()));
+        return Math.max(...row.map((box) => box!.y)) - Math.min(...row.map((box) => box!.y));
+      })
+      .toBeLessThan(1);
+    const row = await Promise.all(cards.map((card) => card.boundingBox()));
+    expect(Math.abs(row[1]!.width - row[2]!.width)).toBeLessThan(1);
+    expect(Math.abs(row[1]!.height - row[2]!.height)).toBeLessThan(1);
+    expect(row[1]!.x + row[1]!.width).toBeLessThan(row[0]!.x);
+    expect(row[0]!.x + row[0]!.width).toBeLessThan(row[2]!.x);
   }
   await page.screenshot({ path: testInfo.outputPath('visual-stage.png'), animations: 'disabled' });
   if (testInfo.project.name === 'desktop') {

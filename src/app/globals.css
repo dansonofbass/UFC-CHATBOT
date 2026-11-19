@@ -313,13 +313,32 @@ small {
 }
 .visual-stage {
   position: relative;
-  max-width: 1080px;
-  height: 440px;
+  max-width: 1180px;
+  min-height: 480px;
+  padding: 72px 0;
   margin: 32px auto 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.85fr) minmax(0, 1fr);
+  grid-template-areas: 'source preview knowledge';
+  gap: 24px;
+  align-items: stretch;
   isolation: isolate;
+}
+.visual-stage > .chat-preview { grid-area: preview; }
+.visual-stage > .float-source { grid-area: source; }
+.visual-stage > .float-right { grid-area: knowledge; }
+.visual-stage > .chat-preview,
+.visual-stage > .float-card {
+  position: static;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  transform: none;
+  animation: none;
 }
 .red-glow {
   position: absolute;
@@ -460,12 +479,6 @@ small {
   box-shadow: 0 15px 45px #0007;
   width: 206px;
 }
-.float-right {
-  right: 1%;
-  top: 151px;
-  transform: rotate(6deg);
-  width: 218px;
-}
 .mini-icon {
   display: flex;
   margin-bottom: 12px;
@@ -494,34 +507,11 @@ small {
   padding-top: 10px;
   border-top: 1px solid var(--line);
 }
-.floating-pill {
-  position: absolute;
-  bottom: 2px;
-  z-index: 4;
-  left: 34%;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: #1a1a1d;
-  border: 1px solid #ffffff18;
-  padding: 7px 14px;
-  border-radius: 100px;
-  color: #a1a1aa;
-  transform: rotate(-3deg);
-}
 
-/* Source/input elements retain their original styling in the left floating slot. */
-.float-source {
-  left: 3%;
-  top: 88px;
-  transform: rotate(-6deg);
-}
+/* Source/input styling for the left card in the balanced row. */
 .float-source .preview-chips { margin-top: 0; flex-wrap: wrap; gap: 5px; }
 .float-source .preview-input { margin-top: 15px; gap: 8px; }
 .float-source .preview-input a { flex-shrink: 0; }
-@media (min-width: 1101px) { .float-source { animation: drift-source 7s ease-in-out infinite; } }
-@keyframes drift-source { 50% { transform: translateY(-9px) rotate(-4deg); } }
 .feature-strip {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -1298,16 +1288,6 @@ select.field {
   text-align: center;
   color: var(--muted);
 }
-@media (min-width: 900px) {
-  .float-right {
-    animation: drift-right 8s ease-in-out infinite;
-  }
-}
-@keyframes drift-right {
-  50% {
-    transform: translateY(10px) rotate(4deg);
-  }
-}
 @media (max-width: 900px) {
   .float-right {
     right: -2%;
@@ -1442,9 +1422,6 @@ select.field {
   .float-right .mini-icon,
   .float-right p,
   .source-line {
-    display: none;
-  }
-  .floating-pill {
     display: none;
   }
   .orbit {
@@ -1774,7 +1751,7 @@ small, code, pre, label {
 
 /* Normal flow preserves every card and its text on phones and narrow tablets. */
 @media (max-width: 1100px) {
-  .hero .visual-stage { display: flex; flex-direction: column; align-items: stretch; height: auto; padding: 0; margin-top: 32px; gap: 18px; }
+  .hero .visual-stage { display: flex; flex-direction: column; align-items: stretch; height: auto; min-height: 0; padding: 0; margin-top: 32px; gap: 18px; }
   .visual-stage > .chat-preview, .visual-stage > .float-card { position: static; width: 100%; max-width: none; transform: none; animation: none; }
   .visual-stage .float-right .mini-icon, .visual-stage .source-line { display: flex; }
   .visual-stage .float-right p { display: block; }
@@ -1782,6 +1759,5 @@ small, code, pre, label {
   .visual-stage .float-card small { font-size: 0.55rem; }
   .visual-stage .float-card p { font-size: 0.7rem; }
   .visual-stage .float-source .preview-input { margin-top: 25px; }
-  .visual-stage > .floating-pill { position: static; display: flex; align-self: center; transform: none; }
   .visual-stage > .red-glow, .visual-stage > .orbit { display: none; }
 }

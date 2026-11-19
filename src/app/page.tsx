@@ -4,7 +4,6 @@ import {
   Sparkles,
   ShieldCheck,
   Activity,
-  Layers,
   Search,
   MessageSquare,
   BookOpen,
@@ -107,10 +106,6 @@ export default async function Home() {
               <BookOpen size={14} />
               Verified context
             </div>
-          </div>
-          <div className="floating-pill">
-            <Layers size={15} />
-            One conversation. Every angle.
           </div>
         </div>
         <div className="feature-strip">
