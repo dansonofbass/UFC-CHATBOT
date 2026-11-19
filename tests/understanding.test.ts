@@ -24,7 +24,8 @@ describe('query understanding using directory identities', () => {
     const plan = understand('give me the record of khabib', [], []);
     expect(plan.intent).not.toBe('out_of_scope');
     expect(plan.subject).toBe('khabib');
-    expect(plan.intents).toContain('fighter_history');
+    expect(plan.intent).toBe('fighter_history');
+    expect(plan.intents).toEqual(['fighter_history']);
   });
   it('keeps genuinely ambiguous first-name references ambiguous', () => {
     const fighters = [
