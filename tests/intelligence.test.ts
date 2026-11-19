@@ -58,6 +58,38 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe('intelligent evidence pipeline — synthetic integrations', () => {
+  it('explains general UFC statistics with no roster, model or live requests', async () => {
+    const result = await intelligentRetrieve('Explain UFC fight statistics', [], [], signal());
+    expect(result.deterministic).toContain('SLpM');
+    expect(result.deterministic).toContain('Takedown accuracy');
+    expect(result.deterministic).toContain('UFCStats');
+    expect(result.text).toBe('');
+    expect(request).not.toHaveBeenCalled();
+    expect(liveProvider).not.toHaveBeenCalled();
+  });
+  it('explains sourced fighter statistics for a contextual bare-name follow-up', async () => {
+    const withStats: Fighter = {
+      ...jon,
+      name: 'Islam Makhachev',
+      slug: 'islam-makhachev',
+      stats: {
+        slpm: '2.72', sapm: '1.41', str_acc: '58%', str_def: '64%',
+        td_avg: '3.10', td_acc: '49%', td_def: '87%', sub_avg: '1.0',
+        basis: {},
+      },
+    };
+    const result = await intelligentRetrieve(
+      'islam makhachev',
+      [{ role: 'user', content: 'Explain UFC fight statistics' }],
+      [withStats],
+      signal(),
+    );
+    expect(result.deterministic).toContain('Islam Makhachev');
+    expect(result.deterministic).toContain('2.72');
+    expect(result.deterministic).toContain('Profile snapshot');
+    expect(result.citations.length).toBeGreaterThan(0);
+    expect(request).not.toHaveBeenCalled();
+  });
   it('retrieves a missing comparison participant instead of discarding the named opponent', async () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
     const tom = { ...jon, id: 2, name: 'Tom Aspinall', slug: 'tom-aspinall', nickname: null };
