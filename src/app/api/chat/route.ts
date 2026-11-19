@@ -5,6 +5,10 @@ import { answer, providers } from '@/lib/ai';
 import { clientLimit, reserveAI } from '@/lib/security';
 import { fighters } from '@/lib/data';
 import { cachedEvidence } from '@/lib/cache';
+import { retrievalConfig } from '@/lib/retrieval-config';
+import { directory as fighterDirectory, intelligentRetrieve } from '@/lib/intelligent-retrieval';
+import { queryPlan } from '@/lib/model-understanding';
+import { understand } from '@/lib/understanding';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 const schema = z.object({
@@ -39,21 +43,34 @@ export async function POST(request: Request) {
   const messages = parsed.data.messages,
     query = messages.at(-1)!.content,
     fa = /[\u0600-\u06ff]/.test(query);
+  const requestSignal = AbortSignal.any([request.signal, AbortSignal.timeout(55000)]);
   try {
     if (!(await clientLimit(request)))
       return Response.json(
         { error: 'Hourly request limit reached. Try again later.' },
         { status: 429, headers: { 'Retry-After': '3600' } },
       );
-    const directory = await fighters();
-    const intent = resolveIntent(
-      query,
-      messages.slice(0, -1),
-      directory.items.flatMap((f) => [f.name, f.slug.replaceAll('-', ' '), f.nickname || '']),
-    );
+    const intelligence = retrievalConfig().CHAT_INTELLIGENCE_ENABLED === 'true';
+    const history = messages.slice(0, -1);
+    const directory = intelligence
+      ? { items: await fighterDirectory(requestSignal) }
+      : await fighters();
+    const plan = intelligence ? understand(query, history, directory.items) : undefined;
+    const intent =
+      plan?.intent ||
+      resolveIntent(
+        query,
+        messages.slice(0, -1),
+        directory.items.flatMap((f) => [f.name, f.slug.replaceAll('-', ' '), f.nickname || '']),
+      );
     const encoder = new TextEncoder();
     const record = (data: unknown) => encoder.encode(JSON.stringify(data) + '\n');
-    if (intent === 'out_of_scope')
+    if (
+      intent === 'out_of_scope' &&
+      (!intelligence ||
+        retrievalConfig().CHAT_MODEL_UNDERSTANDING_ENABLED !== 'true' ||
+        /ignore|reveal|system prompt/i.test(query))
+    )
       return new Response(
         record({
           type: 'text',
@@ -63,10 +80,26 @@ export async function POST(request: Request) {
         }),
         { headers: { 'Content-Type': 'application/x-ndjson' } },
       );
-    const evidence = await cachedEvidence(query, JSON.stringify(messages.slice(0, -1)), () =>
-      retrieve(query, messages.slice(0, -1), intent),
-    );
-    if (!evidence.text)
+    const evidence = await cachedEvidence(query, JSON.stringify(history), async () => {
+      if (!intelligence) return retrieve(query, history, intent);
+      const prepared = await queryPlan(query, history, directory.items, requestSignal);
+      if (prepared.intent === 'out_of_scope')
+        return {
+          text: '',
+          citations: [],
+          deterministic:
+            'I can help with UFC fighters, events, fight history, and relevant MMA rules.',
+          cacheTtlMs: 0,
+        };
+      return intelligentRetrieve(
+        query,
+        history,
+        directory.items,
+        AbortSignal.any([requestSignal, AbortSignal.timeout(20000)]),
+        prepared,
+      );
+    });
+    if (!evidence.text && !evidence.deterministic)
       return new Response(
         record({
           type: 'text',
@@ -77,7 +110,7 @@ export async function POST(request: Request) {
         { headers: { 'Content-Type': 'application/x-ndjson' } },
       );
     if (
-      (!evidence.deterministic || fa) &&
+      (!evidence.deterministic || (fa && evidence.text)) &&
       !(await reserveAI(
         Buffer.byteLength(evidence.text + JSON.stringify(messages), 'utf8'),
         providers().length || 1,
@@ -88,13 +121,13 @@ export async function POST(request: Request) {
         { status: 429 },
       );
     const generation = new AbortController();
-    const signal = AbortSignal.any([request.signal, generation.signal]);
+    const signal = AbortSignal.any([requestSignal, generation.signal]);
     let cancelled = false;
     const stream = new ReadableStream({
       async start(controller) {
         try {
           controller.enqueue(record({ type: 'sources', sources: evidence.citations }));
-          if (evidence.deterministic && !fa)
+          if (evidence.deterministic && (!fa || !evidence.text))
             controller.enqueue(record({ type: 'text', text: evidence.deterministic }));
           else
             for await (const text of answer(messages, evidence.text, signal)) {

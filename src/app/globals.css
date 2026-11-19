@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
 @import 'tailwindcss';
 .mobile-chat-history {
   display: none;
@@ -43,7 +44,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Russo One', 'Arial Black', sans-serif;
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -312,13 +313,32 @@ small {
 }
 .visual-stage {
   position: relative;
-  max-width: 1080px;
-  height: 440px;
-  margin: 24px auto 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 1180px;
+  min-height: 480px;
+  padding: 72px 0;
+  margin: 32px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.85fr) minmax(0, 1fr);
+  grid-template-areas: 'source preview knowledge';
+  gap: 24px;
+  align-items: stretch;
   isolation: isolate;
+}
+.visual-stage > .chat-preview { grid-area: preview; }
+.visual-stage > .float-source { grid-area: source; }
+.visual-stage > .float-right { grid-area: knowledge; }
+.visual-stage > .chat-preview,
+.visual-stage > .float-card {
+  position: static;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  transform: none;
+  animation: none;
 }
 .red-glow {
   position: absolute;
@@ -459,17 +479,6 @@ small {
   box-shadow: 0 15px 45px #0007;
   width: 206px;
 }
-.float-left {
-  left: 3%;
-  top: 88px;
-  transform: rotate(-6deg);
-}
-.float-right {
-  right: 1%;
-  top: 151px;
-  transform: rotate(6deg);
-  width: 218px;
-}
 .mini-icon {
   display: flex;
   margin-bottom: 12px;
@@ -488,18 +497,6 @@ small {
   font-size: 0.7rem;
   margin: 10px 0 0;
 }
-.stat-bars {
-  display: flex;
-  gap: 5px;
-  height: 53px;
-  align-items: flex-end;
-  margin-top: 18px;
-}
-.stat-bars i {
-  width: 15px;
-  background: linear-gradient(#d53232, #651a1a);
-  border-radius: 2px 2px 0 0;
-}
 .source-line {
   display: flex;
   align-items: center;
@@ -510,22 +507,11 @@ small {
   padding-top: 10px;
   border-top: 1px solid var(--line);
 }
-.floating-pill {
-  position: absolute;
-  bottom: 2px;
-  z-index: 4;
-  left: 34%;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: #1a1a1d;
-  border: 1px solid #ffffff18;
-  padding: 7px 14px;
-  border-radius: 100px;
-  color: #a1a1aa;
-  transform: rotate(-3deg);
-}
+
+/* Source/input styling for the left card in the balanced row. */
+.float-source .preview-chips { margin-top: 0; flex-wrap: wrap; gap: 5px; }
+.float-source .preview-input { margin-top: 15px; gap: 8px; }
+.float-source .preview-input a { flex-shrink: 0; }
 .feature-strip {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -774,6 +760,99 @@ small {
 }
 .how-card p {
   font-size: 0.85rem;
+}
+.corner-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 48px);
+  margin-top: 32px;
+  text-align: left;
+}
+.corner-content {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.corner-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid #ffffff12;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff06, #d20a0a04);
+  box-shadow: inset 0 1px 0 #ffffff04;
+}
+.corner-card > svg {
+  flex: 0 0 22px;
+  margin: 2px 0 0;
+  color: #e16b70;
+}
+.corner-card h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+.corner-card p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.75;
+}
+.corner-poster {
+  min-width: 0;
+  margin: 0;
+}
+.champions-poster {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 16px;
+}
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 24px;
+  margin-top: 6px;
+  color: #a1a1aa;
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.typing-dots > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e35b62;
+  animation: typing-pulse 1.2s ease-in-out infinite;
+}
+.typing-dots > span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing-dots > span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes typing-pulse {
+  0%, 65%, 100% { opacity: 0.35; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+@media (max-width: 767px) {
+  .corner-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .corner-poster { text-align: center; }
+  .corner-card { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal-from='left'] { opacity: 1 !important; transform: none !important; }
 }
 .final-cta {
   text-align: center;
@@ -1209,29 +1288,7 @@ select.field {
   text-align: center;
   color: var(--muted);
 }
-@media (min-width: 900px) {
-  .float-left {
-    animation: drift-left 7s ease-in-out infinite;
-  }
-  .float-right {
-    animation: drift-right 8s ease-in-out infinite;
-  }
-}
-@keyframes drift-left {
-  50% {
-    transform: translateY(-9px) rotate(-4deg);
-  }
-}
-@keyframes drift-right {
-  50% {
-    transform: translateY(10px) rotate(4deg);
-  }
-}
 @media (max-width: 900px) {
-  .float-left {
-    left: -2%;
-    width: 175px;
-  }
   .float-right {
     right: -2%;
     width: 185px;
@@ -1348,18 +1405,6 @@ select.field {
     font-size: 0.65rem;
     margin-top: 20px;
   }
-  .float-left {
-    top: 305px;
-    left: 0;
-    width: 145px;
-    padding: 12px;
-    transform: rotate(-5deg);
-  }
-  .float-left .mini-icon,
-  .float-left .stat-bars,
-  .float-left p {
-    display: none;
-  }
   .float-card small {
     font-size: 0.43rem;
   }
@@ -1377,9 +1422,6 @@ select.field {
   .float-right .mini-icon,
   .float-right p,
   .source-line {
-    display: none;
-  }
-  .floating-pill {
     display: none;
   }
   .orbit {
@@ -1594,4 +1636,128 @@ select.field {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* OCTAGON AI 2026 — restrained glass surfaces and branded scrolling. */
+html {
+  scrollbar-color: #8e191e #101013;
+  scrollbar-width: thin;
+}
+body {
+  letter-spacing: 0.025em;
+}
+button, input, textarea, select, code, .markdown {
+  font-family: 'Russo One', 'Arial Black', sans-serif;
+}
+input, textarea, .markdown {
+  letter-spacing: 0.012em;
+}
+.hero .feature-strip, .feature-strip {
+  margin-top: 32px;
+}
+.panel, .float-card, .chat-preview, .chat-layout, .message, .suggestions button, .composer-box {
+  background: linear-gradient(145deg, rgba(38, 36, 43, .67), rgba(12, 12, 17, .78));
+  border-color: rgba(255, 255, 255, .13);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .06), 0 12px 32px rgba(0, 0, 0, .17);
+}
+.message-user {
+  background: linear-gradient(140deg, rgba(102, 16, 23, .52), rgba(29, 14, 20, .7));
+  border-color: rgba(230, 41, 41, .22);
+}
+.chat-sidebar, .chat-compose {
+  background: rgba(16, 15, 19, .74);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.chat-main { min-height: 0; }
+.chat-messages {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.chat-messages::-webkit-scrollbar {
+  display: none;
+}
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: #101013; border-radius: 9px; }
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b52229, #531013);
+  border: 2px solid #101013;
+  border-radius: 12px;
+}
+*::-webkit-scrollbar-thumb:hover { background: #d52a32; }
+.chat-messages::-webkit-scrollbar { width: 0; height: 0; }
+@media (max-width: 640px) {
+  .hero-buttons .button { max-width: 100%; white-space: normal; text-align: center; }
+}
+
+/* One consistent sitewide typeface: Russo One for menus, chat, controls and content. */
+:root {
+  --font-display: 'Russo One', 'Arial Black', sans-serif;
+  --font-reading: 'Russo One', 'Arial Black', sans-serif;
+}
+body, button, input, textarea, select, code, .markdown {
+  font-family: var(--font-reading);
+  letter-spacing: normal;
+  font-weight: 400;
+}
+h1, h2, h3, h4, .brand, .section-kicker, .section-heading h2,
+.chat-toolbar strong, .preview-top strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.22;
+}
+h1 { letter-spacing: -0.015em; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4.45rem); line-height: 1.15; }
+.chat-welcome h1 { font-size: clamp(1.8rem, 3vw, 2.3rem); }
+.brand { font-size: 1rem; letter-spacing: 0.025em; }
+.brand-ai { font-family: var(--font-reading); font-size: 0.65rem; }
+.button, .nav-links, .footer-links, .suggestions button, .message,
+.composer-box textarea, .chat-compose small, .message-tools,
+.status-card, .data-table, .history-item {
+  font-family: var(--font-reading);
+  letter-spacing: normal;
+}
+.button { font-weight: 600; }
+.markdown { font-size: 0.94rem; line-height: 1.75; }
+.markdown p, .chat-welcome p, .hero-copy, .ask-card p { line-height: 1.7; }
+@media (max-width: 640px) {
+  .hero h1 { font-size: clamp(2.05rem, 8vw, 3rem); }
+  .chat-welcome h1 { font-size: 1.8rem; }
+}
+
+/* Explicitly unify embedded widgets, chat Markdown, menus, buttons and form controls. */
+:root { --font-display: 'Russo One', 'Arial Black', sans-serif; --font-reading: var(--font-display); }
+html, body, button, input, select, textarea,
+.nav, .nav-links, .footer, .footer-links,
+.chat-layout, .chat-sidebar, .chat-main, .chat-toolbar,
+.chat-messages, .markdown, .markdown *, .message,
+.chat-compose, .composer-box, .suggestions, .history-item,
+.status-card, .data-table, .data-table *,
+.panel, .panel *, .button, .button *,
+small, code, pre, label {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+.markdown, .markdown p { font-size: 0.88rem; line-height: 1.8; }
+.chat-compose textarea { font-size: 0.85rem; }
+.nav-links, .footer-links { font-size: 0.78rem; }
+.chat-messages .message-role { font-size: 0.62rem; }
+
+/* Normal flow preserves every card and its text on phones and narrow tablets. */
+@media (max-width: 1100px) {
+  .hero .visual-stage { display: flex; flex-direction: column; align-items: stretch; height: auto; min-height: 0; padding: 0; margin-top: 32px; gap: 18px; }
+  .visual-stage > .chat-preview, .visual-stage > .float-card { position: static; width: 100%; max-width: none; transform: none; animation: none; }
+  .visual-stage .float-right .mini-icon, .visual-stage .source-line { display: flex; }
+  .visual-stage .float-right p { display: block; }
+  .visual-stage .float-card h4 { font-size: 1rem; margin: 6px 0 10px; }
+  .visual-stage .float-card small { font-size: 0.55rem; }
+  .visual-stage .float-card p { font-size: 0.7rem; }
+  .visual-stage .float-source .preview-input { margin-top: 25px; }
+  .visual-stage > .red-glow, .visual-stage > .orbit { display: none; }
 }

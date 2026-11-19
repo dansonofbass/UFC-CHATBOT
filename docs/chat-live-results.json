@@ -1,0 +1,121 @@
+{
+  "checked_at": "2026-11-19T13:11:41.614Z",
+  "target": "http://localhost:3100",
+  "results": [
+    {
+      "question": "Who is Jon Jones?",
+      "status": 200,
+      "duration_ms": 2628,
+      "frame_types": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "frame_count": 3,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "Jon Jones (“Bones”) · United States.\n\nufc-only: 22-1-0 (1 NC); pro-mma: 28-1-0.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: 2026-11-19 (UTC).",
+      "error": false
+    },
+    {
+      "question": "Tell me about John Jones.",
+      "status": 200,
+      "duration_ms": 1546,
+      "frame_types": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "frame_count": 3,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "Jon Jones (“Bones”) · United States.\n\nufc-only: 22-1-0 (1 NC); pro-mma: 28-1-0.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: 2026-11-19 (UTC).",
+      "error": false
+    },
+    {
+      "question": "Who is Jon Jons?",
+      "status": 200,
+      "duration_ms": 1537,
+      "frame_types": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "frame_count": 3,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "Jon Jones (“Bones”) · United States.\n\nufc-only: 22-1-0 (1 NC); pro-mma: 28-1-0.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: 2026-11-19 (UTC).",
+      "error": false
+    },
+    {
+      "question": "What is Bones' MMA record?",
+      "status": 200,
+      "duration_ms": 1825,
+      "frame_types": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "frame_count": 3,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "Jon Jones: 28-1-0 (pro-mma).\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: 2026-11-19 (UTC).",
+      "error": false
+    },
+    {
+      "question": "What happened at the latest UFC event?",
+      "status": 200,
+      "duration_ms": 7406,
+      "frame_types": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "frame_count": 3,
+      "sources": [
+        {
+          "title": "Polymarket UFC 334: Gane vs Hokit",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-19T13:11:35.549Z"
+        }
+      ],
+      "answer": "Latest completed UFC event in the available records: **Polymarket UFC 334: Gane vs Hokit** (2026-11-14, UTC). Main event: Ciryl Gane vs Josh Hokit. Ciryl Gane won by Decision - Unanimous.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: 2026-11-19 (UTC).",
+      "error": false
+    },
+    {
+      "question": "Tell me about Unknown Fixture Fighter",
+      "status": 200,
+      "duration_ms": 4269,
+      "frame_types": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "frame_count": 3,
+      "sources": [],
+      "answer": "I couldn’t verify Unknown Fixture from the available sources. Could you confirm the spelling or share the event or opponent?",
+      "error": false
+    }
+  ],
+  "diagnostics_unauthorized_status": 401
+}

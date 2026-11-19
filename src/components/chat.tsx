@@ -5,9 +5,17 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from './ui/button';
 import { safeUrl, type Citation } from '@/lib/schemas';
+import { TypingIndicator } from './typing-indicator';
 type ChatMessage = { role: 'user' | 'assistant'; content: string; sources?: Citation[] };
 type Conversation = { id: string; title: string; messages: ChatMessage[] };
 const STORE = 'octagon-conversations-v1';
+// Hide internal ingestion endpoints in chat output and legacy local history.
+// The source publisher is sufficient for readers; API URLs are not public article links.
+function publicAnswer(text: string) {
+  return text
+    .replace(/\[[^\]]*\]\(https?:\/\/api\.ufcalendar\.com[^)\s]*\)/gi, 'UFCalendar')
+    .replace(/https?:\/\/api\.ufcalendar\.com\/[^\s)\]】]*/gi, 'UFCalendar');
+}
 const subscribe = (callback: () => void) => {
   window.addEventListener('storage', callback);
   return () => window.removeEventListener('storage', callback);
@@ -50,11 +58,13 @@ function ChatClient() {
     [error, setError] = useState(''),
     [copied, setCopied] = useState(-1);
   const abort = useRef<AbortController | null>(null),
-    bottom = useRef<HTMLDivElement>(null);
+    bottom = useRef<HTMLDivElement>(null),
+    messagesPane = useRef<HTMLDivElement>(null);
   const fa = /[\u0600-\u06ff]/.test(input || messages.at(-1)?.content || '');
   useEffect(() => () => abort.current?.abort(), []);
   useEffect(() => {
-    bottom.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+    const pane = messagesPane.current;
+    if (pane) pane.scrollTop = pane.scrollHeight;
   }, [messages, busy]);
   useEffect(() => {
     if (!messages.length) return;
@@ -173,7 +183,7 @@ function ChatClient() {
         <div className="chat-toolbar">
           <strong>Octagon intelligence</strong>
           <div className="nav-actions">
-            <span className="tag">EN / فارسی</span>
+            <span className="tag">ENGLISH</span>
             <button
               className="icon-button"
               onClick={newChat}
@@ -211,7 +221,7 @@ function ChatClient() {
             Clear local history
           </button>
         </details>
-        <div className="chat-messages" aria-live="polite" aria-busy={busy}>
+        <div ref={messagesPane} className="chat-messages" aria-live="polite">
           {!messages.length && (
             <div className="chat-welcome">
               <div className="chat-emblem">
@@ -222,14 +232,14 @@ function ChatClient() {
               <p>
                 Follow the records. Explore the details.
                 <br />
-                Ask about UFC in English or فارسی.
+                Ask anything about the UFC.
               </p>
               <div className="suggestions">
                 {[
                   'What is the next UFC event?',
                   'Explain UFC fight statistics',
                   'Show the latest UFC rankings',
-                  'آخرین اخبار UFC چیست؟',
+                  'What happened at the last UFC event?',
                 ].map((q) => (
                   <button key={q} onClick={() => void send(q)}>
                     {q}
@@ -245,13 +255,17 @@ function ChatClient() {
               dir={/[\u0600-\u06ff]/.test(m.content) ? 'rtl' : 'ltr'}
             >
               <div className="message-role">{m.role === 'user' ? 'You' : 'Octagon AI'}</div>
-              <div className="markdown">
+              <div
+                className="markdown"
+                aria-busy={busy && m.role === 'assistant' && i === messages.length - 1}
+              >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   skipHtml
                   components={{
                     a: ({ href, children }) =>
                       safeUrl(href || '') &&
+                      new URL(safeUrl(href || '')!).hostname !== 'api.ufcalendar.com' &&
                       (m.role === 'user' ||
                         m.sources?.some((s) => safeUrl(s.url) === safeUrl(href || ''))) ? (
                         <a href={safeUrl(href!)} target="_blank" rel="noopener noreferrer">
@@ -263,29 +277,10 @@ function ChatClient() {
                     img: () => null,
                   }}
                 >
-                  {m.content || (busy ? 'Retrieving verified context…' : 'No answer received.')}
+                  {publicAnswer(m.content) || (busy ? '' : 'No answer received.')}
                 </ReactMarkdown>
               </div>
-              {m.sources && m.sources.length > 0 && (
-                <div className="citation-list">
-                  {m.sources.map(
-                    (s) =>
-                      safeUrl(s.url) && (
-                        <a
-                          key={s.url}
-                          href={safeUrl(s.url)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {s.title}
-                          <time dateTime={s.updated_at}>
-                            Verified {new Date(s.updated_at).toLocaleString()} · source timestamp
-                          </time>
-                        </a>
-                      ),
-                  )}
-                </div>
-              )}
+              {busy && m.role === 'assistant' && i === messages.length - 1 && <TypingIndicator />}
               {m.role === 'assistant' && m.content && (
                 <div className="message-tools">
                   <button
@@ -336,7 +331,7 @@ function ChatClient() {
               rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={fa ? 'درباره UFC بپرسید…' : 'Ask anything about UFC…'}
+              placeholder="Ask anything about the UFC…"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
                   e.preventDefault();

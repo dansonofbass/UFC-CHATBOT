@@ -42,6 +42,10 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe('AI abstraction — mocked SDK, not live APIs', () => {
+  it('rejects reasoning-only completions with no visible answer', async () => {
+    vi.mocked(streamText).mockReturnValue(output([]));
+    await expect(collect()).rejects.toThrow('temporarily unavailable');
+  });
   it('uses Groq first, bounds tokens, disables retries and logs usage', async () => {
     vi.mocked(streamText).mockReturnValue(
       output([{ type: 'text-delta', text: 'Verified answer' }]),
@@ -50,7 +54,7 @@ describe('AI abstraction — mocked SDK, not live APIs', () => {
     const call = vi.mocked(streamText).mock.calls[0][0];
     expect(call.model).toMatchObject({ modelId: 'openai/gpt-oss-120b' });
     expect(call.maxRetries).toBe(0);
-    expect(call.maxOutputTokens).toBe(1200);
+    expect(call.maxOutputTokens).toBe(450);
     expect(call.system).toContain('untrusted quoted data');
     expect(insert).toHaveBeenCalledWith(
       expect.objectContaining({ provider: 'groq', tokens: 25, status: 'success' }),

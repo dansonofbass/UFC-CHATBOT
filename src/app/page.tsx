@@ -1,9 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Sparkles,
   ShieldCheck,
   Activity,
-  Layers,
   Search,
   MessageSquare,
   BookOpen,
@@ -14,11 +14,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion';
-import { FighterCard, EventCard, NewsCard, Empty } from '@/components/data-ui';
-import { fighters, events, news } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 export default async function Home() {
-  const [f, e, n] = await Promise.all([fighters(), events(), news()]);
   return (
     <>
       <section className="hero">
@@ -40,11 +37,8 @@ export default async function Home() {
             <Button asChild>
               <Link href="/chat">
                 <Sparkles size={17} />
-                Start Chatting
+                Ask Anything About the UFC
               </Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/fighters">Explore Fighters</Link>
             </Button>
           </div>
           <div className="hero-note">
@@ -56,19 +50,6 @@ export default async function Home() {
           <div className="red-glow" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
-          <div className="float-card float-left">
-            <div className="mini-icon">
-              <Activity size={18} />
-            </div>
-            <small>THE COMPLETE PICTURE</small>
-            <h4>Beyond the record.</h4>
-            <div className="stat-bars">
-              {[38, 63, 50, 85, 67, 94, 76, 100].map((v, i) => (
-                <i key={i} style={{ height: v + '%' }} />
-              ))}
-            </div>
-            <p>Fight history. In context.</p>
-          </div>
           <Reveal className="chat-preview">
             <div className="preview-top">
               <span className="preview-logo">
@@ -87,17 +68,19 @@ export default async function Home() {
                 <p className="muted">
                   Explore striking, grappling, fight history, and the sources behind every answer.
                 </p>
-                <div className="preview-chips">
-                  <span>
-                    <Check size={12} />
-                    Source-linked
-                  </span>
-                  <span>
-                    <Globe2 size={12} />
-                    EN / فارسی
-                  </span>
-                </div>
               </div>
+            </div>
+          </Reveal>
+          <div className="float-card float-source">
+            <div className="preview-chips">
+              <span>
+                <Check size={12} />
+                Source-linked
+              </span>
+              <span>
+                <Globe2 size={12} />
+                ENGLISH
+              </span>
             </div>
             <div className="preview-input">
               <span>Ask anything about the octagon...</span>
@@ -105,7 +88,7 @@ export default async function Home() {
                 <CornerDownLeft size={17} />
               </Link>
             </div>
-          </Reveal>
+          </div>
           <div className="float-card float-right">
             <span className="mini-icon">
               <ShieldCheck size={19} />
@@ -123,10 +106,6 @@ export default async function Home() {
               <BookOpen size={14} />
               Verified context
             </div>
-          </div>
-          <div className="floating-pill">
-            <Layers size={15} />
-            One conversation. Every angle.
           </div>
         </div>
         <div className="feature-strip">
@@ -192,126 +171,51 @@ export default async function Home() {
           })}
         </div>
       </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <div className="section-kicker">THE ATHLETES</div>
-            <h2>More than a name on the card.</h2>
-          </div>
-          <Link href="/fighters">Explore fighters</Link>
-        </div>
-        {f.items.length ? (
-          <div className="grid three">
-            {f.items.slice(0, 3).map((f) => (
-              <FighterCard key={f.id} fighter={f} />
-            ))}
-          </div>
-        ) : (
-          <Empty kind="fighter profiles" state={f.state} />
-        )}
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <div className="section-kicker">ON THE HORIZON</div>
-            <h2>The next chapter.</h2>
-          </div>
-          <Link href="/events">All events</Link>
-        </div>
-        {e.items.some((e) => ['announced', 'scheduled', 'live'].includes(e.status)) ? (
-          <div className="grid three">
-            {e.items
-              .filter((e) => ['announced', 'scheduled', 'live'].includes(e.status))
-              .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
-              .slice(0, 3)
-              .map((e) => (
-                <EventCard key={e.id} event={e} />
-              ))}
-          </div>
-        ) : (
-          <Empty kind="upcoming events" state={e.state} />
-        )}
-      </section>
-      <section className="section compare-teaser panel">
-        <div>
-          <div className="section-kicker">TWO FIGHTERS. A CLEARER PICTURE.</div>
-          <h2>
-            Let the details
-            <br />
-            do the talking.
-          </h2>
-          <p>
-            Put sourced records and available statistics side by side.
-            <br />
-            Then ask AI to explain the differences.
-          </p>
-          <Button asChild variant="secondary">
-            <Link href="/compare">Compare fighters</Link>
-          </Button>
-        </div>
-        <div className="compare-art">
-          <div>
-            <span>STRIKING</span>
-            <i style={{ width: '75%' }} />
-            <i style={{ width: '55%' }} />
-          </div>
-          <strong>VS</strong>
-          <div>
-            <span>GRAPPLING</span>
-            <i style={{ width: '50%' }} />
-            <i style={{ width: '80%' }} />
-          </div>
-          <small>Illustration · no fighter statistics shown</small>
-        </div>
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <div className="section-kicker">BEYOND THE HEADLINES</div>
-            <h2>Stay close to the story.</h2>
-          </div>
-          <Link href="/news">Latest news</Link>
-        </div>
-        {n.items.length ? (
-          <div className="grid three">
-            {n.items.slice(0, 3).map((n) => (
-              <NewsCard key={n.id} item={n} />
-            ))}
-          </div>
-        ) : (
-          <Empty kind="news articles" state={n.state} />
-        )}
-      </section>
       <section className="section how-section">
         <div className="section-kicker">INTELLIGENCE YOU CAN TRACE</div>
         <h2>A good answer has a corner.</h2>
-        <div className="grid three">
-          {[
-            [
-              BookOpen,
-              'Grounded in records',
-              'Database-first retrieval brings verified facts into the conversation.',
-            ],
-            [
-              ShieldCheck,
-              'Every source matters',
-              'Source links and timestamps show where an answer comes from.',
-            ],
-            [
-              Globe2,
-              'Your language. Your pace.',
-              'Ask in English or Persian. Follow up without starting over.',
-            ],
-          ].map(([Icon, title, copy]) => {
-            const I = Icon as typeof Search;
-            return (
-              <div className="how-card" key={title as string}>
-                <I />
-                <h3>{title as string}</h3>
-                <p>{copy as string}</p>
-              </div>
-            );
-          })}
+        <div className="corner-layout">
+          <Reveal from="left" className="corner-content">
+            {[
+              [
+                BookOpen,
+                'Grounded in records',
+                'Verified fighter records and fight history give every answer a solid foundation.',
+              ],
+              [
+                ShieldCheck,
+                'Every source matters',
+                'Source links and timestamps show where an answer comes from.',
+              ],
+              [
+                Globe2,
+                'Your questions. Your pace.',
+                'Ask your UFC questions and follow up without starting over.',
+              ],
+            ].map(([Icon, title, copy]) => {
+              const I = Icon as typeof Search;
+              return (
+                <div className="how-card corner-card" key={title as string}>
+                  <I />
+                  <div>
+                    <h3>{title as string}</h3>
+                    <p>{copy as string}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </Reveal>
+          <figure className="corner-poster">
+            <Image
+              src="/images/poster.webp"
+              width={1080}
+              height={1350}
+              unoptimized
+              alt="Collage of MMA champions wearing championship belts"
+              className="champions-poster"
+              sizes="(max-width: 767px) calc(100vw - 40px), 500px"
+            />
+          </figure>
         </div>
       </section>
       <section className="final-cta">

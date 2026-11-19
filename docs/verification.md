@@ -1,5 +1,7 @@
 # Implementation and verification record
 
+Latest refactor review: [Intelligent chat architecture, tests, live checks, limitations and rollback](chat-architecture-refactor.md). The historical record below describes the earlier implementation and is superseded by that review for the current branch. Preview publication is awaiting approval; production is unchanged.
+
 Prepared on 19 November 2026. This report separates local verification from live external integration.
 
 ## IMPLEMENTED

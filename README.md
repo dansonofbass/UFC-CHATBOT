@@ -33,6 +33,7 @@ Playwright uses Chromium. Install with `npx playwright install chromium`. To use
 - [GitHub Actions and Vercel deployment checklist](docs/deployment.md)
 - [Security and troubleshooting](docs/security.md)
 - [Verification and remaining work](docs/verification.md)
+- [Intelligent chat refactor review and feature flags](docs/chat-architecture-refactor.md)
 
 Routes: `/`, `/chat`, `/fighters`, `/fighters/[slug]`, `/events`, `/events/[slug]`, `/compare`, `/rankings`, `/news`, `/about`, `/status`, `/privacy`, `/terms`.
 

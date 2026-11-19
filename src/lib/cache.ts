@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { db } from './db';
 import type { Evidence } from './retrieval';
+import { retrievalConfig } from './retrieval-config';
 export async function cachedEvidence(
   query: string,
   history: string,
@@ -11,7 +12,18 @@ export async function cachedEvidence(
   const key =
     'retrieval:' +
     createHash('sha256')
-      .update(query + history)
+      .update(
+        JSON.stringify({
+          version: 2,
+          query,
+          history,
+          config: {
+            ...retrievalConfig(),
+            webConfigured: !!retrievalConfig().BRAVE_SEARCH_API_KEY,
+            BRAVE_SEARCH_API_KEY: undefined,
+          },
+        }),
+      )
       .digest('hex');
   const { data } = await client
     .from('query_cache')
@@ -20,9 +32,10 @@ export async function cachedEvidence(
     .maybeSingle();
   if (data && Date.parse(data.expires_at) > Date.now()) return data.response as Evidence;
   const value = await load();
-  if (value.text)
+  const ttl = value.cacheTtlMs ?? 60000;
+  if (value.text && ttl > 0)
     await client
       .from('query_cache')
-      .upsert({ key, response: value, expires_at: new Date(Date.now() + 60000).toISOString() });
+      .upsert({ key, response: value, expires_at: new Date(Date.now() + ttl).toISOString() });
   return value;
 }
