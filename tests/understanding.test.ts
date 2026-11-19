@@ -34,6 +34,28 @@ describe('query understanding using directory identities', () => {
     ];
     expect(understand('khabib record', [], fighters).ambiguous).toBe(true);
   });
+  it('carries a broad statistics question into a bare fighter name follow-up', () => {
+    const history = [
+      { role: 'user' as const, content: 'Explain UFC fight statistics' },
+      { role: 'assistant' as const, content: 'SLpM is strikes landed per minute.' },
+    ];
+    const fighter = { id: 3, name: 'Islam Makhachev', slug: 'islam-makhachev', nickname: null };
+    const known = understand('islam makhachev', history, [fighter]);
+    expect(known.intent).toBe('fight_statistics');
+    expect(known.intents).toEqual(['fight_statistics']);
+    expect(known.subject).toBe('islam makhachev');
+    expect(known.fighters).toEqual([fighter]);
+    const notYetImported = understand('islam makhachev', history, []);
+    expect(notYetImported.intent).toBe('fight_statistics');
+    expect(notYetImported.subject).toBe('islam makhachev');
+    expect(notYetImported.fighters).toEqual([]);
+    expect(understand('islam makhachev', [], []).intent).not.toBe('fight_statistics');
+  });
+  it('does not treat unrelated short questions as fighter-name follow-ups', () => {
+    const history = [{ role: 'user' as const, content: 'Explain UFC fight statistics' }];
+    expect(understand('what is weather', history, []).subject).toBeUndefined();
+    expect(understand('tell me more', history, []).subject).toBeUndefined();
+  });
   it('works for arbitrary imported names, diacritics and aliases', () => {
     const f = { id: 3, name: 'José Alvarex', slug: 'jose-alvarex', aliases: ['El Ejemplo'] };
     expect(candidates('Jose Alvarez record', [f])[0].fighter).toBe(f);
