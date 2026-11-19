@@ -18,7 +18,7 @@ function requestedName(query: string): string | undefined {
   // Restrict public live lookups to questions naming a UFC fighter.
   const explicit = q.match(/(?:who is|tell me about|record(?:s)? of|profile of|about)\s+([a-z]+(?:\s+[a-z]+){1,2})/i);
   if (!explicit) return undefined;
-  return explicit[1].replace(/\s+/g, ' ').trim();
+  return explicit[1].replace(/\s+/g, ' ').trim().split(' ').slice(0, 2).join(' ');
 }
 export async function liveFighter(query: string): Promise<Fighter | null> {
   const requested = requestedName(query);
