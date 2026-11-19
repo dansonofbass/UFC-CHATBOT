@@ -20,6 +20,7 @@ export async function GET(request: Request) {
       record: fighter?.records?.pro_mma?.value || null,
       evidenceLength: evidence.text.length,
       citationCount: evidence.citations.length,
+      deterministic: evidence.deterministic || null,
     }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (e) {
     return Response.json({ error: 'Retrieval failed', category: e instanceof Error ? e.name : 'unknown' }, { status: 503 });
