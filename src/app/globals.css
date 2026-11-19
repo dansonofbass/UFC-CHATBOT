@@ -314,75 +314,12 @@ small {
 .visual-stage {
   position: relative;
   max-width: 1080px;
-  max-height: 100vh;
+  height: 440px;
   margin: 32px auto 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(160px, 0.8fr) minmax(0, 1fr);
-  grid-template-areas: 'preview ufc knowledge' 'details ufc knowledge' 'tagline tagline tagline';
-  gap: 20px;
-  align-items: center;
-  isolation: isolate;
-}
-.visual-stage > .chat-preview {
-  grid-area: preview;
-  width: 100%;
-  padding: 16px;
-}
-.visual-stage > .chat-preview .preview-question {
-  margin-top: 16px;
-  margin-bottom: 0;
-}
-.visual-stage > .float-card {
-  position: static;
-  width: 100%;
-  min-width: 0;
-  padding: 16px;
-  transform: none;
-  animation: none;
-  backdrop-filter: blur(12px);
-}
-.visual-stage > .float-left { grid-area: details; }
-.visual-stage > .float-right { grid-area: knowledge; }
-.visual-stage .float-card small { font-size: 0.6rem; }
-.visual-stage .float-card h4 { font-size: 1rem; margin: 6px 0 10px; }
-.visual-stage .float-card p { font-size: 0.76rem; }
-.visual-stage .float-left .preview-answer { margin-top: 18px; }
-.visual-stage .preview-input { margin-top: 16px; gap: 12px; }
-.visual-stage .preview-top { padding-bottom: 12px; flex-wrap: wrap; }
-.visual-stage > .floating-pill {
-  grid-area: tagline;
-  position: static;
-  justify-self: center;
-  transform: none;
-}
-.ufc-float-card {
-  grid-area: ufc;
-  min-width: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 20px 16px;
-  border: 1px solid #ffffff1a;
-  border-top-color: #d20a0a66;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #29252c99, #121116d9);
-  backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 #ffffff06, 0 8px 24px #0003;
-  animation: ufc-float 5s ease-in-out infinite alternate;
-}
-.stage-ufc-logo {
-  display: block;
-  width: min(160px, 100%);
-  height: auto;
-  object-fit: contain;
-  border-radius: 8px;
-}
-.ufc-float-card strong { font-size: 0.8rem; line-height: 1.5; }
-.ufc-float-card p { margin: 0; font-size: 0.7rem; line-height: 1.7; }
-@keyframes ufc-float {
-  from { transform: translateY(-3px); }
-  to { transform: translateY(3px); }
+  justify-content: center;
+  isolation: isolate;
 }
 .red-glow {
   position: absolute;
@@ -523,11 +460,6 @@ small {
   box-shadow: 0 15px 45px #0007;
   width: 206px;
 }
-.float-left {
-  left: 3%;
-  top: 88px;
-  transform: rotate(-6deg);
-}
 .float-right {
   right: 1%;
   top: 151px;
@@ -551,18 +483,6 @@ small {
 .float-card p {
   font-size: 0.7rem;
   margin: 10px 0 0;
-}
-.stat-bars {
-  display: flex;
-  gap: 5px;
-  height: 53px;
-  align-items: flex-end;
-  margin-top: 18px;
-}
-.stat-bars i {
-  width: 15px;
-  background: linear-gradient(#d53232, #651a1a);
-  border-radius: 2px 2px 0 0;
 }
 .source-line {
   display: flex;
@@ -590,6 +510,18 @@ small {
   color: #a1a1aa;
   transform: rotate(-3deg);
 }
+
+/* Source/input elements retain their original styling in the left floating slot. */
+.float-source {
+  left: 3%;
+  top: 88px;
+  transform: rotate(-6deg);
+}
+.float-source .preview-chips { margin-top: 0; flex-wrap: wrap; gap: 5px; }
+.float-source .preview-input { margin-top: 15px; gap: 8px; }
+.float-source .preview-input a { flex-shrink: 0; }
+@media (min-width: 1101px) { .float-source { animation: drift-source 7s ease-in-out infinite; } }
+@keyframes drift-source { 50% { transform: translateY(-9px) rotate(-4deg); } }
 .feature-strip {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -1367,16 +1299,8 @@ select.field {
   color: var(--muted);
 }
 @media (min-width: 900px) {
-  .float-left {
-    animation: drift-left 7s ease-in-out infinite;
-  }
   .float-right {
     animation: drift-right 8s ease-in-out infinite;
-  }
-}
-@keyframes drift-left {
-  50% {
-    transform: translateY(-9px) rotate(-4deg);
   }
 }
 @keyframes drift-right {
@@ -1385,10 +1309,6 @@ select.field {
   }
 }
 @media (max-width: 900px) {
-  .float-left {
-    left: -2%;
-    width: 175px;
-  }
   .float-right {
     right: -2%;
     width: 185px;
@@ -1504,18 +1424,6 @@ select.field {
   .preview-input {
     font-size: 0.65rem;
     margin-top: 20px;
-  }
-  .float-left {
-    top: 305px;
-    left: 0;
-    width: 145px;
-    padding: 12px;
-    transform: rotate(-5deg);
-  }
-  .float-left .mini-icon,
-  .float-left .stat-bars,
-  .float-left p {
-    display: none;
   }
   .float-card small {
     font-size: 0.43rem;
@@ -1864,37 +1772,16 @@ small, code, pre, label {
 .nav-links, .footer-links { font-size: 0.78rem; }
 .chat-messages .message-role { font-size: 0.62rem; }
 
-/* Reading order replaces the floating composition on tablets and phones. */
-@media (max-width: 1023px) {
-  .hero .visual-stage {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    height: auto;
-    max-height: none;
-    margin-top: 32px;
-    padding: 0;
-    gap: 18px;
-  }
-  .visual-stage > .chat-preview,
-  .visual-stage > .float-card,
-  .visual-stage > .ufc-float-card {
-    position: static;
-    width: 100%;
-    max-width: none;
-    transform: none;
-    animation: none;
-  }
-  .visual-stage .float-left .mini-icon,
-  .visual-stage .float-left .stat-bars,
-  .visual-stage .float-left p,
-  .visual-stage .float-right .mini-icon,
-  .visual-stage .float-right p,
-  .visual-stage .source-line { display: flex; }
-  .visual-stage .float-left p,
+/* Normal flow preserves every card and its text on phones and narrow tablets. */
+@media (max-width: 1100px) {
+  .hero .visual-stage { display: flex; flex-direction: column; align-items: stretch; height: auto; padding: 0; margin-top: 32px; gap: 18px; }
+  .visual-stage > .chat-preview, .visual-stage > .float-card { position: static; width: 100%; max-width: none; transform: none; animation: none; }
+  .visual-stage .float-right .mini-icon, .visual-stage .source-line { display: flex; }
   .visual-stage .float-right p { display: block; }
-  .visual-stage .float-card .mini-icon { margin-bottom: 12px; }
-  .visual-stage > .floating-pill { display: flex; align-self: center; }
-  .visual-stage > .red-glow,
-  .visual-stage > .orbit { display: none; }
+  .visual-stage .float-card h4 { font-size: 1rem; margin: 6px 0 10px; }
+  .visual-stage .float-card small { font-size: 0.55rem; }
+  .visual-stage .float-card p { font-size: 0.7rem; }
+  .visual-stage .float-source .preview-input { margin-top: 25px; }
+  .visual-stage > .floating-pill { position: static; display: flex; align-self: center; transform: none; }
+  .visual-stage > .red-glow, .visual-stage > .orbit { display: none; }
 }

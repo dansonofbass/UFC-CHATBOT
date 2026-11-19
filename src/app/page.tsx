@@ -60,31 +60,6 @@ export default async function Home() {
               <span className="tag">PREVIEW</span>
             </div>
             <div className="preview-question">What makes a complete fighter?</div>
-          </Reveal>
-          <div className="ufc-float-card">
-            <Image
-              src="/images/logo.webp"
-              width={800}
-              height={800}
-              alt="UFC"
-              sizes="160px"
-              className="stage-ufc-logo"
-            />
-            <strong>Built for UFC fans</strong>
-            <p>Fight intelligence, powered by verified sources.</p>
-          </div>
-          <div className="float-card float-left">
-            <div className="mini-icon">
-              <Activity size={18} />
-            </div>
-            <small>THE COMPLETE PICTURE</small>
-            <h4>Beyond the record.</h4>
-            <div className="stat-bars">
-              {[38, 63, 50, 85, 67, 94, 76, 100].map((v, i) => (
-                <i key={i} style={{ height: v + '%' }} />
-              ))}
-            </div>
-            <p>Fight history. In context.</p>
             <div className="preview-answer">
               <span className="mini-spark">
                 <Sparkles size={17} />
@@ -94,17 +69,19 @@ export default async function Home() {
                 <p className="muted">
                   Explore striking, grappling, fight history, and the sources behind every answer.
                 </p>
-                <div className="preview-chips">
-                  <span>
-                    <Check size={12} />
-                    Source-linked
-                  </span>
-                  <span>
-                    <Globe2 size={12} />
-                    ENGLISH
-                  </span>
-                </div>
               </div>
+            </div>
+          </Reveal>
+          <div className="float-card float-source">
+            <div className="preview-chips">
+              <span>
+                <Check size={12} />
+                Source-linked
+              </span>
+              <span>
+                <Globe2 size={12} />
+                ENGLISH
+              </span>
             </div>
             <div className="preview-input">
               <span>Ask anything about the octagon...</span>

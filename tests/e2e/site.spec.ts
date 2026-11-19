@@ -82,7 +82,7 @@ test('corner section uses balanced columns, mobile stacking and 32px spacing', a
   });
 });
 
-test('visual stage preserves four distinct cards and stacks them in reading order', async ({
+test('visual stage keeps the three original cards without the UFC logo card', async ({
   page,
 }, testInfo) => {
   await page.goto('/');
@@ -90,25 +90,19 @@ test('visual stage preserves four distinct cards and stacks them in reading orde
   await stage.scrollIntoViewIfNeeded();
   const cards = [
     stage.locator('.chat-preview'),
-    stage.locator('.ufc-float-card'),
-    stage.locator('.float-left'),
+    stage.locator('.float-source'),
     stage.locator('.float-right'),
   ];
   for (const card of cards) await expect(card).toBeVisible();
   await expect(cards[0]).toContainText('What makes a complete fighter?');
-  await expect(cards[1]).toContainText('Built for UFC fans');
-  await expect(cards[2]).toContainText('Source-linked');
-  await expect(cards[2]).toContainText('Ask anything about the octagon...');
-  await expect(cards[2]).toContainText('Beyond the record.');
-  await expect(cards[3]).toContainText('Sources. Not speculation.');
-  await expect(stage.locator('.stage-ufc-logo')).toBeVisible();
-  await expect
-    .poll(() =>
-      stage
-        .locator('.stage-ufc-logo')
-        .evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0),
-    )
-    .toBe(true);
+  await expect(cards[0]).toContainText('A better question starts with the details.');
+  await expect(cards[1]).toContainText('Source-linked');
+  await expect(cards[1]).toContainText('Ask anything about the octagon...');
+  await expect(cards[2]).toContainText('Sources. Not speculation.');
+  await expect(stage.locator('.chat-preview, .float-card')).toHaveCount(3);
+  await expect(stage.locator('.ufc-logo-anchor, .ufc-float-card, .stage-ufc-logo')).toHaveCount(0);
+  await expect(stage).not.toContainText('Built for UFC fans');
+  await expect(stage).not.toContainText('Beyond the record.');
   expect(await stage.evaluate((el) => getComputedStyle(el).marginTop)).toBe('32px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const boxes = await Promise.all(cards.map((card) => card.boundingBox()));
@@ -123,13 +117,16 @@ test('visual stage preserves four distinct cards and stacks them in reading orde
           b.y + b.height <= a.y + 1,
       ).toBe(true);
     }
-  if (page.viewportSize()!.width <= 1023) {
+  if (page.viewportSize()!.width <= 1100) {
     for (let i = 1; i < boxes.length; i++)
       expect(boxes[i]!.y).toBeGreaterThanOrEqual(boxes[i - 1]!.y + boxes[i - 1]!.height);
     for (const card of cards)
       expect(await card.evaluate((el) => getComputedStyle(el).position)).toBe('static');
   } else {
     expect((await stage.boundingBox())!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    expect(await cards[0].evaluate((el) => getComputedStyle(el).width)).toBe('510px');
+    expect(await cards[1].evaluate((el) => getComputedStyle(el).width)).toBe('206px');
+    expect(await cards[2].evaluate((el) => getComputedStyle(el).width)).toBe('218px');
   }
   await page.screenshot({ path: testInfo.outputPath('visual-stage.png'), animations: 'disabled' });
   if (testInfo.project.name === 'desktop') {
@@ -146,15 +143,15 @@ test('visual stage preserves four distinct cards and stacks them in reading orde
         true,
       );
       const resized = await Promise.all(cards.map((card) => card.boundingBox()));
-      if (viewport.width >= 1024) {
+      if (viewport.width > 1100) {
         expect(stageBox.height).toBeLessThanOrEqual(viewport.height);
         for (const box of resized) {
           expect(box!.y).toBeGreaterThanOrEqual(stageBox.y - 4);
           expect(box!.y + box!.height).toBeLessThanOrEqual(stageBox.y + stageBox.height + 4);
         }
         expect(
-          Math.abs(resized[1]!.x + resized[1]!.width / 2 - (stageBox.x + stageBox.width / 2)),
-        ).toBeLessThan(stageBox.width * 0.1);
+          Math.abs(resized[0]!.x + resized[0]!.width / 2 - (stageBox.x + stageBox.width / 2)),
+        ).toBeLessThan(1);
       } else {
         for (let i = 1; i < resized.length; i++)
           expect(resized[i]!.y).toBeGreaterThanOrEqual(resized[i - 1]!.y + resized[i - 1]!.height);
@@ -178,7 +175,7 @@ test('visual stage preserves four distinct cards and stacks them in reading orde
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect
-    .poll(() => cards[1].evaluate((el) => getComputedStyle(el).animationName))
+    .poll(() => cards[0].evaluate((el) => getComputedStyle(el).animationName))
     .toBe('none');
   expect(await page.locator('.hero > [data-reveal-from] img, .header img').count()).toBe(0);
 });
