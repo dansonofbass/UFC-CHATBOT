@@ -57,11 +57,13 @@ function ChatClient() {
     [error, setError] = useState(''),
     [copied, setCopied] = useState(-1);
   const abort = useRef<AbortController | null>(null),
-    bottom = useRef<HTMLDivElement>(null);
+    bottom = useRef<HTMLDivElement>(null),
+    messagesPane = useRef<HTMLDivElement>(null);
   const fa = /[\u0600-\u06ff]/.test(input || messages.at(-1)?.content || '');
   useEffect(() => () => abort.current?.abort(), []);
   useEffect(() => {
-    bottom.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+    const pane = messagesPane.current;
+    if (pane) pane.scrollTop = pane.scrollHeight;
   }, [messages, busy]);
   useEffect(() => {
     if (!messages.length) return;
@@ -218,7 +220,7 @@ function ChatClient() {
             Clear local history
           </button>
         </details>
-        <div className="chat-messages" aria-live="polite" aria-busy={busy}>
+        <div ref={messagesPane} className="chat-messages" aria-live="polite" aria-busy={busy}>
           {!messages.length && (
             <div className="chat-welcome">
               <div className="chat-emblem">
