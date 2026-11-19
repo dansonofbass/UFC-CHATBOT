@@ -1,4 +1,5 @@
 import { generateText, Output } from 'ai';
+import { isGeneralStatisticsQuestion } from './statistics-guide';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { z } from 'zod';
 import { providers } from './ai';
@@ -43,6 +44,10 @@ export async function queryPlan(
   if (
     c.CHAT_MODEL_UNDERSTANDING_ENABLED !== 'true' ||
     plan.ambiguous ||
+    isGeneralStatisticsQuestion(query) ||
+    // The latest user-specified fighter inherits the earlier statistics intent.
+    // Do not let a second model call lose that conversation context.
+    (plan.intent === 'fight_statistics' && plan.contextual && !!plan.subject) ||
     plan.fighters.length ||
     // A clear identity + record request has a deterministic structured-data path.
     // Do not spend a model call merely to restate the user's intent.
