@@ -288,6 +288,12 @@ export async function intelligentRetrieve(
         deterministic: `**${fighter.name} — verified profile statistics**\n\n${known.join('\n')}\n\nThese are the source's available career-profile statistics, not an invented current fight result.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Profile snapshot: ${fighter.updated_at.slice(0, 10)} (UTC).`,
         cacheTtlMs: uncertain ? 0 : 60000,
       };
+    return {
+      text: pieces.join('\n'),
+      citations,
+      deterministic: `**${fighter.name}** was identified in a sourced fighter profile, but that profile does not currently provide verified numerical striking or grappling averages. I won't invent them.\n\nYou can ask about a specific fight, or request an explanation of SLpM, striking accuracy, takedown accuracy and defense.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Profile snapshot: ${fighter.updated_at.slice(0, 10)} (UTC).`,
+      cacheTtlMs: 0,
+    };
   }
   const recordOnly =
     plan.intents.length === 1 &&
