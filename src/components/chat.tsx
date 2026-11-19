@@ -180,7 +180,7 @@ function ChatClient() {
         <div className="chat-toolbar">
           <strong>Octagon intelligence</strong>
           <div className="nav-actions">
-            <span className="tag">EN / فارسی</span>
+            <span className="tag">ENGLISH</span>
             <button
               className="icon-button"
               onClick={newChat}
@@ -229,14 +229,14 @@ function ChatClient() {
               <p>
                 Follow the records. Explore the details.
                 <br />
-                Ask about UFC in English or فارسی.
+                Ask anything about the UFC.
               </p>
               <div className="suggestions">
                 {[
                   'What is the next UFC event?',
                   'Explain UFC fight statistics',
                   'Show the latest UFC rankings',
-                  'آخرین اخبار UFC چیست؟',
+                  'What happened at the last UFC event?',
                 ].map((q) => (
                   <button key={q} onClick={() => void send(q)}>
                     {q}
@@ -324,7 +324,7 @@ function ChatClient() {
               rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={fa ? 'درباره UFC بپرسید…' : 'Ask anything about UFC…'}
+              placeholder="Ask anything about the UFC…"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
                   e.preventDefault();
