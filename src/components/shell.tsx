@@ -21,7 +21,7 @@ export function Header() {
         <div className="nav-links"><Link href="/chat">AI Chat</Link><Link href="/about">About</Link></div>
         <div className="nav-actions">
           <Button asChild>
-            <Link href="/chat">Launch AI</Link>
+            <a href="https://www.ufc.com/" target="_blank" rel="noopener noreferrer">Official UFC Site</a>
           </Button>
         </div>
       </nav>
@@ -39,7 +39,7 @@ export function Footer() {
         </small>
       </div>
       <div className="footer-links">
-        {['About', 'Privacy', 'Terms'].map((n) => (
+        {['About', 'Privacy', 'Terms', 'Admin'].map((n) => (
           <Link href={`/${n.toLowerCase()}`} key={n}>
             {n}
           </Link>
