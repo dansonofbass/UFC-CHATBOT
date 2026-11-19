@@ -13,6 +13,26 @@ describe('query understanding using directory identities', () => {
     expect(p.fighters.map((f) => f.id)).toEqual([1]);
     expect(p.intent).not.toBe('out_of_scope');
   });
+  it('treats a record request about a first-name fighter as UFC-related', () => {
+    const khabib = { id: 7, name: 'Khabib Nurmagomedov', slug: 'khabib-nurmagomedov', nickname: 'The Eagle' };
+    const plan = understand('give me the record of khabib', [], [jon, tom, khabib]);
+    expect(plan.intent).toBe('fighter_history');
+    expect(plan.fighters.map(f => f.id)).toEqual([7]);
+    expect(plan.ambiguous).toBe(false);
+  });
+  it('recognizes a named fighter record request even if the local directory is empty', () => {
+    const plan = understand('give me the record of khabib', [], []);
+    expect(plan.intent).not.toBe('out_of_scope');
+    expect(plan.subject).toBe('khabib');
+    expect(plan.intents).toContain('fighter_history');
+  });
+  it('keeps genuinely ambiguous first-name references ambiguous', () => {
+    const fighters = [
+      { id: 7, name: 'Khabib Nurmagomedov', slug: 'khabib-nurmagomedov' },
+      { id: 8, name: 'Khabib Khabibov', slug: 'khabib-khabibov' },
+    ];
+    expect(understand('khabib record', [], fighters).ambiguous).toBe(true);
+  });
   it('works for arbitrary imported names, diacritics and aliases', () => {
     const f = { id: 3, name: 'José Alvarex', slug: 'jose-alvarex', aliases: ['El Ejemplo'] };
     expect(candidates('Jose Alvarez record', [f])[0].fighter).toBe(f);
