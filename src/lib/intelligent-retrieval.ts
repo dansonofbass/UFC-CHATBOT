@@ -19,15 +19,16 @@ import {
 import type { Message, Intent } from './router';
 import type { Evidence } from './retrieval';
 
-export async function directory() {
+export async function directory(signal?: AbortSignal) {
   const client = db();
   if (!client) return (await fighters()).items;
   // Bounded directory and imported aliases; never infer identity from model memory.
-  const response = await client
+  const query = client
     .from('fighters')
     .select('payload,source_url,updated_at')
     .order('id')
     .limit(2000);
+  const response = await (signal ? query.abortSignal(signal) : query);
   if (response.error) return (await fighters()).items;
   const rows = response.data || [];
   const aliases = await client.from('fighter_aliases').select('fighter_id,alias').limit(4000);
@@ -115,9 +116,57 @@ export async function intelligentRetrieve(
   };
   const provider = liveProvider(signal);
   const live = retrievalConfig().CHAT_LIVE_RETRIEVAL_ENABLED === 'true';
+  if (/\bcompare|comparison\b/i.test(query) && selected.length === 1) {
+    const pair = query.match(
+      /compare\s+(.+?)\s+(?:and|versus|vs\.?)\s+(.+?)(?:\s+(?:records?|stats|statistics)\b.*|[?.]|$)/i,
+    );
+    const other = pair
+      ?.slice(1)
+      .find((name) => !candidates(name, selected).length)
+      ?.trim();
+    if (other && live) {
+      try {
+        const list = await provider(
+          `/fighters?org=ufc&q=${encodeURIComponent(other)}&limit=10`,
+          envelope(z.array(fighterSchema)),
+        );
+        const found = candidates(other, list.data);
+        if (found.length === 1) {
+          const detail = await provider(
+            `/fighters/${found[0].fighter.id}`,
+            envelope(fighterSchema),
+          );
+          if (detail.data.id !== found[0].fighter.id) throw new Error('Identity mismatch');
+          selected = [
+            ...selected,
+            {
+              ...detail.data,
+              source_url: 'https://www.ufcalendar.com',
+              updated_at: new Date().toISOString(),
+            },
+          ];
+        }
+      } catch {
+        uncertain = true;
+      }
+    }
+    if (selected.length === 1)
+      return {
+        text: '',
+        citations: [],
+        deterministic: `I identified ${selected[0].name}, but couldn’t verify ${other || 'the other fighter'} from the available sources. Please confirm the other fighter’s spelling or share an event.`,
+        cacheTtlMs: 0,
+      };
+  }
   if (
     live &&
-    (!selected.length || selected.some((f) => !fresh(f.updated_at, ttl(plan.intent)))) &&
+    (!selected.length ||
+      selected.some(
+        (f) =>
+          !fresh(f.updated_at, ttl(plan.intent)) ||
+          (plan.intents.includes('fighter_history') && !Object.keys(f.records || {}).length) ||
+          (plan.intents.includes('fight_statistics') && !f.stats),
+      )) &&
     (plan.subject || selected.length)
   ) {
     try {
@@ -194,11 +243,13 @@ export async function intelligentRetrieve(
     /^(who is|tell me about)\b/i.test(query)
   ) {
     const f = selected[0];
-    const records = Object.values(f.records || {}).filter((r) => r.value && r.scope);
+    const records = Object.values(f.records || {}).filter(
+      (r) => r.value && r.scope && !/grappling/i.test(r.scope),
+    );
     return {
       text: pieces.join('\n'),
       citations,
-      deterministic: `${f.name}${f.nickname ? ` (“${f.nickname}”)` : ''}${f.nationality ? ` · ${f.nationality}` : ''}.${records.length ? `\n\n${records.map((r) => `${r.scope}: ${r.value}`).join('; ')}.` : '\n\nA verified record is not available in this profile.'}\n\nSource snapshot: ${f.updated_at}.`,
+      deterministic: `${f.name}${f.nickname ? ` (“${f.nickname}”)` : ''}${f.nationality ? ` · ${f.nationality}` : ''}.${records.length ? `\n\n${records.map((r) => `${r.scope}: ${r.value}`).join('; ')}.` : '\n\nA verified record is not available in this profile.'}\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: ${f.updated_at.slice(0, 10)} (UTC).`,
       cacheTtlMs: uncertain ? 0 : 60000,
     };
   }
@@ -207,16 +258,47 @@ export async function intelligentRetrieve(
     plan.intent === 'fighter_history' &&
     /\brecord\b/i.test(query) &&
     !/last|opponent|fight|news/i.test(query.replace(/fighter/gi, ''));
+  if (
+    selected.length === 2 &&
+    /\bcompare\b/i.test(query) &&
+    /\brecords?\b/i.test(query) &&
+    !/history|last|news|stats/i.test(query) &&
+    selected.every((f) => fresh(f.updated_at, 86400000) && Object.keys(f.records || {}).length)
+  ) {
+    return {
+      text: pieces.join('\n'),
+      citations,
+      deterministic:
+        selected
+          .map(
+            (f) =>
+              `${f.name}: ${Object.values(f.records || {})
+                .filter((r) => !/grappling/i.test(r.scope))
+                .map((r) => `${r.value} (${r.scope})`)
+                .join('; ')}. Snapshot: ${f.updated_at.slice(0, 10)} (UTC).`,
+          )
+          .join('\n\n') + '\n\nSource: [UFCalendar](https://www.ufcalendar.com).',
+      cacheTtlMs: uncertain ? 0 : 60000,
+    };
+  }
   if (recordOnly && selected.length === 1 && fresh(selected[0].updated_at, 86400000)) {
     const f = selected[0];
     const records = Object.entries(f.records || {}).filter(
-      ([, r]) => r.value && r.scope && r.source,
+      ([, r]) =>
+        r.value &&
+        r.scope &&
+        r.source &&
+        (/\bmma\b/i.test(query)
+          ? /mma/i.test(r.scope)
+          : /\bufc\b/i.test(query)
+            ? /ufc/i.test(r.scope)
+            : !/grappling/i.test(r.scope)),
     );
     if (records.length)
       return {
         text: pieces.join('\n'),
         citations,
-        deterministic: `${f.name}: ${records.map(([key, r]) => `${r.value} (${r.scope}; ${key})`).join('; ')}. Source snapshot: ${f.updated_at}.`,
+        deterministic: `${f.name}: ${records.map(([, r]) => `${r.value} (${r.scope})`).join('; ')}.\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: ${f.updated_at.slice(0, 10)} (UTC).`,
         cacheTtlMs: 60000,
       };
   }
@@ -244,7 +326,8 @@ export async function intelligentRetrieve(
                 selected.map((f) => f.id),
               )
               .order('event_date', { ascending: false })
-              .limit(16),
+              .limit(16)
+              .abortSignal(signal),
           );
           for (const r of rows) {
             const h = historySchema.safeParse(r.payload);
@@ -268,7 +351,8 @@ export async function intelligentRetrieve(
               .or(
                 `fighter_a_id.in.(${selected.map((f) => f.id).join(',')}),fighter_b_id.in.(${selected.map((f) => f.id).join(',')})`,
               )
-              .limit(12),
+              .limit(12)
+              .abortSignal(signal),
           );
           for (const b of bouts) {
             const f = fightSchema.safeParse(b.payload);
@@ -290,7 +374,8 @@ export async function intelligentRetrieve(
                   'fight_id',
                   bouts.map((b) => b.id),
                 )
-                .limit(24),
+                .limit(24)
+                .abortSignal(signal),
             );
             for (const s of stats) {
               const bout = bouts.find((b) => b.id === s.fight_id);
@@ -304,9 +389,22 @@ export async function intelligentRetrieve(
                   'supabase',
                 );
             }
+            if (!stats.length && live) {
+              const result = await provider(
+                `/fights/${bouts[0].id}/stats`,
+                envelope(z.array(fightStatSchema)),
+              );
+              add(
+                'Verified fight statistics',
+                { fight_id: bouts[0].id, fighters: result.data },
+                'https://www.ufcalendar.com',
+                new Date().toISOString(),
+                'ufcalendar',
+              );
+            }
           }
         }
-        if (!historyFound && live)
+        if (!historyFound && live && intent !== 'fight_statistics')
           for (const f of selected.slice(0, 2)) {
             const result = await provider(
               `/fighters/${f.id}/history`,
@@ -326,8 +424,8 @@ export async function intelligentRetrieve(
         );
       }
       if (
-        ['upcoming_event', 'completed_event', 'fight_result'].includes(intent) &&
-        !selected.length
+        ['upcoming_event', 'completed_event'].includes(intent) ||
+        (intent === 'fight_result' && !selected.length)
       ) {
         let list = (await events()).items.filter((e) =>
           intent === 'upcoming_event'
@@ -361,6 +459,33 @@ export async function intelligentRetrieve(
         }
         for (const e of list.slice(0, 2))
           add(e.title, e, e.source_url, e.updated_at, 'structured-event');
+        if (
+          list[0] &&
+          plan.intents.length === 1 &&
+          citations.length &&
+          !/\b(and|compare|between)\b/i.test(query)
+        ) {
+          const e = list[0];
+          const main = e.card?.find(
+            (b) => b.is_main && ['completed', 'no_contest'].includes(b.status || ''),
+          );
+          const winner = main?.result?.winner_fighter_id;
+          const winnerName =
+            winner != null
+              ? [main?.fighter_a, main?.fighter_b].find((f) => f?.id === winner)?.name
+              : undefined;
+          const summary = main
+            ? ` Main event: ${[main.fighter_a?.name, main.fighter_b?.name].filter(Boolean).join(' vs ')}.${winnerName ? ` ${winnerName} won${main.result?.method ? ` by ${main.result.method}` : ''}.` : main.result?.method ? ` Reported result: ${main.result.method}.` : ' A verified winner is not available.'}`
+            : intent === 'upcoming_event'
+              ? ' Schedules may change.'
+              : ' Detailed results are not available in this record.';
+          return {
+            text: pieces.join('\n'),
+            citations,
+            deterministic: `${intent === 'upcoming_event' ? 'Next scheduled UFC event' : 'Latest completed UFC event'} in the available records: **${e.title}** (${e.starts_at.slice(0, 10)}, UTC).${summary}\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: ${e.updated_at.slice(0, 10)} (UTC).`,
+            cacheTtlMs: uncertain ? 0 : 60000,
+          };
+        }
         if (!list.length) missing.push('No fresh verified event available.');
       }
       if (intent === 'rankings') {

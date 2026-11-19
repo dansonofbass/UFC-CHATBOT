@@ -5,12 +5,7 @@ import type { Citation } from './schemas';
 import { queryEmbedding } from './embeddings';
 import { latestCompletedEvent } from './latest-completed';
 import { liveFighter } from './live-fighter';
-export type Evidence = {
-  text: string;
-  citations: Citation[];
-  deterministic?: string;
-  cacheTtlMs?: number;
-};
+export type Evidence = { text: string; citations: Citation[]; deterministic?: string; cacheTtlMs?: number };
 export async function retrieve(
   query: string,
   history: Message[],
@@ -30,10 +25,7 @@ export async function retrieve(
     ].join(' '),
     fs.items,
   );
-  if (
-    !matched.length &&
-    ['fighter_profile', 'fighter_history', 'fight_statistics'].includes(intent)
-  ) {
+  if (!matched.length && ['fighter_profile', 'fighter_history', 'fight_statistics'].includes(intent)) {
     const fresh = await liveFighter(query);
     if (fresh) matched = [fresh];
   }
@@ -149,24 +141,19 @@ export async function retrieve(
     ) {
       const e = selected[0];
       const headliner = e.card?.find((bout) => bout.is_main);
-      const names =
-        headliner &&
-        [headliner.fighter_a?.name, headliner.fighter_b?.name].filter(Boolean).join(' vs ');
+      const names = headliner && [headliner.fighter_a?.name, headliner.fighter_b?.name]
+        .filter(Boolean).join(' vs ');
       const winner = headliner?.result?.winner_fighter_id;
-      const winnerName =
-        winner === headliner?.fighter_a?.id
-          ? headliner?.fighter_a?.name
-          : winner === headliner?.fighter_b?.id
-            ? headliner?.fighter_b?.name
-            : null;
+      const winnerName = winner === headliner?.fighter_a?.id
+        ? headliner?.fighter_a?.name
+        : winner === headliner?.fighter_b?.id
+          ? headliner?.fighter_b?.name
+          : null;
       const result = winnerName
         ? ` Main-event winner: ${winnerName} (${headliner?.result?.method || 'method unavailable'}).`
         : '';
       const date = new Date(e.starts_at).toLocaleDateString('en-US', {
-        timeZone: 'UTC',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
+        timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric',
       });
       return {
         text: pieces.join('\n'),

@@ -52,7 +52,9 @@ export async function POST(request: Request) {
       );
     const intelligence = retrievalConfig().CHAT_INTELLIGENCE_ENABLED === 'true';
     const history = messages.slice(0, -1);
-    const directory = intelligence ? { items: await fighterDirectory() } : await fighters();
+    const directory = intelligence
+      ? { items: await fighterDirectory(requestSignal) }
+      : await fighters();
     const plan = intelligence ? understand(query, history, directory.items) : undefined;
     const intent =
       plan?.intent ||

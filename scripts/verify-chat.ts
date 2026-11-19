@@ -36,7 +36,8 @@ for (const question of questions) {
     question,
     status: response.status,
     duration_ms: Math.round(performance.now() - started),
-    frame_types: frames.map((f) => f.type),
+    frame_types: Array.from(new Set(frames.map((f) => f.type))),
+    frame_count: frames.length,
     sources: frames.find((f) => f.type === 'sources')?.sources || [],
     answer: frames
       .filter((f) => f.type === 'text')

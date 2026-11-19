@@ -93,6 +93,17 @@ export function understand<T extends Identity>(query: string, history: Message[]
     .match(/(?:who is|tell me about|about|record of)\s+([\p{L}'’ -]{3,65})/iu)?.[1]
     ?.replace(/\b(mma record|record|ufc|fighter)\b.*$/i, '')
     .trim();
+  // A name-shaped question is unresolved, not automatically outside UFC scope.
+  // Provider matching still has to establish an actual identity before any facts are used.
+  if (
+    intent === 'out_of_scope' &&
+    subject &&
+    /^(who is|tell me about)\b/i.test(query) &&
+    !/ignore|reveal|system prompt/i.test(query)
+  ) {
+    intent = 'unknown';
+    intents[0] = intent;
+  }
   return {
     intent,
     intents,

@@ -81,13 +81,13 @@ describe('live adapters with mocked network and persistent quota controls', () =
       expect.objectContaining({ key: 'ufcalendar:quota-block' }),
     );
   });
-  it('counts recoverable credential failover against the same request budget', async () => {
+  it('preserves the existing request-time restriction to credential slot one', async () => {
     fetcher
       .mockResolvedValueOnce(new Response('', { status: 401 }))
       .mockResolvedValueOnce(Response.json({ data: ['fixture'], meta: {} }));
-    await liveProvider(signal())('/events', schema);
-    expect(fetcher).toHaveBeenCalledTimes(2);
-    expect(consume).toHaveBeenCalledTimes(4);
+    await expect(liveProvider(signal())('/events', schema)).rejects.toThrow();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(consume).toHaveBeenCalledTimes(2);
   });
   it('does not invent web access without explicit configuration', async () => {
     expect(await webSearch('UFC news', signal())).toEqual([]);

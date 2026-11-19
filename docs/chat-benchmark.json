@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-11-19T13:13:08.152Z",
+  "fixture_cases": 7,
+  "fixture_iterations": 700,
+  "fixture_identity_and_intent_accuracy": 1,
+  "understanding_p50_ms": 0.010699999999999932,
+  "understanding_p95_ms": 0.030799999999999272,
+  "live_cases": 6,
+  "live_sourced_answers": 5,
+  "live_safe_fallbacks": 1,
+  "live_latency_ms": [
+    2628,
+    1546,
+    1537,
+    1825,
+    7406,
+    4269
+  ],
+  "limitations": "Synthetic identity/intent accuracy is not a real-world factual accuracy score. Live checks verify source presence and safe failure, not independent publisher truth. No comprehensive accuracy claim is made."
+}

@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-11-19T13:16:59.711Z",
+  "target": "http://localhost:3100",
+  "results": [
+    {
+      "question": "Who did he fight last?",
+      "status": 200,
+      "duration_ms": 8556,
+      "frames": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        },
+        {
+          "title": "Jon Jones career history",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-19T13:16:55.673Z"
+        }
+      ],
+      "answer": "Jon Jones’s most recent recorded UFC bout was against **Stipe Miocic** at **UFC 309 on 16 November 2024**, which he won by KO/TKO in round 3【https://www.ufcalendar.com/】."
+    },
+    {
+      "question": "Compare Jon Jones and Tom Aspinall records",
+      "status": 200,
+      "duration_ms": 1250,
+      "frames": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "sources": [],
+      "answer": "I identified Jon Jones. Which other UFC fighter do you want to compare?"
+    },
+    {
+      "question": "Compare Jon Jones and Tom Aspinall records",
+      "status": 200,
+      "duration_ms": 6520,
+      "frames": [
+        "sources",
+        "text",
+        "done"
+      ],
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        },
+        {
+          "title": "Tom Aspinall",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-19T13:18:37.358Z"
+        }
+      ],
+      "answer": "Jon Jones: 22-1-0 (1 NC) (ufc-only); 28-1-0 (pro-mma). Snapshot: 2026-11-19 (UTC).\n\nTom Aspinall: 9-0 (amateur-mma); 1-0 (pro-boxing); 15-3-0 (pro-mma); 8-1-0 (1 NC) (ufc-only). Snapshot: 2026-11-19 (UTC).\n\nSource: [UFCalendar](https://www.ufcalendar.com).",
+      "checked_at": "2026-11-19T13:18:37.692Z"
+    }
+  ]
+}

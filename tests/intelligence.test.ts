@@ -58,6 +58,21 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe('intelligent evidence pipeline — synthetic integrations', () => {
+  it('retrieves a missing comparison participant instead of discarding the named opponent', async () => {
+    vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
+    const tom = { ...jon, id: 2, name: 'Tom Aspinall', slug: 'tom-aspinall', nickname: null };
+    request.mockResolvedValueOnce({ data: [tom] }).mockResolvedValueOnce({ data: tom });
+    const result = await intelligentRetrieve(
+      'Compare Jon Jones and Tom Aspinall records',
+      [],
+      [jon],
+      signal(),
+    );
+    expect(request.mock.calls[0][0]).toContain('q=Tom%20Aspinall');
+    expect(result.deterministic).toContain('Jon Jones');
+    expect(result.deterministic).toContain('Tom Aspinall');
+    expect(request).toHaveBeenCalledTimes(2);
+  });
   it('withholds conflicting numerical records for the same scope', async () => {
     const conflicting = {
       ...jon,
