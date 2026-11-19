@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
 @import 'tailwindcss';
 .mobile-chat-history {
   display: none;
@@ -44,7 +44,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Russo One', 'Arial Black', sans-serif;
   font-size: 16px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -1606,7 +1606,7 @@ body {
   letter-spacing: 0.025em;
 }
 button, input, textarea, select, code, .markdown {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: 'Russo One', 'Arial Black', sans-serif;
 }
 input, textarea, .markdown {
   letter-spacing: 0.012em;
@@ -1654,10 +1654,10 @@ input, textarea, .markdown {
   .hero-buttons .button { max-width: 100%; white-space: normal; text-align: center; }
 }
 
-/* Readable typography: Russo One is a display face, not a paragraph font. */
+/* One consistent sitewide typeface: Russo One for menus, chat, controls and content. */
 :root {
   --font-display: 'Russo One', 'Arial Black', sans-serif;
-  --font-reading: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-reading: 'Russo One', 'Arial Black', sans-serif;
 }
 body, button, input, textarea, select, code, .markdown {
   font-family: var(--font-reading);
@@ -1689,3 +1689,21 @@ h1 { letter-spacing: -0.015em; }
   .hero h1 { font-size: clamp(2.05rem, 8vw, 3rem); }
   .chat-welcome h1 { font-size: 1.8rem; }
 }
+
+/* Explicitly unify embedded widgets, chat Markdown, menus, buttons and form controls. */
+:root { --font-display: 'Russo One', 'Arial Black', sans-serif; --font-reading: var(--font-display); }
+html, body, button, input, select, textarea,
+.nav, .nav-links, .footer, .footer-links,
+.chat-layout, .chat-sidebar, .chat-main, .chat-toolbar,
+.chat-messages, .markdown, .markdown *, .message,
+.chat-compose, .composer-box, .suggestions, .history-item,
+.status-card, .data-table, .data-table *,
+.panel, .panel *, .button, .button *,
+small, code, pre, label {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+.markdown, .markdown p { font-size: 0.88rem; line-height: 1.8; }
+.chat-compose textarea { font-size: 0.85rem; }
+.nav-links, .footer-links { font-size: 0.78rem; }
+.chat-messages .message-role { font-size: 0.62rem; }
