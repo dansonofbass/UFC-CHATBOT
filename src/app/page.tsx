@@ -37,11 +37,8 @@ export default async function Home() {
             <Button asChild>
               <Link href="/chat">
                 <Sparkles size={17} />
-                Start Chatting
+                Ask Anything About the UFC
               </Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/chat?q=Tell%20me%20about%20UFC%20fighters">Ask about fighters</Link>
             </Button>
           </div>
           <div className="hero-note">
@@ -91,7 +88,7 @@ export default async function Home() {
                   </span>
                   <span>
                     <Globe2 size={12} />
-                    EN / فارسی
+                    ENGLISH
                   </span>
                 </div>
               </div>
@@ -207,7 +204,7 @@ export default async function Home() {
             [
               Globe2,
               'Your language. Your pace.',
-              'Ask in English or Persian. Follow up without starting over.',
+              'Ask your UFC questions and follow up without starting over.',
             ],
           ].map(([Icon, title, copy]) => {
             const I = Icon as typeof Search;
