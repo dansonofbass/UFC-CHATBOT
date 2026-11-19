@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Sparkles,
   ShieldCheck,
@@ -50,6 +51,28 @@ export default async function Home() {
           <div className="red-glow" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
+          <Reveal className="chat-preview">
+            <div className="preview-top">
+              <span className="preview-logo">
+                <Sparkles size={18} />
+              </span>
+              <strong>Octagon intelligence</strong>
+              <span className="tag">PREVIEW</span>
+            </div>
+            <div className="preview-question">What makes a complete fighter?</div>
+          </Reveal>
+          <div className="ufc-float-card">
+            <Image
+              src="/images/logo.webp"
+              width={800}
+              height={800}
+              alt="UFC"
+              sizes="160px"
+              className="stage-ufc-logo"
+            />
+            <strong>Built for UFC fans</strong>
+            <p>Fight intelligence, powered by verified sources.</p>
+          </div>
           <div className="float-card float-left">
             <div className="mini-icon">
               <Activity size={18} />
@@ -62,16 +85,6 @@ export default async function Home() {
               ))}
             </div>
             <p>Fight history. In context.</p>
-          </div>
-          <Reveal className="chat-preview">
-            <div className="preview-top">
-              <span className="preview-logo">
-                <Sparkles size={18} />
-              </span>
-              <strong>Octagon intelligence</strong>
-              <span className="tag">PREVIEW</span>
-            </div>
-            <div className="preview-question">What makes a complete fighter?</div>
             <div className="preview-answer">
               <span className="mini-spark">
                 <Sparkles size={17} />
@@ -99,7 +112,7 @@ export default async function Home() {
                 <CornerDownLeft size={17} />
               </Link>
             </div>
-          </Reveal>
+          </div>
           <div className="float-card float-right">
             <span className="mini-icon">
               <ShieldCheck size={19} />
@@ -189,33 +202,48 @@ export default async function Home() {
       <section className="section how-section">
         <div className="section-kicker">INTELLIGENCE YOU CAN TRACE</div>
         <h2>A good answer has a corner.</h2>
-        <div className="grid three">
-          {[
-            [
-              BookOpen,
-              'Grounded in records',
-              'Database-first retrieval brings verified facts into the conversation.',
-            ],
-            [
-              ShieldCheck,
-              'Every source matters',
-              'Source links and timestamps show where an answer comes from.',
-            ],
-            [
-              Globe2,
-              'Your language. Your pace.',
-              'Ask your UFC questions and follow up without starting over.',
-            ],
-          ].map(([Icon, title, copy]) => {
-            const I = Icon as typeof Search;
-            return (
-              <div className="how-card" key={title as string}>
-                <I />
-                <h3>{title as string}</h3>
-                <p>{copy as string}</p>
-              </div>
-            );
-          })}
+        <div className="corner-layout">
+          <Reveal from="left" className="corner-content">
+            {[
+              [
+                BookOpen,
+                'Grounded in records',
+                'Verified fighter records and fight history give every answer a solid foundation.',
+              ],
+              [
+                ShieldCheck,
+                'Every source matters',
+                'Source links and timestamps show where an answer comes from.',
+              ],
+              [
+                Globe2,
+                'Your questions. Your pace.',
+                'Ask your UFC questions and follow up without starting over.',
+              ],
+            ].map(([Icon, title, copy]) => {
+              const I = Icon as typeof Search;
+              return (
+                <div className="how-card corner-card" key={title as string}>
+                  <I />
+                  <div>
+                    <h3>{title as string}</h3>
+                    <p>{copy as string}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </Reveal>
+          <figure className="corner-poster">
+            <Image
+              src="/images/poster.webp"
+              width={1080}
+              height={1350}
+              unoptimized
+              alt="Collage of MMA champions wearing championship belts"
+              className="champions-poster"
+              sizes="(max-width: 767px) calc(100vw - 40px), 500px"
+            />
+          </figure>
         </div>
       </section>
       <section className="final-cta">
