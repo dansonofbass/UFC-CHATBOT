@@ -106,8 +106,10 @@ export function understand<T extends Identity>(query: string, history: Message[]
     /\b(who is|tell me about|records? of|records? for|profile of|stats of|stats for)\b/i.test(query) &&
     !/ignore|reveal|system prompt/i.test(query)
   ) {
-    intent = 'unknown';
-    intents[0] = intent;
+    intent = /\brecords?\s+(?:of|for)\b/i.test(query)
+      ? 'fighter_history'
+      : 'unknown';
+    intents.splice(0, intents.length, ...new Set([intent, ...intents.filter(i => i !== 'out_of_scope')]));
   }
   return {
     intent,
