@@ -3,7 +3,7 @@ import { fighters, events, news, rankings } from './data';
 import { identifyFighters, type Message, type Intent } from './router';
 import type { Citation } from './schemas';
 import { queryEmbedding } from './embeddings';
-export type Evidence = { text: string; citations: Citation[]; deterministic?: string };
+export type Evidence = { text: string; citations: Citation[]; deterministic?: string; cacheTtlMs?: number };
 export async function retrieve(
   query: string,
   history: Message[],

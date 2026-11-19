@@ -6,7 +6,7 @@ test('home navigation and responsive layout', async ({ page }, testInfo) => {
   ).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({
-    path: `docs/screenshots/home-${testInfo.project.name}.png`,
+    path: testInfo.outputPath(`home-${testInfo.project.name}.png`),
     fullPage: true,
     animations: 'disabled',
   });
@@ -35,6 +35,15 @@ test('all directories and information pages render', async ({ page }) => {
   }
 });
 test('chat handles infrastructure unavailability honestly', async ({ page }) => {
+  await page.route('**/api/chat', (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        error: 'Verified retrieval and usage controls are unavailable. Check /status.',
+      }),
+    }),
+  );
   await page.goto('/chat');
   await page.getByLabel('Ask a UFC question').fill('What is the next UFC event?');
   await page.getByLabel('Send question').click();

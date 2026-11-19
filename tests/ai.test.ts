@@ -42,6 +42,10 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe('AI abstraction — mocked SDK, not live APIs', () => {
+  it('rejects reasoning-only completions with no visible answer', async () => {
+    vi.mocked(streamText).mockReturnValue(output([]));
+    await expect(collect()).rejects.toThrow('temporarily unavailable');
+  });
   it('uses Groq first, bounds tokens, disables retries and logs usage', async () => {
     vi.mocked(streamText).mockReturnValue(
       output([{ type: 'text-delta', text: 'Verified answer' }]),
