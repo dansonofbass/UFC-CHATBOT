@@ -4,6 +4,7 @@ import { identifyFighters, type Message, type Intent } from './router';
 import type { Citation } from './schemas';
 import { queryEmbedding } from './embeddings';
 import { latestCompletedEvent } from './latest-completed';
+import { liveFighter } from './live-fighter';
 export type Evidence = { text: string; citations: Citation[]; deterministic?: string };
 export async function retrieve(
   query: string,
@@ -13,16 +14,21 @@ export async function retrieve(
   const citations: Citation[] = [];
   const pieces: string[] = [];
   const fs = await fighters();
-  const matched = identifyFighters(
+  const normalizedQuery = query.replace(/\bjohn\s+jones\b/gi, 'jon jones');
+  let matched = identifyFighters(
     [
       ...history
         .filter((m) => m.role === 'user')
         .slice(-2)
         .map((m) => m.content),
-      query,
+      normalizedQuery,
     ].join(' '),
     fs.items,
   );
+  if (!matched.length && ['fighter_profile', 'fighter_history', 'fight_statistics'].includes(intent)) {
+    const fresh = await liveFighter(query);
+    if (fresh) matched = [fresh];
+  }
   for (const f of matched.slice(0, 2)) {
     pieces.push(JSON.stringify(f));
     citations.push({ title: f.name, url: f.source_url, updated_at: f.updated_at });
