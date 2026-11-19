@@ -6,6 +6,7 @@ import { retrievalConfig } from './retrieval-config';
 import { liveProvider, webSearch } from './live-retrieval';
 import {
   fighterSchema,
+  identitySchema,
   eventSchema,
   rankingSchema,
   historySchema,
@@ -128,7 +129,7 @@ export async function intelligentRetrieve(
       try {
         const list = await provider(
           `/fighters?org=ufc&q=${encodeURIComponent(other)}&limit=10`,
-          envelope(z.array(fighterSchema)),
+          envelope(z.array(identitySchema)),
         );
         const found = candidates(other, list.data);
         if (found.length === 1) {
@@ -173,7 +174,7 @@ export async function intelligentRetrieve(
       if (!selected.length && plan.subject) {
         const result = await provider(
           `/fighters?org=ufc&q=${encodeURIComponent(plan.subject)}&limit=10`,
-          envelope(z.array(fighterSchema)),
+          envelope(z.array(identitySchema)),
         );
         const found = candidates(plan.subject, result.data);
         if (found.length === 1)
