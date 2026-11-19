@@ -43,7 +43,12 @@ export function candidates<T extends Identity>(text: string, directory: T[]) {
           break;
         }
         const tokens = name.split(' ');
-        // Fuzzy matching requires the full multi-token name; single nicknames remain exact.
+        // A clearly named fighter may be referenced by one given name or surname.
+        // Preserve ambiguity when multiple roster entries share that token.
+        if (tokens.length >= 2 && words.some(w => w.length >= 4 && tokens.some(t => t === w))) {
+          confidence = Math.max(confidence, 0.86);
+        }
+        // Full multi-token fuzzy matching keeps small spelling errors tolerable.
         if (tokens.length < 2) continue;
         for (let i = 0; i <= words.length - tokens.length; i++) {
           const window = words.slice(i, i + tokens.length);
@@ -90,15 +95,15 @@ export function understand<T extends Identity>(query: string, history: Message[]
   if (/\bstats|statistics|accuracy\b/i.test(query) && !intents.includes('fight_statistics'))
     intents.push('fight_statistics');
   const subject = query
-    .match(/(?:who is|tell me about|about|record of)\s+([\p{L}'’ -]{3,65})/iu)?.[1]
-    ?.replace(/\b(mma record|record|ufc|fighter)\b.*$/i, '')
+    .match(/(?:who is|tell me about|about|records? of|records? for|records? does|profile of|stats of|stats for)\s+([\p{L}'’ -]{3,65})/iu)?.[1]
+    ?.replace(/\b(mma record|record|ufc|fighter|have|has|and|what|his|her|their)\b.*$/i, '')
     .trim();
   // A name-shaped question is unresolved, not automatically outside UFC scope.
   // Provider matching still has to establish an actual identity before any facts are used.
   if (
     intent === 'out_of_scope' &&
     subject &&
-    /^(who is|tell me about)\b/i.test(query) &&
+    /\b(who is|tell me about|records? of|records? for|profile of|stats of|stats for)\b/i.test(query) &&
     !/ignore|reveal|system prompt/i.test(query)
   ) {
     intent = 'unknown';
