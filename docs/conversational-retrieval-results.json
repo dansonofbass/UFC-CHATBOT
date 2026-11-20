@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-20T06:50:09.596Z",
+  "checked_at": "2026-11-20T07:52:28.811Z",
   "results": [
     {
       "query": "slpm significant strikes",
@@ -47,7 +47,8 @@
       "dimensions": 384,
       "pass": true,
       "titles": [
-        "Rankings and championship terminology"
+        "Rankings and championship terminology",
+        "Weight classes and weigh-ins"
       ]
     },
     {
@@ -56,7 +57,8 @@
       "dimensions": 384,
       "pass": true,
       "titles": [
-        "Rankings and championship terminology"
+        "Rankings and championship terminology",
+        "Weight classes and weigh-ins"
       ]
     },
     {

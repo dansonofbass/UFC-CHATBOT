@@ -1,0 +1,320 @@
+{
+  "checked_at": "2026-11-20T08:31:14.413Z",
+  "application_commit": "559c4575a4115587f96b833cb66c9c5edd5bc517",
+  "preview_url": "https://octagon-b5a1p42ce-dansonofbass-projects.vercel.app",
+  "deployment_id": "dpl_5M7rmpUqRMZkKRJKSwGSTg6rfUYf",
+  "release_status": "Preview functional; Production held",
+  "tests": {
+    "unit_integration_acceptance": 143,
+    "playwright": 18,
+    "hybrid_retrieval_checks": 8,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "production_build": "passed",
+    "secret_scan": "passed"
+  },
+  "migration_ledger": {
+    "applied": [
+      "001_initial.sql",
+      "002_history.sql",
+      "003_search.sql"
+    ],
+    "pending": [
+      "004_provenance_hybrid.sql"
+    ],
+    "verified_by": "Read public.app_migrations; no schema mutations performed"
+  },
+  "final_live_requests": [
+    {
+      "question": "What is SLpM?",
+      "status": 200,
+      "latency_ms": 9845,
+      "done": true,
+      "error": false,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "**SLpM (Significant Strikes landed per Minute)** is a rate statistic that tells you how many *significant* strikes a fighter lands on average for every minute of fighting time.  \n\n- **Significant strikes** are those delivered at distance, as well as power strikes thrown in the clinch or on the ground. They exclude lighter, less‑forceful contacts that occur in close positions.  \n- The metric is expressed as a **per‑minute** value, so a SLpM of 4.5 means the fighter lands about 4.5 significant strikes each minute of total fight time (including any stoppage time).  \n\nSLpM is useful for gauging a fighter’s offensive output independent of fight length, but it must be interpreted with context: small sample sizes, differing opponents, and the mix of striking versus grappling can all affect the number. It is complementary to other stats such as striking accuracy (percentage of attempted significant strikes that land) and striking defense (percentage of opponent’s significant strike attempts avoided) [Interpreting MMA statistics](https://www.ufcalendar.com/glossary)."
+    },
+    {
+      "question": "Tell me about Georges St-Pierre.",
+      "status": 200,
+      "latency_ms": 20805,
+      "done": true,
+      "error": false,
+      "sources": [
+        {
+          "title": "Georges St-Pierre",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre base-style (confirmed)",
+          "url": "https://www.ufc.com/athlete/georges-st-pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre base-style (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre base-style (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre base-style (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre base-style (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre belt-rank (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre award (confirmed)",
+          "url": "https://www.ufc.com/news/georges-st-pierre-named-ufc-hall-fame-class-2020",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre award (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre award (confirmed)",
+          "url": "https://www.ufc.com/news/ufc-legend-georges-st-pierre-be-inducted-canadas-sports-hall-fame",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre award (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre training-started (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre training-started (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre training-started (confirmed)",
+          "url": "https://www.ufc.com/news/ufc-legend-georges-st-pierre-be-inducted-canadas-sports-hall-fame",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre training-started (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre gym (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://fr.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (confirmed)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        },
+        {
+          "title": "Georges St-Pierre coach (reported)",
+          "url": "https://en.wikipedia.org/wiki/Georges_St-Pierre",
+          "updated_at": "2026-11-20T08:24:57.507Z"
+        }
+      ],
+      "answer": "\n### Martial‑arts background  \n\n| Discipline | Rank / Note | Confidence |\n|------------|-------------|------------|\n| **Kyokushin karate** (first art, started at 7) | 3rd‑dan (awarding body not sourced) | confirmed |\n| **Shotokan & Shidokan karate** | Black‑belt (instructor/year not sourced) | reported |\n| **Wrestling – freestyle** | Trained from his late teens at the Montreal Wrestling Club; core of his takedown game (87 UFC takedowns, a welterweight record) | confirmed |\n| **Brazilian Jiu‑Jitsu** | Brown‑belt 2006 (Renzo Gracie Academy) → Black‑belt 2008 (first‑degree, Bruno Fernandes, Gracie Barra Montreal) | confirmed |\n| **Gaidojutsu** (Greg Jackson’s hybrid system) | Black‑belt (date not sourced) | reported |\n\n### Coaching & affiliations  \n\n* **Current primary gym:** Tristar Gym, Montreal – coached by head trainer **Firas Zahabi** (both listed as current as of 28 Aug 2026) ([source](https://www.ufcalendar.com/)).  \n* Former training sites include Gracie Barra Montreal, Renzo Gracie Academy (NY), Jackson Wink MMA Academy (Albuquerque), Grudge Training Center (Colorado), Montreal Wrestling Club (≈2000‑2017) and The Wat (NY, 2006‑2009).\n\n### Honors  \n\n* **UFC Hall of Fame (Modern Wing)** – class 2020, announced at UFC 249 ([UFC news](https://www.ufc.com/news/georges-st-pierre-named-ufc-hall-fame-class-2020))  \n* **Canada’s Sports Hall of Fame – Order of Sport** – inducted 2023 ([UFC news](https://www.ufc.com/news/ufc-legend-georges-st-pierre-be-inducted-canadas-sports-hall-fame))  \n* **Rogers Sportsnet Canadian Athlete of the Year** – 2008‑2010 (reported, not independently verified) ([source](https://en.wikipedia.org/wiki/Georges_St-Pierre)).\n\n### Summary  \n\nSt‑Pierre’s skill set blends Kyokushin‑style striking, elite freestyle wrestling, and high‑level BJJ, giving him a versatile “karate‑first” takedown entry and a reputation for technical precision. His two career losses came after a long dominant run, and his post‑retirement role remains tied to Tristar as a mentor and ambassador. All facts above are drawn from the supplied evidence; where the source marks information as “reported,” it should be treated as unconfirmed."
+    },
+    {
+      "question": "What about his takedown defense?",
+      "status": 200,
+      "latency_ms": 8508,
+      "done": true,
+      "error": false,
+      "sources": [
+        {
+          "title": "Georges St-Pierre",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-20T08:24:56.388+00:00"
+        }
+      ],
+      "answer": "**Takedown defense (UFC‑recorded)** – **85 %**\n\n\n- **How it’s calculated** – UFC fight‑metric staff count every *attempted* takedown by an opponent. If the defender either retains position, reverses, or the attempt is otherwise unsuccessful, it counts as a defended takedown. The percentage is (Defended attempts ÷ Total opponent attempts) × 100.\n\n- **Context & limitations** –  \n  * The stat reflects only GSP’s UFC fights (22 bouts) and does not include any pre‑UFC or exhibition matches.  \n  * It is an aggregate figure; individual fight‑by‑fight percentages can vary widely depending on opponent style and game plan.  \n  * Because the data set is limited to 22 bouts, the metric is most reliable for assessing his overall defensive tendency in the UFC rather than predicting performance against a specific future opponent.\n\n**Source**: UFC performance panel shows “td_def”: 85 % for Georges St‑Pierre (22 UFC bouts)."
+    }
+  ],
+  "functional_checks": {
+    "general_mma": true,
+    "fighter_profile": true,
+    "statistics": true,
+    "contextual_followup": true
+  },
+  "content_caveats": [
+    "SLpM example incorrectly says fight time includes stoppage time. Source frames and transport passed; semantic accuracy is not certified.",
+    "Profile citations contain repeated references; not a transport blocker."
+  ],
+  "blockers": [
+    "Migration 004 is unapplied: SUPABASE_DB_HOST and SUPABASE_DB_PASSWORD unavailable.",
+    "Content correction/review required before Production.",
+    "Earlier shared-counter testing exhausted the legacy Production AI allowance until 2026-11-21 00:00 UTC (04:00 Asia/Yerevan). Later Preview budgets are isolated; no counters reset."
+  ],
+  "verification_gaps": [
+    "Privileged Admin login not executed live: local operator credentials unavailable; session tests and sign-in-page regression passed."
+  ],
+  "provider_limits": {
+    "final_checks": "No HTTP 429 or error frame observed in the three final requests; no repeat benchmark or rate-limit retries initiated by the agent."
+  },
+  "production": {
+    "commit": "bfbf40b2326f1de32cfba9e42613599e468e6b3c",
+    "deployment_id": "dpl_DrKYjH9BU9Lg8MMnJifR2XaBw92G",
+    "promoted": false
+  }
+}
