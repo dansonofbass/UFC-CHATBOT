@@ -43,13 +43,28 @@ export async function resolveFighterEvidence(
   for (const name of names.slice(0, 3)) {
     if (candidates(name, selected).length) continue;
     try {
-      const result = await get(
+      let result = await get(
         `/fighters?org=ufc&q=${encodeURIComponent(name)}&limit=10`,
         envelope(z.array(identitySchema)),
       );
-      const ranked = candidates(name, result.data);
-      const matches =
-        ranked[0]?.confidence === 1 ? ranked.filter((m) => m.confidence === 1) : ranked;
+      let ranked = candidates(name, result.data);
+      // A provider may require correctly spelled search terms. If a full-name
+      // search finds no confident match, retry with one substantial name token,
+      // then rank returned identities against the ORIGINAL full name.
+      // Never treat a shared first name alone as verified identification.
+      if (!ranked.length && name.trim().split(/\\s+/).length >= 2) {
+        const token = name.trim().split(/\\s+/).find((part) => part.length >= 4);
+        if (token) {
+          result = await get(
+            `/fighters?org=ufc&q=${encodeURIComponent(token)}&limit=10`,
+            envelope(z.array(identitySchema)),
+          );
+          ranked = candidates(name, result.data).filter((m) => m.confidence >= 0.9);
+        }
+      }
+      const matches = ranked[0]?.confidence >= 0.9
+        ? ranked.filter((m) => ranked[0].confidence - m.confidence < 0.06)
+        : ranked;
       if (matches.length > 1) {
         clarification = `Which fighter do you mean: ${matches.map((m) => m.fighter.name).join(', ')}?`;
         break;
