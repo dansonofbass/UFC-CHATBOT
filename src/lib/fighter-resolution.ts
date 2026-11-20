@@ -52,8 +52,8 @@ export async function resolveFighterEvidence(
       // search finds no confident match, retry with one substantial name token,
       // then rank returned identities against the ORIGINAL full name.
       // Never treat a shared first name alone as verified identification.
-      if (!ranked.length && name.trim().split(/\\s+/).length >= 2) {
-        const token = name.trim().split(/\\s+/).find((part) => part.length >= 4);
+      if (!ranked.length && name.trim().split(/\s+/).length >= 2) {
+        const token = name.trim().split(/\s+/).find((part) => part.length >= 4);
         if (token) {
           result = await get(
             `/fighters?org=ufc&q=${encodeURIComponent(token)}&limit=10`,
