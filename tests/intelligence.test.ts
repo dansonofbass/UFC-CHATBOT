@@ -165,8 +165,9 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
   });
   it('does not let the model reinterpret profile statistics or null record counts', async () => {
     const r = await intelligentRetrieve('Who is Jon Jons?', [], [jon], signal());
-    expect(r.deterministic).toContain('Jon Jones');
-    expect(r.deterministic).not.toContain('no-contests');
+    expect(r.deterministic).toBeUndefined();
+    expect(r.text).toContain('Jon Jones');
+    expect(r.text).not.toContain('no-contests');
     expect(r.text).not.toContain('slpm');
   });
   it('returns a deterministic scoped record with human-facing sources', async () => {
