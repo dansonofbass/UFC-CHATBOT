@@ -24,6 +24,24 @@ export const fighterSchema = identitySchema.extend({
   team: z.string().nullable().optional(),
   birthplace: z.string().nullable().optional(),
   records: z.record(z.string(), recordSchema).optional(),
+  career_stats: z
+    .array(
+      z.object({
+        scope: z.string(),
+        source: z.string(),
+        record: z.string().nullable(),
+        slpm: z.string().nullable(),
+        sapm: z.string().nullable(),
+        str_acc: z.string().nullable(),
+        str_def: z.string().nullable(),
+        td_avg: z.string().nullable(),
+        td_acc: z.string().nullable(),
+        td_def: z.string().nullable(),
+        sub_avg: z.string().nullable(),
+        updated_at: z.string().nullable().optional(),
+      }),
+    )
+    .optional(),
   stats: z
     .object({
       slpm: z.string().nullable(),

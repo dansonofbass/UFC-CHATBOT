@@ -31,6 +31,7 @@ const schema = z.object({
     .min(1)
     .max(3),
   subject: z.string().max(80).nullable(),
+  event_subject: z.string().min(2).max(100).nullable().default(null),
   subjects: z.array(z.string().min(2).max(80)).max(3).default([]),
   ambiguous: z.boolean(),
 });
@@ -45,6 +46,7 @@ export async function queryPlan(
   if (
     c.CHAT_MODEL_UNDERSTANDING_ENABLED !== 'true' ||
     plan.ambiguous ||
+    plan.eventSubject ||
     isGeneralStatisticsQuestion(query) ||
     plan.educational ||
     // The latest user-specified fighter inherits the earlier statistics intent.
@@ -74,7 +76,7 @@ export async function queryPlan(
     query,
     history: history.slice(-4),
     instruction:
-      'Extract a UFC query plan. subject and subjects contain ONLY fighter names or nicknames from the user or relevant conversation, retaining spelling. For comparisons retain BOTH the previous subject and newly named participant. Never answer facts or invent identities. Resolve pronouns only from conversation. Latest UFC event means completed_event. Educational definitions are rules. Unrelated requests are out_of_scope. Use ambiguous=true for unclear references.',
+      'Extract a UFC query plan. subject and subjects contain ONLY fighter names or nicknames from the user or relevant conversation, retaining spelling. event_subject is only an event title from the user or relevant conversation, never a fighter name. For comparisons retain BOTH the previous subject and newly named participant. Never answer facts or invent identities. Resolve pronouns only from conversation. Latest UFC event means completed_event. Educational definitions are rules. Unrelated requests are out_of_scope. Use ambiguous=true for unclear references.',
   });
   try {
     if (!(await reserveAI(Buffer.byteLength(prompt, 'utf8'), 1))) return plan;
@@ -106,6 +108,7 @@ export async function queryPlan(
       intent: output.intents[0],
       intents: output.intents,
       subject: output.subject || plan.subject,
+      eventSubject: output.event_subject || plan.eventSubject,
       subjects: [
         ...new Set([
           ...(plan.contextual && output.intents.includes('fighter_comparison')

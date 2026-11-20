@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { isGeneralStatisticsQuestion, statisticsGuide } from './statistics-guide';
 import { retrieveKnowledge } from './knowledge-retrieval';
 import { localKnowledge } from './knowledge';
+import { eventEvidence } from './event-resolution';
 import { synthesisEvidence } from './chat-strategy';
 import { resolveFighterEvidence } from './fighter-resolution';
 import { db, checked } from './db';
@@ -81,6 +82,7 @@ export async function intelligentRetrieve(
   preparedPlan?: ReturnType<typeof understand<Fighter>>,
 ): Promise<Evidence> {
   const plan = preparedPlan || understand(query, history, items);
+  if (plan.eventSubject) return eventEvidence(plan.eventSubject,signal);
   if (isGeneralStatisticsQuestion(query) || plan.educational) {
     const docs = await retrieveKnowledge(query, signal);
     return {

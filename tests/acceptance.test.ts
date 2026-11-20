@@ -85,6 +85,47 @@ describe('twenty representative acceptance plans', () => {
   });
 });
 describe('five multi-turn conversations', () => {
+  it('keeps a numbered event across a follow-up without carrying it into a new fighter question', () => {
+    expect(
+      understand(
+        'What about its fight card?',
+        [{ role: 'user', content: 'Tell me about UFC 300' }],
+        directory,
+      ).eventSubject,
+    ).toBe('UFC 300');
+    expect(
+      understand(
+        'Tell me about Jon Jones',
+        [{ role: 'user', content: 'Tell me about UFC 300' }],
+        directory,
+      ).eventSubject,
+    ).toBeUndefined();
+  });
+  it('resolves an event through the documented global search and verifies its details', async () => {
+    vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
+    const event = {
+      id: 300,
+      slug: 'synthetic-event',
+      title: 'UFC 300: Synthetic event',
+      org: 'ufc',
+      starts_at: '2024-04-14T00:00:00Z',
+      tz: 'UTC',
+      status: 'completed',
+      card: [],
+    };
+    get.mockImplementation(async (path, schema) =>
+      schema.parse({ data: path.startsWith('/search') ? { events: [event] } : event, meta: {} }),
+    );
+    const result = await intelligentRetrieve(
+      'Tell me about UFC 300',
+      [],
+      [],
+      new AbortController().signal,
+    );
+    expect(get.mock.calls.map((c) => c[0])).toEqual(['/search?q=UFC%20300', '/events/300']);
+    expect(result.text).toContain('Synthetic event');
+    expect(result.text).toContain('never infer winners');
+  });
   it('prefers an exact full identity over an incidental shared first name', () => {
     const plan = understand(
       'Tell me about Islam Makhachev.',

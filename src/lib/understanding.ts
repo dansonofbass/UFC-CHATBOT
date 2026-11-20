@@ -72,7 +72,7 @@ export function understand<T extends Identity>(query: string, history: Message[]
   const explicitMatches = matches.length > 0;
   const topic = conversationTopic(history);
   const contextual =
-    /\b(he|she|his|her|they|their|him|them|that|those|both|it)\b|^(and|what about|how about)\b/i.test(
+    /\b(he|she|his|her|they|their|him|them|that|those|both|its|it)\b|^(and|what about|how about)\b/i.test(
       query,
     ) ||
     (/\bbetter\b/i.test(query) &&
@@ -129,6 +129,16 @@ export function understand<T extends Identity>(query: string, history: Message[]
     matches = matches.filter((m) => m.confidence === 1);
   const ambiguous = matches.length > 1 && !multiple;
   const selected = ambiguous ? [] : matches.slice(0, 3).map((m) => m.fighter);
+  const eventSubject =
+    query.match(/\bUFC\s+\d{1,4}\b/i)?.[0] ||
+    (!explicitMatches && contextual
+      ? history
+          .filter((m) => m.role === 'user')
+          .slice(-6)
+          .reverse()
+          .map((m) => m.content.match(/\bUFC\s+\d{1,4}\b/i)?.[0])
+          .find(Boolean)
+      : undefined);
   let intent = resolveIntent(query, history, names);
   if (intent === 'out_of_scope' && matches.length && !/ignore|reveal|system prompt/i.test(query))
     intent = classify(`UFC ${query}`, [], names);
@@ -136,7 +146,9 @@ export function understand<T extends Identity>(query: string, history: Message[]
     intent = 'completed_event';
   if (/\bwho did\b.*\bfight\b|\blast (fight|opponent)\b/i.test(query)) intent = 'fighter_history';
   if (statsFollowup) intent = 'fight_statistics';
-  const educational = educationalQuestion(query, explicitMatches);
+  if (eventSubject)
+    intent = /\b(next|upcoming)\b/i.test(query) ? 'upcoming_event' : 'completed_event';
+  const educational = educationalQuestion(query, explicitMatches || !!eventSubject);
   if (educational) intent = 'rules';
   if (
     !educational &&
@@ -230,6 +242,7 @@ export function understand<T extends Identity>(query: string, history: Message[]
     educational,
     topic: contextual || bareName ? topic : undefined,
     subject,
+    eventSubject,
     subjects: [...new Set(subjects)],
     query: selected.length
       ? `${query}\nSubjects: ${selected.map((f) => f.name).join(', ')}${contextual && topic ? `\nTopic: ${topic}` : ''}`

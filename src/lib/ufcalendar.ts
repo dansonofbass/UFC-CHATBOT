@@ -55,7 +55,7 @@ export class UFCalendar {
     this.active = slot;
   }
   async request<T>(path: string, schema: z.ZodType<T>, signal?: AbortSignal): Promise<T> {
-    if (!/^\/(events|fighters|fights|rankings\/ufc|usage)(\/|\?|$)/.test(path))
+    if (!/^\/(events|fighters|fights|rankings\/ufc|search|usage)(\/|\?|$)/.test(path))
       throw new Error('Unsupported provider path');
     if (this.exhausted) throw new ProviderError(429, 'quota_exceeded');
     const preferred = this.credentials.find((c) => c.slot === this.active);
