@@ -10,9 +10,22 @@ const schema = z.object({
   OPENROUTER_MODEL: z.string().default('openrouter/free'),
   ALLOW_OPENROUTER_FALLBACK: z.enum(['true', 'false']).default('false'),
   INTERNAL_API_TOKEN: z.string().min(32).optional(),
-  AI_DAILY_REQUEST_LIMIT: z.coerce.number().int().min(1).default(100),
-  AI_DAILY_TOKEN_LIMIT: z.coerce.number().int().min(2048).default(100000),
-  CLIENT_HOURLY_LIMIT: z.coerce.number().int().min(1).default(20),
+  AI_DAILY_REQUEST_LIMIT: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .default(process.env.VERCEL_ENV === 'production' ? 100 : 1000),
+  AI_DAILY_TOKEN_LIMIT: z.coerce
+    .number()
+    .int()
+    .min(2048)
+    .default(process.env.VERCEL_ENV === 'production' ? 100000 : 2000000),
+  CLIENT_HOURLY_LIMIT: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .default(process.env.VERCEL_ENV === 'production' ? 20 : 120),
+  AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(450).max(4096).default(1400),
 });
 export function env() {
   return schema.parse(Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== '')));

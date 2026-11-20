@@ -4,6 +4,7 @@ export class ProviderError extends Error {
   constructor(
     public status: number,
     public code: string,
+    public retryAfterSeconds?: number,
   ) {
     super(`UFCalendar ${code} (${status})`);
   }
@@ -66,22 +67,54 @@ export class UFCalendar {
       await this.beforeRequest?.();
       try {
         c.requests++;
-        const r = await this.fetcher(`https://api.ufcalendar.com/v1${path}`, {
+        const options = {
           headers: { Authorization: `Bearer ${c.key}` },
           signal: signal
             ? AbortSignal.any([signal, AbortSignal.timeout(12000)])
             : AbortSignal.timeout(12000),
-          cache: 'no-store',
-        });
+          cache: 'no-store' as const,
+        };
+        let r = await this.fetcher(`https://api.ufcalendar.com/v1${path}`, options);
+        if (r.status >= 500 && ordered.length === 1) {
+          // One bounded retry, charged to the same account budget, after backoff.
+          await new Promise<void>((resolve, reject) => {
+            const abort = () => {
+              clearTimeout(timer);
+              reject(options.signal.reason);
+            };
+            const timer = setTimeout(
+              () => {
+                options.signal.removeEventListener('abort', abort);
+                resolve();
+              },
+              250 + Math.floor(Math.random() * 250),
+            );
+            options.signal.addEventListener('abort', abort, { once: true });
+          });
+          options.signal.throwIfAborted();
+          await this.beforeRequest?.();
+          c.requests++;
+          r = await this.fetcher(`https://api.ufcalendar.com/v1${path}`, options);
+        }
         c.lastStatus = r.status;
         if (!r.ok) {
           const body = await r.json().catch(() => ({}));
           const code = z.object({ error: z.object({ code: z.string() }) }).safeParse(body);
           const name = code.success ? code.data.error.code : 'request_failed';
-          if (r.status === 429 || name === 'quota_exceeded') {
+          if (name === 'quota_exceeded') {
             c.health = 'quota';
             this.exhausted = true;
             throw new ProviderError(r.status, name);
+          }
+          if (r.status === 429) {
+            const retry = r.headers.get('retry-after');
+            const seconds =
+              retry && /^\d+$/.test(retry)
+                ? Number(retry)
+                : retry
+                  ? Math.max(1, Math.ceil((Date.parse(retry) - Date.now()) / 1000))
+                  : 60;
+            throw new ProviderError(429, 'rate_limited', Number.isFinite(seconds) ? seconds : 60);
           }
           if (r.status === 401) {
             c.health = 'unauthorized';

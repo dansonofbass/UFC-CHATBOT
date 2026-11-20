@@ -8,6 +8,7 @@ test-results/
 playwright-report/
 .vercel/
 .sync-state.json
+.fighter-sync-state.json
 .model-cache/
 .playwright-browsers/
 *.tsbuildinfo

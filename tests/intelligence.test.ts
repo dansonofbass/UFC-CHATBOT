@@ -63,7 +63,7 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
     expect(result.deterministic).toContain('SLpM');
     expect(result.deterministic).toContain('TD Acc.');
     expect(result.deterministic).toContain('UFCStats');
-    expect(result.text).toBe('');
+    expect(result.text).toContain('ANSWER_MODE: educational');
     expect(request).not.toHaveBeenCalled();
     expect(liveProvider).not.toHaveBeenCalled();
   });

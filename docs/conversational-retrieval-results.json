@@ -1,0 +1,81 @@
+{
+  "checked_at": "2026-11-20T06:50:09.596Z",
+  "results": [
+    {
+      "query": "slpm significant strikes",
+      "mode": "lexical",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "Interpreting MMA statistics"
+      ]
+    },
+    {
+      "query": "slpm significant strikes",
+      "mode": "hybrid",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "Interpreting MMA statistics"
+      ]
+    },
+    {
+      "query": "successful grappling damage scoring",
+      "mode": "lexical",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "Judging and scoring rounds",
+        "MMA fundamentals and techniques",
+        "Interpreting MMA statistics"
+      ]
+    },
+    {
+      "query": "successful grappling damage scoring",
+      "mode": "hybrid",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "Judging and scoring rounds",
+        "Interpreting MMA statistics",
+        "MMA fundamentals and techniques"
+      ]
+    },
+    {
+      "query": "media panel rankings",
+      "mode": "lexical",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "Rankings and championship terminology"
+      ]
+    },
+    {
+      "query": "media panel rankings",
+      "mode": "hybrid",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "Rankings and championship terminology"
+      ]
+    },
+    {
+      "query": "chokes armbars submissions",
+      "mode": "lexical",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "MMA fundamentals and techniques"
+      ]
+    },
+    {
+      "query": "chokes armbars submissions",
+      "mode": "hybrid",
+      "dimensions": 384,
+      "pass": true,
+      "titles": [
+        "MMA fundamentals and techniques"
+      ]
+    }
+  ]
+}

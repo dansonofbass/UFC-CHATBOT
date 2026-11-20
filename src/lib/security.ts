@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { db, checked } from './db';
 import { env } from './env';
+const localClients = new Map<string, { count: number; expires: number }>();
 export function authorized(header: string | null) {
   const expected = env().INTERNAL_API_TOKEN;
   if (!expected || !header) return false;
@@ -25,7 +26,20 @@ export async function clientLimit(request: Request) {
     1,
     env().CLIENT_HOURLY_LIMIT,
     new Date(Date.now() + 3600000),
-  );
+  ).catch(() => {
+    // Isolated database failure still permits local educational fallbacks.
+    // AI and live-provider budgets continue to fail closed independently.
+    const key = `${hour}:${hash}`;
+    const prior = localClients.get(key);
+    if (localClients.size > 10000) {
+      for (const [key, value] of localClients)
+        if (value.expires < Date.now()) localClients.delete(key);
+      if (localClients.size > 10000) return false;
+    }
+    const count = (prior?.count || 0) + 1;
+    localClients.set(key, { count, expires: Date.now() + 3600000 });
+    return count <= env().CLIENT_HOURLY_LIMIT;
+  });
 }
 export async function reserveAI(inputBytes = 7000, attempts = 2) {
   const day = new Date().toISOString().slice(0, 10),
@@ -35,7 +49,7 @@ export async function reserveAI(inputBytes = 7000, attempts = 2) {
     return false;
   return consume(
     `ai:tokens:${day}`,
-    (inputBytes + 3000) * attempts,
+    (inputBytes + env().AI_MAX_OUTPUT_TOKENS * 4) * attempts,
     e.AI_DAILY_TOKEN_LIMIT,
     expiry,
   );

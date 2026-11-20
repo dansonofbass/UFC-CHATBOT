@@ -210,18 +210,20 @@ async function run() {
       console.log('Embedding indexing disabled; full-text search remains available');
       return;
     }
-    const { pipeline } = await import('@huggingface/transformers');
-    const embed = await pipeline(
-      'feature-extraction',
-      'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
-      { dtype: 'q8', cache_dir: '.model-cache' },
-    );
+    const { queryEmbedding } = await import('../src/lib/embeddings');
     const rows = await checked(
-      client.from('document_chunks').select('id,content').is('embedding', null).limit(limit),
+      args.includes('--reindex')
+        ? client
+            .from('document_chunks')
+            .select('id,content')
+            .gt('id', state.index?.cursor || '')
+            .order('id')
+            .limit(limit)
+        : client.from('document_chunks').select('id,content').is('embedding', null).limit(limit),
     );
     for (const r of rows) {
-      const out = await embed(r.content, { pooling: 'mean', normalize: true });
-      const vector = Array.from(out.data);
+      const vector = await queryEmbedding(r.content);
+      if (!vector) throw new Error('Embedding model unavailable');
       if (vector.length !== 384) throw new Error('Unexpected embedding dimensions');
       await checked(
         client
@@ -234,6 +236,8 @@ async function run() {
           .eq('id', r.id)
           .select(),
       );
+      await checkpoint(r.id);
+      console.log(JSON.stringify({ chunk: r.id, dimensions: vector.length, status: 'indexed' }));
     }
     return;
   }

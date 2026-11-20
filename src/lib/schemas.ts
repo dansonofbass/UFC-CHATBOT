@@ -129,6 +129,7 @@ export const envelope = <T extends z.ZodType>(schema: T) =>
     data: schema,
     meta: z
       .object({
+        fetched_at: z.string().optional(),
         pagination: z
           .object({ next_cursor: z.string().nullable(), has_more: z.boolean() })
           .optional(),

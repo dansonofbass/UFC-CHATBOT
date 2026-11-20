@@ -1,23 +1,19 @@
 import { z } from 'zod';
-import { resolveIntent } from '@/lib/router';
-import { retrieve } from '@/lib/retrieval';
 import { answer, providers } from '@/lib/ai';
 import { clientLimit, reserveAI } from '@/lib/security';
-import { fighters } from '@/lib/data';
-import { cachedEvidence } from '@/lib/cache';
-import { retrievalConfig } from '@/lib/retrieval-config';
-import { directory as fighterDirectory, intelligentRetrieve } from '@/lib/intelligent-retrieval';
-import { queryPlan } from '@/lib/model-understanding';
-import { understand } from '@/lib/understanding';
+import { prepareChat, chatDiagnostic } from '@/lib/chat-orchestration';
+import { groundedCitations } from '@/lib/citation-guard';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 const schema = z.object({
   messages: z
     .array(
-      z.object({
-        role: z.enum(['user', 'assistant']),
-        content: z.string().trim().min(1).max(2500),
-      }),
+      z
+        .object({
+          role: z.enum(['user', 'assistant']),
+          content: z.string().trim().min(1).max(10000),
+        })
+        .refine((message) => message.role === 'assistant' || message.content.length <= 2500),
     )
     .min(1)
     .max(16),
@@ -50,54 +46,15 @@ export async function POST(request: Request) {
         { error: 'Hourly request limit reached. Try again later.' },
         { status: 429, headers: { 'Retry-After': '3600' } },
       );
-    const intelligence = retrievalConfig().CHAT_INTELLIGENCE_ENABLED === 'true';
-    const history = messages.slice(0, -1);
-    const directory = intelligence
-      ? { items: await fighterDirectory(requestSignal) }
-      : await fighters();
-    const plan = intelligence ? understand(query, history, directory.items) : undefined;
-    const intent =
-      plan?.intent ||
-      resolveIntent(
-        query,
-        messages.slice(0, -1),
-        directory.items.flatMap((f) => [f.name, f.slug.replaceAll('-', ' '), f.nickname || '']),
-      );
+    const requestId = crypto.randomUUID();
+    const started = performance.now();
     const encoder = new TextEncoder();
     const record = (data: unknown) => encoder.encode(JSON.stringify(data) + '\n');
-    if (
-      intent === 'out_of_scope' &&
-      (!intelligence ||
-        retrievalConfig().CHAT_MODEL_UNDERSTANDING_ENABLED !== 'true' ||
-        /ignore|reveal|system prompt/i.test(query))
-    )
-      return new Response(
-        record({
-          type: 'text',
-          text: fa
-            ? 'من فقط درباره UFC، مبارزان، مسابقات و قوانین مرتبط پاسخ می‌دهم.'
-            : 'I can help with UFC fighters, events, fight history, and relevant MMA rules. Please ask a UFC question.',
-        }),
-        { headers: { 'Content-Type': 'application/x-ndjson' } },
-      );
-    const evidence = await cachedEvidence(query, JSON.stringify(history), async () => {
-      if (!intelligence) return retrieve(query, history, intent);
-      const prepared = await queryPlan(query, history, directory.items, requestSignal);
-      if (prepared.intent === 'out_of_scope')
-        return {
-          text: '',
-          citations: [],
-          deterministic:
-            'I can help with UFC fighters, events, fight history, and relevant MMA rules.',
-          cacheTtlMs: 0,
-        };
-      return intelligentRetrieve(
-        query,
-        history,
-        directory.items,
-        AbortSignal.any([requestSignal, AbortSignal.timeout(20000)]),
-        prepared,
-      );
+    const evidence = await prepareChat(query, messages.slice(0, -1), requestSignal, requestId);
+    chatDiagnostic(requestId, 'retrieval', {
+      sources: evidence.citations.length,
+      hasEvidence: !!evidence.text,
+      latencyMs: Math.round(performance.now() - started),
     });
     if (!evidence.text && !evidence.deterministic)
       return new Response(
@@ -109,34 +66,62 @@ export async function POST(request: Request) {
         }),
         { headers: { 'Content-Type': 'application/x-ndjson' } },
       );
-    if (
-      (!evidence.deterministic || (fa && evidence.text)) &&
-      !(await reserveAI(
+    let generate = !!evidence.text && providers().length > 0;
+    if (generate) {
+      const reserved = await reserveAI(
         Buffer.byteLength(evidence.text + JSON.stringify(messages), 'utf8'),
-        providers().length || 1,
-      ))
-    )
-      return Response.json(
-        { error: 'Daily AI budget reached. Verified records remain available in the directory.' },
-        { status: 429 },
-      );
+        (providers().length || 1) * 2,
+      ).catch(() => false);
+      if (!reserved) {
+        if (evidence.deterministic) generate = false;
+        else
+          return Response.json(
+            { error: 'AI usage allowance is temporarily unavailable. Please retry later.' },
+            { status: 429 },
+          );
+      }
+    }
     const generation = new AbortController();
     const signal = AbortSignal.any([requestSignal, generation.signal]);
     let cancelled = false;
     const stream = new ReadableStream({
       async start(controller) {
+        let emitted = false;
         try {
           controller.enqueue(record({ type: 'sources', sources: evidence.citations }));
-          if (evidence.deterministic && (!fa || !evidence.text))
+          if (!generate && evidence.deterministic)
             controller.enqueue(record({ type: 'text', text: evidence.deterministic }));
           else
-            for await (const text of answer(messages, evidence.text, signal)) {
+            for await (const text of groundedCitations(
+              answer(messages, evidence.text, signal),
+              evidence.citations.map((c) => c.url),
+              evidence.text.includes('ANSWER_MODE: educational') ? undefined : evidence.text,
+            )) {
               if (cancelled) break;
+              if (!text) continue;
+              if (text.trim()) emitted = true;
               controller.enqueue(record({ type: 'text', text }));
             }
+          if (generate && !emitted && !cancelled)
+            controller.enqueue(
+              record({
+                type: 'text',
+                text:
+                  evidence.deterministic ||
+                  'The available sources did not support a reliable explanation. Please ask for a specific statistic or bout.',
+              }),
+            );
+          chatDiagnostic(requestId, 'generation', {
+            status: generate ? 'generated' : 'fallback',
+            latencyMs: Math.round(performance.now() - started),
+          });
           if (!cancelled) controller.enqueue(record({ type: 'done' }));
         } catch {
-          if (!cancelled)
+          chatDiagnostic(requestId, 'generation', { status: 'error', emitted });
+          if (!cancelled && !emitted && evidence.deterministic) {
+            controller.enqueue(record({ type: 'text', text: evidence.deterministic }));
+            controller.enqueue(record({ type: 'done' }));
+          } else if (!cancelled)
             controller.enqueue(
               record({
                 type: 'error',

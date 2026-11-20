@@ -1,3 +1,4 @@
+import { clearProviderCache } from '../src/lib/provider-cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { liveProvider, webSearch } from '../src/lib/live-retrieval';
@@ -26,6 +27,8 @@ const fetcher = vi.fn<typeof fetch>();
 const signal = () => new AbortController().signal;
 const schema = z.object({ data: z.array(z.string()), meta: z.object({}) });
 beforeEach(() => {
+  clearProviderCache();
+  vi.stubEnv('CHAT_PROVIDER_REQUEST_LIMIT', '3');
   vi.stubEnv('UFCALENDAR_API_KEY_1', 'fixture-one');
   vi.stubEnv('UFCALENDAR_API_KEY_2', 'fixture-two');
   vi.stubEnv('UFCALENDAR_API_KEY_3', '');
@@ -48,7 +51,7 @@ afterEach(() => {
 describe('live adapters with mocked network and persistent quota controls', () => {
   it('caps each retrieval to three attempted provider calls', async () => {
     const get = liveProvider(signal());
-    for (let i = 0; i < 3; i++) await get('/events', schema);
+    for (let i = 0; i < 3; i++) await get(`/events?limit=${i+1}`, schema);
     await expect(get('/events', schema)).rejects.toThrow('budget');
     expect(fetcher).toHaveBeenCalledTimes(3);
     expect(consume).toHaveBeenCalledWith(

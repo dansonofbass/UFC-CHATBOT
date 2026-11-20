@@ -1,0 +1,104 @@
+{
+  "checked_at": "2026-11-20T07:02:16.180Z",
+  "target": "http://localhost:3101",
+  "note": "Content gates do not establish independent factual accuracy. Dynamic coverage gaps require review.",
+  "results": [
+    {
+      "group": "conversation-3",
+      "question": "Tell me about Khabib.",
+      "status": 200,
+      "latency_ms": 10963,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Khabib Nurmagomedov – “The Eagle”**  \n\n- **Nationality:** Russian  \n- **Born:** 20 September 1988, Makhachkala, Russian SFSR (Soviet Union)  \n- **Weight class:** Competes at 155 lb (lightweight)  \n- **Stance:** Orthodox  \n- **Team:** American Kickboxing Academy (AKA)  \n\n### Record  \n- **UFC:** 13‑0‑0 (13 wins, 0 losses, 0 draws) – *UFC‑only record*(https://www.ufcalendar.com)  \n- **Overall professional MMA:** 29‑0‑0 (29 wins, 0 losses, 0 draws) – *all‑pro record*(https://www.ufcalendar.com)  \n\nKhabir’s undefeated streak spans both his UFC tenure and earlier professional bouts, giving him a perfect win‑to‑loss ratio in both datasets.\n\n### What’s missing from the available data  \nThe evidence does not include any performance metrics such as significant‑strike accuracy, takedown average, submission‑attempt rate, SLpM (significant strikes landed per minute), or defensive percentages. Consequently, we cannot comment on his striking efficiency, grappling output, or how those numbers compare to other fighters.\n\n### Contextual note  \nBecause the record information is limited to win‑loss tallies, any qualitative assessment (e.g., “dominant grappler” or “high‑pressure style”) must rely on external knowledge rather than the supplied facts. The data confirms Khabib’s undefeated status and basic biographical details, but it does not provide a statistical picture of his in‑fight performance or current activity level."
+    },
+    {
+      "group": "conversation-3",
+      "question": "What was his record?",
+      "status": 200,
+      "latency_ms": 9580,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "Khabib Nurmagomedov’s official records are:\n\n- **UFC record:** **13‑0‑0** (13 wins, 0 losses, 0 draws)  \n- **Overall professional MMA record:** **29‑0‑0** (29 wins, 0 losses, 0 draws)\n\nBoth records are undefeated."
+    },
+    {
+      "group": "conversation-3",
+      "question": "How many submissions did he win by?",
+      "status": 200,
+      "latency_ms": 7325,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        },
+        {
+          "title": "Khabib Nurmagomedov career history",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-20T07:02:11.530Z"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-19T23:49:19.839+00:00"
+        },
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-19T23:49:23.548+00:00"
+        },
+        {
+          "title": "Rankings and championship terminology",
+          "url": "https://www.ufc.com/news/ufc-and-meta-unveil-meta-ufc-rankings",
+          "updated_at": "2026-11-20T06:52:52.211+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "Khabib Nurmagomedov earned **nine submission victories** in the fights listed in the supplied data. The submission wins are recorded against the following opponents:\n\n| Event (date) | Opponent | Method |\n|--------------|----------|--------|\n| UFC 254 – 24 Oct 2020 | Justin Gaethje | Submission (2 R, 1:34) |\n| UFC 242 – 07 Sep 2019 | Dustin Poirier | Submission (3 R, 2:06) |\n| UFC 229 – 07 Oct 2018 | Conor McGregor | Submission (4 R, 3:03) |\n| UFC 205 – 12 Nov 2016 | Michael Johnson | Submission (3 R, 2:31) |\n| UFC on FX – 20 Jan 2013 | Shalorus Kamal | Submission (3 R, 2:08) |\n| ProFC 29 – 02 Jul 2011 | Kadzhik Abadzhyan | Submission (Triangle Choke) |\n| ProFC 26 – 08 Apr 2011 | Said Khalilov | Submission (Kimura) |\n| M‑1 Russian Selection 2009 – 03 Nov 2009 | Shakhbulat Shamkhalaev | Submission (Armbar) |\n| CSFU Champions League – 13 Sep 2008 | Vusal Bayramov | Submission (Rear‑Naked Choke) |\n\nThese nine entries are the only fights in the provided dataset where the “method” field is listed as **Submission**. No other fights in the evidence indicate a submission win, so the count is limited to what is documented."
+    }
+  ]
+}

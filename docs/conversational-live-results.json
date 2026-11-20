@@ -1,0 +1,957 @@
+{
+  "checked_at": "2026-11-20T06:58:18.012Z",
+  "target": "http://localhost:3100",
+  "note": "Content gates do not establish independent factual accuracy. Dynamic coverage gaps require review.",
+  "results": [
+    {
+      "group": "single",
+      "question": "Explain UFC fight statistics.",
+      "status": 200,
+      "latency_ms": 57140,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Rankings and championship terminology",
+          "url": "https://www.ufc.com/rankings",
+          "updated_at": "2026-11-19T23:49:24.88+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "**UFC fight statistics are a set of metrics that try to capture what happened inside the Octagon and give a quick picture of a fighter’s performance.**  \n\n| Metric | What it measures | How it’s expressed |\n|--------|-----------------|--------------------|\n| **SLpM** – Significant Strikes landed per minute | The rate at which a fighter lands “significant” strikes (powerful punches/kicks, elbows, knees, or any strike that could cause damage). | Strikes ÷ minutes of fight time |\n| **SApM** – Significant Strikes absorbed per minute | How many significant strikes the fighter **takes** per minute. | Opponent’s significant strikes ÷ minutes |\n| **Striking accuracy** | Proportion of attempted significant strikes that actually land. | (Significant strikes landed ÷ attempted) × 100 % |\n| **Striking defense** | Share of opponent’s significant‑strike attempts that are avoided. | (Opponent attempts ‑ significant strikes landed on fighter) ÷ opponent attempts × 100 % |\n| **Takedown accuracy** | Success rate of the fighter’s takedown attempts. | (Successful takedowns ÷ attempts) × 100 % |\n| **Takedown defense** | How often the fighter prevents an opponent’s takedown attempts. | (Opponent attempts ‑ takedowns landed) ÷ opponent attempts × 100 % |\n| **Takedown & submission‑attempt averages** | Volume of takedowns or submission attempts **per 15 minutes** of fight time – the standard “per‑round” unit used by most stat providers. | Total attempts ÷ ( fight minutes / 15 ) |\n| **Control time** | Time a fighter maintains a dominant position (e.g., top control on the ground). It does not automatically translate to damage or a win. |\n| **Career averages vs. fight‑by‑fight stats** | Career averages pool data from many bouts, smoothing out outliers; a single‑fight stat reflects what happened **in that specific contest**. |\n\n**Why the numbers need context**  \n- **Sample size matters.** A high SLpM in a five‑minute bout may look impressive, but a larger career average is a more reliable indicator of a fighter’s typical output.  \n- **Opposition quality and style** affect every metric. A grappler facing a striker will have different takedown numbers than against another grappler.  \n- **Activity ≠ superiority.** A fighter can throw many strikes (high activity) without being effective; accuracy and defense help evaluate quality over quantity.  \n\nThese definitions come from the UFC’s statistical glossary, which stresses that “different opponents, styles and small samples limit comparisons” and that “a high activity metric alone does not prove superior skill”(https://www.ufcalendar.com/glossary). Understanding each metric and its limitations lets fans and analysts interpret fight data more meaningfully."
+    },
+    {
+      "group": "single",
+      "question": "What is SLpM?",
+      "status": 200,
+      "latency_ms": 3925,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "**SLpM (Significant Strikes Landed per Minute)** is a rate‑based statistic that measures how many *significant* strikes a fighter lands on average each minute of fight time.  \n- **Significant strikes** are the more impactful blows—usually punches, kicks, elbows or knees thrown from distance, or power strikes delivered in the clinch or on the ground.  \n- The metric is expressed as a simple number (e.g., 4.3 SLpM), not a percentage, and it normalizes striking output across fights of different lengths, allowing easier comparison of activity levels.\n\nSLpM is calculated by dividing the total number of significant strikes landed in a bout by the total minutes the fighter was active (including any stoppage time). Because it’s an average, a single high‑tempo fight can inflate the figure, while a low‑output bout can pull it down; thus, **sample size and opponent style matter** when interpreting the number.\n\nIn contrast, **SApM (Significant Strikes Absorbed per Minute)** tracks how many significant strikes a fighter takes per minute, offering insight into defensive effectiveness. Together, SLpM and SApM help analysts gauge a fighter’s offensive output versus the damage they endure.\n\n*Source: [Interpreting MMA statistics – UFC Calendar Glossary](https://www.ufcalendar.com/glossary).*"
+    },
+    {
+      "group": "single",
+      "question": "What is takedown defense?",
+      "status": 200,
+      "latency_ms": 5590,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-19T23:49:19.839+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "**Takedown defense** is a statistical metric that tells you how often a fighter stops an opponent’s attempts to take the fight to the ground. It is expressed as a **percentage**:  \n\n\\[\n\\text{Takedown‑defense %} = \\frac{\\text{Opponent’s takedown attempts – opponent’s successful takedowns}}{\\text{Opponent’s takedown attempts}} \\times 100\n\\]\n\nIn other words, the higher the percentage, the more frequently the fighter “sprawls,” underhooks, re‑counters, or otherwise prevents the opponent from completing a takedown. The figure is usually reported for a single bout and can be averaged across a career, but it is always **per‑fight** and depends on the number of attempts the opponent makes.\n\n**Why it matters**  \n- A strong takedown‑defense rate suggests good grappling awareness and the ability to keep the fight standing (or to stay safe on the ground).  \n- It does **not** guarantee success on the scorecards; judges also weigh striking damage, control time, and submission threats.  \n\n**Limitations**  \n- Small sample sizes (e.g., only a few opponent attempts) can inflate or deflate the percentage.  \n- The quality of the opponent’s takedown game and the fight context (e.g., fighting from a disadvantageous position) are not reflected in the raw number.  \n\nFor a concise definition, see the UFC‑calendar glossary: “takedown defense measures opponent attempts stopped”."
+    },
+    {
+      "group": "single",
+      "question": "Tell me about Islam Makhachev.",
+      "status": 200,
+      "latency_ms": 6417,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        }
+      ],
+      "answer": "**Islam Makhachev – quick profile**\n\n- **Nationality:** Russian  \n- **Born:** 27 Oct 1991 in Makhachkala, Dagestan, Russia  \n- **Team:** American Kickboxing Academy (AK Academy)  \n- **Physical attributes:** 5 ft 10 in (70 in) tall, 170 lb (lightweight), 70‑in reach, fights in a **southpaw** stance  \n\n**Career record (as of the latest public data)**  \n\n| Competition level | Record (W‑L‑D) | Wins | Losses |\n|-------------------|---------------|------|--------|\n| UFC (official stats) | 18‑1‑0 | 18 | 1 |\n| Overall professional MMA* | 29‑1‑0 | 29 | 1 |\n| Amateur Sambo | 1‑0‑0 | 1 | 0 |\n\n\\*The “pro‑MMA” total aggregates all professional bouts, not just UFC contests.  \n\nThese numbers come from the UFC’s official statistics database and other public‑record sources [UFC Stats](https://www.ufcalendar.com)​.\n\n**What the stats tell us**\n\n- **UFC record (18‑1):** Makhachev has competed in 19 UFC fights, winning 18. The single loss came in his UFC career, indicating a 94.7 % win‑rate at the world‑premier level.  \n- **Overall pro record (29‑1):** Adding his pre‑UFC and non‑UFC bouts gives a 96.6 % win‑rate across all professional competition. This shows he has been dominant both before and after joining the UFC.  \n- **Amateur Sambo (1‑0):** A perfect record in the grappling sport that forms the base of many Dagestani fighters’ skill sets.\n\n**What’s missing from the public snapshot**\n\n- **Nickname:** No nickname is listed in the supplied data.  \n- **Detailed performance metrics** such as striking accuracy, takedown percentage, SLpM (significant strikes landed per minute), SApM (significant strikes absorbed per minute), or submission attempts are not provided, so we cannot comment on his style efficiency or defensive strengths.  \n- **Recent fight dates, opponents, titles held, or injury history** are also absent, so any discussion of his current championship status or recent activity would be speculative.\n\n**Bottom line**\n\nIslam Makhachev is a Russian lightweight who fights out of the AK Academy, standing 5’10” with a 70‑inch reach and a southpaw stance. He boasts an 18‑1 UFC record and a 29‑1 overall professional MMA record, reflecting consistent success at the highest level of the sport. For any deeper analysis—strike‑to‑strike ratios, takedown averages, or recent fight outcomes—we would need additional statistical data that isn’t present in the current evidence."
+    },
+    {
+      "group": "single",
+      "question": "islam makhachev",
+      "status": 200,
+      "latency_ms": 5906,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        }
+      ],
+      "answer": "**UFC fight statistics – what they measure and how Islam Makhachev’s numbers read**\n\n| Metric | Meaning (per‑minute or per‑15‑min) | Makhachev’s value* |\n|--------|-----------------------------------|--------------------|\n| **SLpM** – Significant Strikes landed per minute | How many “significant” strikes (powerful or at the head/body) a fighter lands on average each minute of fight time. | **2.27** |\n| **Str. Acc** – Strike accuracy | Percent of total strikes that connect. | **58 %** |\n| **SAPM** – Significant Strikes absorbed per minute | How many significant strikes a fighter takes per minute. | **1.42** |\n| **Str. Def** – Striking defense | Percent of opponents’ strikes that miss. | **61 %** |\n| **TD Avg** – Takedowns per 15 min | Average number of successful takedowns a fighter lands in a full 15‑minute fight. | **3.22** |\n| **TD Acc** – Takedown accuracy | Percent of attempted takedowns that succeed. | **55 %** |\n| **TD Def** – Takedown defense | Percent of opponent takedown attempts that are defended. | **91 %** |\n| **Sub Avg** – Submission attempts per 15 min | How often a fighter tries to finish the fight with a submission. | **0.9** |\n\n\\*All figures come from **19 professional MMA bouts** (UFC‑only) recorded on ufcalendar.com. Because the sample size is limited to those 19 fights, the rates reflect Makhachev’s performance over that span and may shift as he adds more bouts or faces different styles of opposition.\n\n**How to read them**\n\n- **SLpM 2.27** means Makhachev lands roughly two and a quarter significant strikes every minute of action—indicating a steady striking output.\n- **58 % accuracy** shows that just over half of his total thrown strikes find their target, a solid but not elite efficiency (top strikers often exceed 65 %).\n- **1.42 SAPM** and **61 % striking defense** together suggest he absorbs relatively few damaging blows while dodging or blocking a majority of opponents’ attempts.\n- **3.22 TD Avg** with **55 % accuracy** demonstrates a strong grappling base: he secures more than three takedowns per full fight, converting over half of his attempts.\n- **91 % takedown defense** is elite, meaning opponents rarely succeed when they shoot.\n- **0.9 submission attempts per 15 min** indicates he looks for submissions about once per fight, complementing his wrestling rather than being his primary finish.\n\n**Limitations**\n\n- The per‑minute averages smooth out fight‑to‑fight variation; a single high‑tempo bout can inflate SLpM or TD Avg.\n- Opponent quality isn’t captured—facing a striking‑heavy specialist versus a grappler can skew these rates.\n- All numbers are snapshots up to 19 recorded fights; future contests will adjust the percentages.\n\nIn short, Makhachev’s stats paint a picture of a balanced fighter: decent striking volume and accuracy, excellent defensive grappling, and a moderate but effective submission threat."
+    },
+    {
+      "group": "single",
+      "question": "Give me the record of Khabib.",
+      "status": 200,
+      "latency_ms": 5139,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Khabib Nurmagomedov – Fight Record**\n\n| Scope | Wins | Losses | Draws | No Contests |\n|-------|------|--------|-------|-------------|\n| **UFC** (official UFC‑Stats) | 13 | 0 | 0 | 0 |\n| **Overall professional MMA** (public records) | 29 | 0 | 0 | 0 |\n\nThe data shows Khabib has remained unbeaten in both his UFC career (13‑0‑0) and his entire professional MMA career (29‑0‑0) as of the latest update on 19 Nov 2026.  \n\n**What’s missing:** The evidence does not include the dates of individual fights, opponent names, event locations, methods of victory, or any recent activity beyond the aggregate totals. Those details would be needed for a full fight‑by‑fight breakdown."
+    },
+    {
+      "group": "single",
+      "question": "Who is Khabib Nurmagomedov?",
+      "status": 200,
+      "latency_ms": 6679,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Khabir Nurmagomedov** (often spelled **Khabib Nurmagomedov**) is a Russian mixed‑martial‑arts fighter best known for his tenure in the UFC’s lightweight division.\n\n| Detail | Information |\n|--------|--------------|\n| **Full name / nickname** | Khabib Nurmagomedov – “The Eagle” |\n| **Date of birth** | 20 September 1988 |\n| **Birthplace** | Makhachkala, Russian SFSR, Soviet Union |\n| **Nationality** | Russian |\n| **Physical stats** | Height 70 in (5 ft 10 in), reach 70 in, fighting weight 155 lb (lightweight) |\n| **Stance** | Orthodox |\n| **Training team** | American Kickboxing Academy (AKA) |\n| **Professional record** | **UFC‑only:** 13‑0‑0 (13 wins, 0 losses) <br> **Overall pro MMA:** 29‑0‑0 (29 wins, 0 losses) |\n\nThese records come from the UFC’s official statistics and publicly compiled MMA databases, indicating that Nurmagomedov has never been defeated in either his UFC career or his entire professional MMA career .\n\n### What the numbers mean\n- **UFC‑only record (13‑0‑0):** All 13 victories were earned inside the UFC; the “0” in the loss column confirms he has never been knocked out, submitted, or otherwise beaten in a UFC bout.\n- **Pro‑MMA record (29‑0‑0):** Before joining the UFC, he accumulated 16 additional wins on regional circuits, bringing his total professional tally to 29 wins with no defeats, draws, or no‑contests.\n\n### Information not covered in the supplied evidence\n- Specific titles held (e.g., UFC Lightweight Champion)  \n- Notable opponents, fight dates, or method of victory (KO, submission, decision)  \n- Rankings, awards, injury history, or retirement status  \n\nBecause those details aren’t present in the provided data, they can’t be confirmed here. The evidence focuses on his basic bio, physical attributes, team affiliation, and win‑loss record."
+    },
+    {
+      "group": "single",
+      "question": "Tell me about Jon Jones.",
+      "status": 200,
+      "latency_ms": 7045,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "**Jon “Bones” Jones – Quick Profile**\n\n- **Full name / nickname:** Jon Jones, “Bones”  \n- **Nationality & birthplace:** United States – Rochester, New York  \n- **Date of birth:** 19 July 1987 (age 39)  \n- **Physical attributes:** 6 ft 4 in (76 in) tall, 248 lb fighting weight, 84‑in reach, orthodox stance  \n- **Primary camp:** Jackson’s MMA Acoma  \n\n**Career record (as of the latest public data)**  \n- **UFC‑only record:** 22 wins – 1 loss – 0 draws (+ 1 no‑contest) [UFC‑stats]  \n- **Overall professional MMA record:** 28 wins – 1 loss – 0 draws (0 no‑contests) [public‑records]  \n- **Pro submission‑grappling:** 1 win – 0 losses  \n\nThese numbers indicate that Jones has competed primarily within the UFC, accounting for the bulk of his 28 professional victories. The single no‑contest in his UFC ledger reflects a fight that was later ruled invalid (often due to a failed drug test or an accidental foul), but the exact cause isn’t listed in the provided data.\n\n**What the data does not show**\n\n- **Specific fight dates, opponents, or titles held** (e.g., his long‑run as UFC Light‑Heavyweight champion).  \n- **Detailed performance metrics** such as significant strikes landed per minute (SLpM), takedown accuracy, or submission‑attempt rates.  \n- **Injury history, recent activity, or current ranking** within the division.  \n\nWithout those details, we can only state that Jones is a veteran fighter with a dominant win‑loss ratio and a single UFC loss, complemented by a perfect grappling record. His physical size (tall, long‑reached, heavyweight‑class weight) and orthodox stance are typical of a fighter who leverages reach and striking distance, though any tactical analysis would require more granular fight statistics.\n\n*Source: [UFCalendar – Jon Jones profile](https://www.ufcalendar.com)*"
+    },
+    {
+      "group": "single",
+      "question": "Compare Jon Jones and Tom Aspinall.",
+      "status": 200,
+      "latency_ms": 7238,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Tom Aspinall",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:18.033+00:00"
+        },
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "**Physical profile**\n\n|                     | Jon Jones | Tom Aspinall |\n|---------------------|-----------|--------------|\n| Height | 76 in (6 ft 4 in) | 77 in (6 ft 5 in) |\n| Weight (fight) | 248 lb | 255 lb |\n| Reach | 84 in | 78 in |\n| Stance | Orthodox | Orthodox |\n| Nationality | United States | England |\n| Team | Jackson’s MMA Acoma | Team Kaobon |\n| DOB | 19 Jul 1987 | 11 Apr 1993 |\n\n*Sources: [UFCCalendar – Jon Jones](https://www.ufcalendar.com), [UFCCalendar – Tom Aspinall](https://www.ufcalendar.com).*\n\n**Career records**\n\n- **UFC‑only record**: Jones 22‑1‑0 (1 NC) vs. Aspinall 8‑1‑0 (1 NC).  \n- **Overall pro‑MMA record**: Jones 28‑1‑0 vs. Aspinall 15‑3‑0.  \n\nThese figures come from the “ufc‑only” and “pro‑mma” scopes in the supplied data and reflect only what has been captured; they may not include very recent bouts or fights outside the listed sources.\n\n**Statistical averages (UFC bouts)**  \n\n| Metric (per minute) | Jon Jones | Tom Aspinall |\n|----------------------|-----------|--------------|\n| Significant strikes landed per minute (SLpM) | 4.38 | 7.63 |\n| Striking accuracy | 59 % | 68 % |\n| Significant strikes absorbed per minute (SAPM) | 2.24 | 3.62 |\n| Striking defense | 64 % | 57 % |\n| Takedown average (per 15 min) | 1.89 | 2.62 |\n| Takedown accuracy | 46 % | 80 % |\n| Takedown defense | 95 % | 100 % |\n| Submission attempts per 15 min | 0.5 | 1.3 |\n\n*Sources: [UFCCalendar – Jon Jones stats](https://www.ufcalendar.com), [UFCCalendar – Tom Aspinall stats](https://www.ufcalendar.com).*\n\n**Interpretation & limitations**\n\n- **Sample size**: Jones’ numbers are drawn from 24 UFC bouts, Aspinall’s from only 10. The larger sample for Jones makes his percentages less sensitive to any single fight, while Aspinall’s figures can swing more dramatically with each bout.  \n- **Opposition quality**: Both fighters have faced elite UFC competition, but Jones’ longer UFC tenure includes multiple title defenses against former champions, giving his stats a higher “level‑of‑opposition” weight.  \n- **Style clues**: Aspinall lands more strikes per minute and is far more efficient on the ground (80 % takedown accuracy, 100 % defense), suggesting a grappling‑oriented approach. Jones lands fewer strikes but absorbs fewer, and his takedown accuracy is lower, reflecting his reputation as a versatile striker‑to‑grappler who often controls distance.  \n- **Missing data**: Neither profile includes knockout‑to‑KO ratios, fight‑time averages, or recent injury updates; the records stop at the latest snapshot (19 Nov 2026) and may not reflect fights after that date.\n\nOverall, Jones boasts a dominant UFC win‑loss record and a larger body of data, while Aspinall shows higher activity rates and superior takedown efficiency in his comparatively shorter UFC sample."
+    },
+    {
+      "group": "single",
+      "question": "Compare Khabib and Islam Makhachev.",
+      "status": 200,
+      "latency_ms": 6431,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        },
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Career overview**\n\n|                     | Khabab Nurmagomedov | Islam Makhachev |\n|---------------------|--------------------|-----------------|\n| **UFC record**      | 13‑0‑0 (13 bouts) | 18‑1‑0 (19 pro‑MMA bouts, 18‑1 in UFC) |\n| **Overall pro‑MMA** | 29‑0‑0 | 29‑1‑0 |\n| **Weight class**    | 155 lb (lightweight) | 170 lb (welterweight) |\n| **Height / Reach**  | 70 in / 70 in | 70 in / 70 in |\n| **Stance**          | Orthodox | Southpaw |\n| **Team**            | American Kickboxing Academy | American Kickboxing Academy |\n| **Birthplace**      | Makhachkala, Dagestan | Makhachkala, Dagestan |\n\n**Statistical comparison**\n\n- **Striking volume** – Khabib averaged **4.10** significant strikes per minute (SLpM) versus Islam’s **2.27** SLpM. Khabib’s higher rate reflects a more aggressive striking output, but it is drawn from only **13 UFC bouts**, whereas Islam’s figure includes **19 pro‑MMA bouts** (including UFC).  \n- **Striking accuracy** – Islam lands **58 %** of his attempts, a notable edge over Khabib’s **49 %**. Accuracy is less dependent on volume, so Islam’s figure suggests greater efficiency in the strikes he throws.  \n- **Takedown activity** – Khabib averages **5.32** takedowns per 15 min, with a **48 %** success rate; Islam averages **3.22** takedowns per 15 min but at a higher **55 %** accuracy and a superior **91 %** defense. The larger sample for Islam (19 bouts) may smooth out variability, while Khabib’s numbers come from a smaller, undefeated UFC sample.  \n- **Submission pressure** – Both are grappling‑heavy: Khabib averages **0.8** submission attempts per 15 min, Islam **0.9**. The difference is negligible.\n\n**Contextual notes**\n\n- The statistics are **UFC‑centric** for Khabib (13 bouts) and **overall pro‑MMA** for Islam (19 bouts). Weight‑class differences (lightweight vs. welterweight) affect average striking and takedown numbers, making direct per‑minute comparisons imperfect.  \n- The evidence does not include titles held, recent rankings, injury history, or activity after the last recorded bout, so any claim about current champion status or retirement would be speculative.  \n\n**Bottom line**\n\nKhabib’s record shows a higher striking volume and more frequent takedowns, but Islam demonstrates better striking efficiency, takedown accuracy, and defensive takedown stats. The sample‑size gap and weight‑class variance mean each fighter’s metrics should be read with those limitations in mind."
+    },
+    {
+      "group": "single",
+      "question": "How does UFC scoring work?",
+      "status": 200,
+      "latency_ms": 8068,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-19T23:49:23.548+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "Rankings and championship terminology",
+          "url": "https://www.ufc.com/rankings",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "UFC fights are judged **round‑by‑round**.  Each round is scored independently, and the judges compare the two competitors on three main pillars:\n\n| Criterion | What the judges look for |\n|-----------|---------------------------|\n| **Effective Striking** | How many significant strikes land **and** the impact they have.  Damage is the key factor – a single powerful blow can outweigh a larger volume of light contact. |\n| **Effective Grappling** | Successful takedowns, submissions and any control that creates offensive opportunities.  Merely holding a position without producing damage or advancing the attack does not automatically earn points. |\n| **Control & Octagon Management** | Time spent in dominant positions is noted, but it must be tied to effective offense; passive possession alone is insufficient to outweigh damaging striking or grappling. |\n\nThe judges assign a 10‑9 (or 10‑8, 10‑7) score per round, with the **10‑9** being the standard for a round where one fighter clearly out‑performed the other in the categories above. A **10‑8** is used when the superiority is overwhelming, typically reflected by heavy damage or decisive grappling.  The round scores are then added to produce the final decision.\n\nBecause the scoring is **qualitative**, raw statistics (total strikes, takedowns, control time, etc.) cannot fully reconstruct a judge’s view.  A high volume of contact, for example, does not guarantee a round win if those strikes lack significant effect.  For exact scoring standards, always refer to the specific athletic commission’s rulebook for the event in question(https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf)."
+    },
+    {
+      "group": "single",
+      "question": "What is the difference between a TKO and a KO?",
+      "status": 200,
+      "latency_ms": 3401,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "A **knockout (KO)** occurs when a strike renders an opponent unable to continue the fight — the fighter is either unconscious or physically incapable of answering the referee’s count, so the bout ends immediately.\n\nA **technical knockout (TKO)** is a stoppage called by the referee (or doctor/officials) because the fighter cannot safely continue or is no longer intelligently defending themselves, even if they are still conscious. This can happen after a barrage of strikes, an injury, or when a corner throws in the towel.\n\nIn short, a KO is a loss of consciousness or immediate inability to continue, while a TKO is a referee‑initiated halt for safety when a fighter is overwhelmed or compromised but not necessarily unconscious.  \n\n[Source: MMA fundamentals and techniques](https://www.ufc.com/intro-to-mma?language_content_entity=en)"
+    },
+    {
+      "group": "single",
+      "question": "Explain the difference between striking accuracy and striking defense.",
+      "status": 200,
+      "latency_ms": 3297,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-19T23:49:19.839+00:00"
+        },
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-19T23:49:23.548+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "**Striking accuracy** and **striking defense** are two separate efficiency metrics that describe opposite aspects of a fighter’s stand‑up game.\n\n* **Striking accuracy** is the proportion of a fighter’s *attempted* significant strikes that actually land. It is calculated by dividing landed significant strikes by total significant‑strike attempts. A higher percentage means the fighter is precise with the strikes they throw, regardless of how many they throw overall.  \n\n* **Striking defense** measures how many of the opponent’s significant‑strike attempts a fighter *avoids*. It is expressed as the share of opponent attempts that do **not** connect. A higher defense percentage indicates that the fighter is good at slipping, blocking, or moving out of the way of incoming attacks.\n\nIn short, accuracy reflects **how effective a fighter’s own offense is**, while defense reflects **how well they limit the opponent’s offense**. Both are percentages, not per‑minute rates, and they should be interpreted together with other stats (e.g., SLpM, total strikes) because a high accuracy can be paired with low volume, and strong defense does not guarantee high offensive output.  \n\nSource: [\"Interpreting MMA statistics\"](https://www.ufcalendar.com/glossary) – defines both metrics and notes they are expressed as percentages."
+    },
+    {
+      "group": "single",
+      "question": "What does control time mean?",
+      "status": 200,
+      "latency_ms": 3823,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-19T23:49:23.548+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "**Control time** is the amount of time a fighter spends “controlling” a position on the ground (or, less commonly, in the clinch) during a bout. It is measured by the clock from the moment a fighter secures a dominant grappling position—such as side‑control, mount, or back‑control—until they lose that control or the round ends.  \n\nImportantly, control time **does not automatically equate to damage or a winning score**. A fighter can hold a position for a long period but inflict little striking or fail to create submission opportunities, while a short burst of control that leads to a damaging strike or a finish can be far more decisive. Judges evaluate the *effect* of control (e.g., does it create effective offense?) rather than the raw minutes alone(https://www.ufcalendar.com/glossary).  \n\nBecause control time is a **raw activity metric**, it should be interpreted alongside other stats—such as significant strikes landed per minute (SLpM), takedown accuracy, and submission attempts—to gauge a fighter’s overall effectiveness. Small sample sizes or vastly different opponents can also skew its relevance, so it’s best used as part of a broader performance picture rather than a standalone indicator."
+    },
+    {
+      "group": "single",
+      "question": "How are UFC rankings determined?",
+      "status": 200,
+      "latency_ms": 4177,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Rankings and championship terminology",
+          "url": "https://www.ufc.com/rankings",
+          "updated_at": "2026-11-19T23:49:24.88+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "UFC rankings are **not** calculated by a formula or by fighters’ win‑loss records alone. Instead, a **panel of media members** votes on where each active competitor belongs in the divisional and pound‑for‑pound lists. Each voter submits a ranked order of fighters they consider the best in a given weight class (or overall), and the UFC compiles those votes into the official ranking table — the process is purely a **consensus poll**, not a statistical ranking .\n\nKey points to keep in mind:\n\n* **Divisional vs. pound‑for‑pound** – Divisional rankings answer “who is the best at X pounds?” while pound‑for‑pound rankings answer “who is the best regardless of weight.” They serve different questions and are not interchangeable.\n* **Separate from championship status** – Holding a title or being an interim champion does not automatically give a fighter a #1 rank, and a high ranking does not guarantee a title shot. Rankings and championship status are distinct concepts.\n* **Dynamic and dated** – Rankings change after each fight, injury, or major news. A “current” list is only accurate as of the date of the latest official snapshot.\n* **Weight‑class membership** – A fighter’s body weight alone does not determine which division they’re ranked in; the UFC defines divisions by official weight limits, and only fighters who compete in that division are eligible for its ranking.\n\nThus, UFC rankings reflect the collective judgment of a qualified media panel at a specific moment, rather than an objective, unchanging metric."
+    },
+    {
+      "group": "single",
+      "question": "What happened in Islam Makhachev's last fight?",
+      "status": 200,
+      "latency_ms": 9499,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        },
+        {
+          "title": "Islam Makhachev career history",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-20T06:53:00.860Z"
+        }
+      ],
+      "answer": "Islam Makhachev’s most recent bout on record took place at **UFC 330: Makhachev vs. Machado Garry** on **15 August 2026**. He faced **Ian “Machado” Garry** and earned a **unanimous decision** victory after the full five‑round distance (5 minutes of the final round) . No other fights are listed after this date, so this is the latest result available in the current data."
+    },
+    {
+      "group": "single",
+      "question": "Who did Khabib fight last?",
+      "status": 200,
+      "latency_ms": 9328,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        },
+        {
+          "title": "Khabib Nurmagomedov career history",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-20T06:53:21.616Z"
+        }
+      ],
+      "answer": "Khabib Nurmagomedov’s most recent recorded bout in the supplied data is a win over **Justin Gaethje** at **UFC 254** on **24 October 2020**. He secured a submission victory in the second round at 1:34 min.  \n\nNo later fights appear in the provided evidence, so this is the latest opponent we can confirm for him."
+    },
+    {
+      "group": "single",
+      "question": "What is the next UFC event?",
+      "status": 200,
+      "latency_ms": 6790,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "UFC Fight Night: Prochazka vs Stirling",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-20T06:53:41.941Z"
+        }
+      ],
+      "answer": "The next UFC‑scheduled show is **UFC Fight Night: Prochazka vs. Stirling**, slated for **21 November 2026** (15:00 local time in Qatar, Asia/Qatar time zone). The event is currently listed as *announced* on the UFC calendar.  \n\n*Source:* (https://www.ufcalendar.com/) (observed 2026‑11‑20)."
+    },
+    {
+      "group": "single",
+      "question": "What was the latest completed UFC event?",
+      "status": 200,
+      "latency_ms": 14980,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Polymarket UFC 334: Gane vs Hokit",
+          "url": "https://www.ufcalendar.com/",
+          "updated_at": "2026-11-20T06:54:03.877Z"
+        }
+      ],
+      "answer": "The most recent UFC event that has been recorded as **completed** is **UFC 334 – “Gane vs. Hokit”** (Polymarket UFC 334). It took place on November 14 2026 at Madison Square Garden in New York, USA, and the card was finalized on November 20 2026 [UFC 334 details](https://www.ufcalendar.com/)."
+    },
+    {
+      "group": "single",
+      "question": "Why is grappling important in MMA?",
+      "status": 200,
+      "latency_ms": 7305,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-19T23:49:19.839+00:00"
+        },
+        {
+          "title": "Judging and scoring rounds",
+          "url": "https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf",
+          "updated_at": "2026-11-19T23:49:23.548+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "Grappling is a core pillar of mixed‑martial arts because it controls where the fight takes place and creates the conditions for damage, finishes, and scoring.\n\n* **Position control** – A takedown brings the opponent to the ground, letting a fighter choose the range of exchange. From dominant positions (mount, back control, etc.) a grappler can land strikes, apply submissions, or keep the opponent from escaping, which often translates into more effective offense and higher judges’ scores(https://www.ufc.com/intro-to-mma?language_content_entity=en).  \n\n* **Submission opportunities** – Once on the mat, the grappler can attack the joints and neck with chokes, armbars, and other locks. A successful submission ends the bout instantly, while the threat of one forces the opponent to defend and can open striking windows.  \n\n* **Defensive utility** – Grappling also lets a fighter escape bad positions, get back to his feet, or neutralize an opponent’s striking pressure. Good defensive grappling (e.g., takedown defense, positional scrambles) prevents the opponent from dictating the fight’s geography.  \n\n* **Scoring impact** – Judges award points not only for strikes but also for effective grappling. “Effective offense” is measured by the damage and control generated, not merely the number of takedowns or time spent in a position. Thus, a well‑executed grappling sequence that creates striking or submission threats can outweigh a higher strike count if the opponent’s attacks are less damaging(https://www.abcboxing.com/wp-content/uploads/2025/08/ABC-MMA-Scoring-Criteira-Clarification-7.2025.pdf).  \n\n* **Statistical context** – Metrics such as takedown accuracy, takedown defense, and control time help illustrate a fighter’s grappling effectiveness, but they must be interpreted with the quality of offense in mind, not as raw totals(https://www.ufcalendar.com/glossary).  \n\nIn short, grappling determines the fight’s location, opens paths to finishes, provides defensive options, and influences judges’ scoring—making it indispensable in MMA."
+    },
+    {
+      "group": "conversation-1",
+      "question": "Explain UFC fight statistics.",
+      "status": 200,
+      "latency_ms": 6708,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-19T23:49:21.986+00:00"
+        },
+        {
+          "title": "Rankings and championship terminology",
+          "url": "https://www.ufc.com/news/ufc-and-meta-unveil-meta-ufc-rankings",
+          "updated_at": "2026-11-20T06:52:52.211+00:00"
+        },
+        {
+          "title": "Interpreting MMA statistics",
+          "url": "https://www.ufcalendar.com/glossary",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "MMA fundamentals and techniques",
+          "url": "https://www.ufc.com/intro-to-mma?language_content_entity=en",
+          "updated_at": "2026-11-20"
+        },
+        {
+          "title": "Rankings and championship terminology",
+          "url": "https://www.ufc.com/rankings",
+          "updated_at": "2026-11-20"
+        }
+      ],
+      "answer": "UFC fight statistics break down what happened inside the octagon into quantifiable pieces, but each number must be read in context.\n\n**Striking** – *Significant strikes* are the higher‑impact punches, kicks, elbows or knees landed at distance, in the clinch or on the ground.  \n- **SLpM** (significant‑strikes‑landed‑per‑minute) tells how many of those strikes a fighter averages each minute of fight time.  \n- **SApM** (significant‑strikes‑absorbed‑per‑minute) shows the same rate for strikes taken.  \n- **Striking accuracy** is the proportion of attempted significant strikes that connect, while **striking defense** is the share of opponent attempts that are avoided.  \n\n**Grappling** – A **takedown** moves the fight to the mat.  \n- **Takedown accuracy** measures successful takedowns divided by attempts.  \n- **Takedown defense** reflects how often a fighter stops an opponent’s takedown attempt.  \nBoth takedown and **submission‑attempt averages** are usually expressed per 15‑minute bout length, so they can be compared across fights of different durations.  \n\n**Control time** records how long a fighter maintains a dominant position; it does not directly equate to damage or scoring.  \n\nCareer averages combine many bouts, whereas fight‑by‑fight stats describe a single contest. Because opponents, styles and sample sizes vary, high activity numbers alone do not prove superior skill — they must be weighed against the quality of opposition and the limited data set [Interpreting MMA statistics](https://www.ufcalendar.com/glossary).  \n\nUnderstanding these metrics helps fans see where a fighter excels (e.g., striking volume vs. grappling efficiency) while remembering that the numbers are snapshots, not definitive rankings of ability."
+    },
+    {
+      "group": "conversation-1",
+      "question": "islam makhachev",
+      "status": 200,
+      "latency_ms": 10682,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        }
+      ],
+      "answer": "### Islam Makhachev – Quick Profile  \n\n| Attribute | Detail |\n|-----------|--------|\n| **Full name** | Islam Makhachev |\n| **Nationality** | Russian (Dagestan) |\n| **Date of birth** | 27 Oct 1991 |\n| **Height / Reach** | 70 in (5 ft 10 in) tall, 70 in reach |\n| **Weight class** | Lightweight (170 lb) |\n| **Stance** | South‑paw |\n| **Team** | American Kickboxing Academy (AK Academy) |\n| **Professional record (UFC)** | 18 wins – 1 loss (18‑1‑0) |\n| **Overall pro‑MMA record** | 29 wins – 1 loss (29‑1‑0) |\n| **Amateur Sambo record** | 1 win – 0 loss (1‑0) |\n\n*Source: UFCalendar data (observed 2026‑11‑19)*  \n\n### Key UFC‑level statistics  \n\n| Metric | Value | What it means |\n|--------|-------|---------------|\n| **Significant‑strikes landed per minute (SLpM)** | **2.27** | On average Makhachev lands a little more than two meaningful strikes each minute of fight time. |\n| **Significant‑strikes absorbed per minute (SApM)** | **1.42** | He takes about 1.4 significant strikes per minute, indicating solid defensive work. |\n| **Striking accuracy** | **58 %** | Roughly six of every ten strike attempts connect. |\n| **Striking defense** | **61 %** | He avoids about three‑quarters of the opponent’s significant‑strike attempts. |\n| **Takedown average** | **3.22 per 15 min** | Over a full three‑round fight (15 min) he would typically secure a little more than three takedowns. |\n| **Takedown accuracy** | **55 %** | Just over half of his takedown attempts succeed. |\n| **Takedown defense** | **91 %** | He stops the vast majority of opponents’ takedown attempts. |\n| **Submission‑attempt average** | **0.9 per 15 min** | He attempts roughly one submission per full fight. |\n| **Striking defense (overall)** | **61 %** (same as above) |\n| **Ground‑control metrics** | *Not provided in the supplied data* | UFCalendar’s snapshot does not list total control time or guard‑pass numbers. |\n\n*All statistics are compiled from 19 professional MMA bouts (UFC‑only scope for the record, but the statistical averages include his full pro‑MMA career).*\n\n### What the numbers tell us  \n\n- **Balanced game:** Makhachev’s SLpM (2.27) is modest compared with pure strikers, but his high takedown accuracy (55 %) and exceptional takedown defense (91 %) show a grappling‑oriented style that still lands effective strikes.  \n- **Defensive efficiency:** Taking only 1.42 significant strikes per minute while landing 2.27 gives him a positive striking differential, a key factor in judges’ scoring.  \n- **Submission threat:** Less than one submission attempt per full fight suggests he prefers positional control and ground‑and‑pound over chasing finishes, which aligns with his reputation as a pressure grappler rather than a submission specialist.  \n\n### Missing / unavailable information  \n\n- **Nickname:** The dataset lists no nickname.  \n- **Recent fight outcomes:** The record shows 18‑1 in the UFC, but the opponent and date of the most recent bout are not included.  \n- **Control‑time, guard‑pass, or significant‑strike totals:** Those detailed per‑fight numbers are absent, so we cannot evaluate his dominance on the ground beyond the takedown figures.  \n- **Ranking or title status:** No current ranking or championship information is provided.  \n\nIf you need a deeper dive into a specific fight, opponent history, or recent news, let me know and I can summarize what’s publicly available beyond the statistical snapshot."
+    },
+    {
+      "group": "conversation-2",
+      "question": "Tell me about Islam Makhachev.",
+      "status": 200,
+      "latency_ms": 6532,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        }
+      ],
+      "answer": "**Islam Makhachev – Quick Profile**\n\n- **Full name:** Islam Makhachev  \n- **Nationality:** Russian (Dagestan)  \n- **Date of birth:** 27 Oct 1991 → age 35 (as of 2026)  \n- **Birthplace:** Makhachkala, Dagestan, Russia  \n- **Team:** American Kickboxing Academy (AK Academy)  \n- **Physical stats:** 5 ft 10 in (70 in) tall, 170 lb (lightweight division), 70‑in reach, fights in a **southpaw** stance  \n\n**Career record (as of the latest data on 19 Nov 2026)**  \n\n| Scope | Wins | Losses | Draws | No‑contests |\n|-------|------|--------|-------|-------------|\n| **UFC only** | 18 | 1 | 0 | 0 |\n| **All professional MMA** | 29 | 1 | 0 | 0 |\n| **Amateur Sambo** | 1 | 0 | 0 | 0 |\n\nThe UFC‑only record (18‑1‑0) is drawn from UFC‑Stats, while the “pro‑MMA” total (29‑1‑0) aggregates his full professional career across all promotions, according to public‑record sources.\n\n**What the numbers tell you**\n\n- **Win‑loss ratio:** Both records show a 94–97 % win rate, indicating a consistently dominant performer at the highest level.  \n- **Losses:** Only a single defeat in his entire professional career, suggesting resilience and the ability to adjust after setbacks.  \n- **Amateur Sambo background:** A 1‑0 record points to a solid grappling foundation, typical for many Dagestani fighters.\n\n**What’s missing from the snapshot**\n\n- **Nickname:** No nickname is listed.  \n- **Championships or title defenses:** The data does not indicate whether he holds or has held a UFC belt.  \n- **Recent fight results, opponent names, event dates, rankings, injuries, or announced future fights:** None of these details are present in the supplied evidence.  \n- **Statistical breakdowns** (significant strikes landed per minute, takedown accuracy, submission attempts, etc.) are not provided, so deeper performance analysis isn’t possible from this source.\n\n**Takeaway**\n\nIslam Makhachev is a Russian lightweight with a Southpaw stance, training out of the renowned American Kickboxing Academy. His record—18‑1 in the UFC and 29‑1 overall—places him among the sport’s most successful competitors, though additional context (titles, recent opponents, detailed fight metrics) would be needed for a fuller evaluation."
+    },
+    {
+      "group": "conversation-2",
+      "question": "What about his takedown defense?",
+      "status": 200,
+      "latency_ms": 5596,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        }
+      ],
+      "answer": "Islam Makhachev’s **takedown defense** is listed at **91 %** — he successfully defends 91 % of his opponents’ takedown attempts. In practical terms, for every 10 takedown attempts aimed at him, roughly nine are stopped or reversed, making his grappling defense among the elite in the lightweight division.\n\n*Why the number matters*  \n- A high takedown‑defense rate limits opponents’ ability to dictate the fight on the ground, forcing them to stay standing where Makhachev can exploit his striking and control the pace.  \n- It complements his overall grappling profile (3.22 takedowns landed per 15 min with a 55 % takedown accuracy) and suggests a well‑rounded wrestler who can both impose and repel the ground game.\n\n*Limitations of the stat*  \n- The figure is drawn from **19 UFC‑level bouts** (the “pro‑MMA” scope) and does not differentiate between opponents of varying grappling skill.  \n- It reflects career‑average performance, so recent improvements or declines are not isolated.  \n- The metric does not capture situational factors (e.g., defensive success after a striking exchange versus a direct grapple).\n\n**Source:** [ufcalendar.com – Islam Makhachev stats](https://www.ufcalendar.com) (observed 19 Nov 2026)."
+    },
+    {
+      "group": "conversation-2",
+      "question": "Compare that with Khabib.",
+      "status": 200,
+      "latency_ms": 6007,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        },
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        }
+      ],
+      "answer": "**Takedown‑defense comparison**\n\n| Fighter | UFC‑level bouts (sample) | Takedown‑defense |\n|---------|--------------------------|------------------|\n| **Islam Makhachev** | 19 | **91 %** |\n| **Khabib Nurmagomedov** | 13 | **85 %** |\n\n**What the numbers mean**\n\n- **Islam Makhachev (91 %)** – He stops 91 out of every 100 takedown attempts against him. That translates to roughly 9 successful defenses per 10 tries, making it extremely difficult for opponents to get him to the mat.  \n- **Khabib Nurmagomedov (85 %)** – Khabib defends 85 of 100 attempts, still elite but a few percentage points lower than Makhachev.\n\n**Context & limitations**\n\n- **Sample size:** Makhachev’s rate is based on 19 UFC bouts, while Khabib’s is from 13 UFC bouts. More fights can smooth out anomalies, but neither sample is exhaustive of each fighter’s entire career.  \n- **Opposition quality:** Both fighters have faced top‑tier lightweight competition, yet the specific grappling skill of each opponent varies, which can influence the raw percentage.  \n- **Career stage:** The figures are career averages; they do not show trends (e.g., whether Makhachev’s defense has improved over time).  \n- **Stat definition:** “Takedown‑defense” reflects the proportion of opponent attempts that do **not** result in a successful takedown, regardless of whether the defender simply sprawls, counters, or gets back to his feet.\n\n**Interpretation**\n\nMakhachev’s 91 % defense edges Khabib’s 85 % by a noticeable margin, suggesting Makhava’s ability to keep fights standing—or to dictate grappling exchanges from a position of control—is marginally superior on paper. Both percentages are exceptionally high, confirming that each fighter is among the most difficult opponents to takedown in the lightweight division.\n\n**Sources**\n\n- Islam Makhachev stats, including 91 % takedown defense, from ufcalendar.com (19 Nov 2026)  \n- Khabib Nurmagomedov stats, including 85 % takedown defense, from ufcalendar.com (19 Nov 2026)"
+    },
+    {
+      "group": "conversation-3",
+      "question": "Tell me about Khabib.",
+      "status": 200,
+      "latency_ms": 7342,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Khabib Nurmagomedov – Quick Profile**\n\n- **Full name:** Khabib Nurmagomedov  \n- **Nickname:** *The Eagle*  \n- **Nationality:** Russian (born in Makhachkala, Russian SFSR, Soviet Union)  \n- **Date of birth:** 20 September 1988  \n- **Height / Reach:** 70 in (5 ft 10 in) tall, 70 in reach  \n- **Weight class:** 155 lb (lightweight)  \n- **Stance:** Orthodox  \n- **Team:** American Kickboxing Academy (AKA)  \n\n**Career record (as of the latest data on 19 Nov 2026)**  \n\n| Category | Record | Source |\n|----------|--------|--------|\n| UFC (official) | 13‑0‑0 (13 wins, 0 losses) | (https://www.ufcalendar.com) |\n| Overall professional MMA | 29‑0‑0 (29 wins, 0 losses) | (https://www.ufcalendar.com) |\n\nThese numbers indicate that every fight Khabib has taken in the UFC ended in a win, and his broader professional career (including pre‑UFC bouts) is also unbeaten.\n\n**What the data tells us**\n\n- **Undefeated streak:** An unblemished 13‑0 UFC record makes him one of the few lightweights to retire (or be inactive) without a loss.  \n- **Experience depth:** The 29 total pro wins suggest a substantial non‑UFC background, though the evidence does not list dates, opponents, or methods of victory.  \n- **Physical attributes:** At 5 ft 10 in with a 70‑in reach, Khabib’s dimensions are typical for a lightweight, supporting a balanced blend of grappling and striking.\n\n**What’s missing from the supplied evidence**\n\n- **Fight details:** No information on fight dates, locations, opponents, or outcomes (e.g., KO, submission).  \n- **Performance metrics:** No strike‑per‑minute, takedown accuracy, SLpM, SApM, or defense percentages are provided, so we cannot comment on his technical efficiency.  \n- **Recent status:** The record snapshot is from 19 Nov 2026; there is no note on whether Khabib is active, retired, or injured.  \n- **Titles & achievements:** No mention of championship belts, awards, or rankings.\n\n**Interpretation**\n\nKhabib’s 13‑0 UFC record and 29‑0 overall record confirm a perfect win‑loss column, underscoring his dominance in the lightweight division historically. However, without detailed fight statistics or contextual data (opponent quality, fight outcomes), we can’t assess the quality of his performances beyond the win‑loss metric. The lack of recent activity notes means we cannot infer his current competitive status.\n\nIf you’d like deeper analysis—such as fight‑by‑fight breakdowns, grappling versus striking ratios, or comparisons to other lightweights—additional data would be needed."
+    },
+    {
+      "group": "conversation-3",
+      "question": "What was his record?",
+      "status": 400,
+      "latency_ms": 24,
+      "checks": {
+        "http": false,
+        "complete": false,
+        "noError": true,
+        "meaningful": false,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": false,
+      "sources": [],
+      "answer": ""
+    },
+    {
+      "group": "conversation-3",
+      "question": "How many submissions did he win by?",
+      "status": 400,
+      "latency_ms": 14,
+      "checks": {
+        "http": false,
+        "complete": false,
+        "noError": true,
+        "meaningful": false,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": false,
+      "sources": [],
+      "answer": ""
+    },
+    {
+      "group": "conversation-4",
+      "question": "Compare Khabib and Islam Makhachev.",
+      "status": 200,
+      "latency_ms": 7679,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        },
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Overall records**  \n- **Khabib Nurmagomedov** – 13‑0 in the UFC (13‑0‑0 pro‑MMA record of 29‑0‑0).  \n- **Islam Makhachev** – 18‑1 in the UFC (18‑1‑0 pro‑MMA record of 29‑1‑0).  \n\nBoth fighters are Russian Dagestanis who train at the American Kickboxing Academy and share the same height (70 in) and reach (70 in). Khabib fought at lightweight (155 lb) while Makhachev competes at welterweight (170 lb). Khabib fights orthodox; Makhachev is a southpaw(https://www.ufcalendar.com)(https://www.ufcalendar.com).\n\n**Striking**  \n- **Significant strikes landed per minute (SLpM)**: Khabib 4.10 vs. Makhachev 2.27. Khabib’s higher rate reflects a more volume‑oriented style.  \n- **Striking accuracy**: Makhachev 58 % beats Khabib’s 49 %, indicating Makhachev lands a greater share of his attempts.  \n- **Strikes absorbed per minute (SAPM)**: Khabib 1.75, Makhachev 1.42—Makhachev allows slightly fewer strikes.  \n- **Striking defense**: Khabib 65 % vs. Makhachev 61 %; Khabib blocks or evades a larger proportion of opponents’ attempts.\n\n**Grappling**  \n- **Takedown average**: Khabib 5.32 per fight vs. Makhachev 3.22, showing Khabib’s higher takedown volume.  \n- **Takedown accuracy**: Makhachev 55 % surpasses Khabib’s 48 %, meaning Makhachev is more efficient when he shoots.  \n- **Takedown defense**: Makhachev 91 % is markedly better than Khabib’s 85 %, highlighting superior ability to stay on his feet.  \n- **Submission average**: Makhachev 0.9 per fight, Khabib 0.8—both rely more on control than finishes.\n\n**Context & limitations**  \n- Sample sizes differ: Khabib’s UFC stats cover 13 bouts, Makhachev’s 19. A larger sample can smooth out outliers but also includes fights against a broader range of opponents.  \n- The data are snapshots from ufcalendar.com as of 19 Nov 2026; they do not guarantee completeness of recent bouts, rankings, injuries, or retirement status. No information is provided about upcoming fights or current championship standing.\n\n**Takeaway**  \nKhabib’s legacy is built on relentless pressure, high takedown volume, and impressive control, while Makhachev combines solid takedown efficiency with better striking accuracy and defensive grappling. Both exhibit elite grappling, but their statistical profiles suggest Khabib favored quantity (more strikes and takedowns per minute) and Makhachev favors efficiency (higher accuracy and defense)."
+    },
+    {
+      "group": "conversation-4",
+      "question": "Who was better at takedowns?",
+      "status": 200,
+      "latency_ms": 5368,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Islam Makhachev",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:53:45.542+00:00"
+        },
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Takedown volume** – Khabib averaged **5.32 takedowns per fight**, far more than Islam’s **3.22** (ufcalendar.com). In pure quantity, Khabib was the more aggressive shooter.\n\n**Takedown efficiency** – When a takedown was attempted, Islam succeeded **55 %** of the time, while Khabib’s accuracy was **48 %** (ufcalendar.com). So Islam was the more efficient takedowner.\n\n**Takedown defense** – Islam also stayed on his feet better, defending **91 %** of opponents’ takedown attempts versus Khabib’s **85 %** (ufcalendar.com).\n\n**What “better” means**  \n- If “better” is defined by **how many takedowns a fighter lands**, Khabib leads because he secures more per bout.  \n- If “better” is defined by **efficiency and defensive skill**, Islam has the edge, landing a higher share of his attempts and thwarting a larger share of opponents’ shots.\n\n**Caveats**  \n- The numbers come from different sample sizes (Khabib 13 UFC fights, Islam 19 UFC fights), which can affect averages.  \n- Both fighters are elite grapplers; the contrast shows Khabib’s high‑volume approach versus Islam’s higher precision and defense."
+    },
+    {
+      "group": "conversation-5",
+      "question": "Tell me about Khabib.",
+      "status": 200,
+      "latency_ms": 4743,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Khabib Nurmagomedov",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T23:54:00.19+00:00"
+        }
+      ],
+      "answer": "**Khabib Nurmagomedov – “The Eagle”**  \n\n- **Nationality:** Russian  \n- **Born:** 20 September 1988 in Makhachkala, Russian SFSR (now Dagestan)  \n- **Team:** American Kickboxing Academy (AKA)  \n- **Physical profile:** 70 in (5 ft 10 in) tall, 155 lb (lightweight division), 70‑inch reach, orthodox stance  \n\n**Career record (as of the latest 2026‑11‑19 data)**  \n- **UFC:** 13 wins – 0 losses – 0 draws (13‑0‑0)   \n- **Overall professional MMA:** 29 wins – 0 losses – 0 draws (29‑0‑0)   \n\nKhabir’s undefeated record shows he has never been defeated in either UFC competition or any professional bout. The data does not include detailed performance metrics such as significant strikes landed per minute (SLpM), takedown accuracy, submission attempts, or fight‑by‑fight results, so those aspects of his fighting style cannot be quantified here. Likewise, information on championship titles, notable opponents, injuries, or current activity status is not present in the supplied evidence.\n\nIf you need specifics about particular fights, rankings, or statistical breakdowns, let me know and I can point out which data points are missing and where you might look for them."
+    },
+    {
+      "group": "conversation-5",
+      "question": "Tell me about Jon Jones.",
+      "status": 200,
+      "latency_ms": 5549,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "**Jon “Bones” Jones – Overview (as of the 2026‑11‑19 snapshot)**  \n\n- **Full name / nickname:** Jon Jones, “Bones”  \n- **Nationality / birthplace:** United States – Rochester, New York  \n- **Date of birth:** 19 July 1987 (age 39)  \n- **Team / gym:** Jackson’s MMA Acoma (Jackson‑Winkeljohn)  \n- **Physical attributes:** 76 in (6 ft 4 in) tall, 248 lb (heavy‑weight limit), 84‑inch reach, orthodox stance  \n\n### Recorded fight totals  \n| Category | Record | Wins | Losses | Draws | No‑contests |\n|----------|--------|------|--------|-------|------------|\n| **UFC (official stats)** | 22‑1‑0 (1 NC) | 22 | 1 | 0 | 1 |\n| **Overall professional MMA** | 28‑1‑0 | 28 | 1 | 0 | 0 |\n| **Pro submission grappling** | 1‑0 | 1 | 0 | 0 | 0 |\n\nThese figures come directly from the supplied UFC‑stats and public‑record sources. The “UFC‑only” line counts only bouts contested under the UFC banner, while the “pro‑MMA” total adds his earlier fights in other promotions. The single no‑contest in the UFC record reflects a result that was later ruled null (often due to a failed drug test or an accidental foul, though the specific cause isn’t listed here).\n\n### What the numbers tell you\n- **Win‑loss ratio:** 28‑1 overall translates to a **97 % win rate** across his entire pro career.  \n- **UFC win‑rate:** 22‑1 yields a **96 % win rate** in the world’s premier promotion.  \n- **No‑contest impact:** The NC does not affect win‑percentage calculations but does appear in the official UFC record.\n\n### Information **not** present in the current evidence\n- **Detailed performance metrics** (e.g., SLpM, takedown accuracy, submission attempts).  \n- **Fight‑by‑fight breakdown** (dates, opponents, event names, titles won or defended).  \n- **Injury history, suspension details, or retirement announcements.**  \n- **Current ranking or activity status** (whether he is actively fighting, on a hiatus, or retired).  \n\nBecause those data points are missing, any analysis of his fighting style, recent form, or championship legacy would have to rely on external sources. If you need specifics such as title defenses, opponent quality, or recent news, let me know which gaps to fill and I can indicate where the missing information lies."
+    },
+    {
+      "group": "conversation-5",
+      "question": "What was his record?",
+      "status": 200,
+      "latency_ms": 4658,
+      "checks": {
+        "http": true,
+        "complete": true,
+        "noError": true,
+        "meaningful": true,
+        "noGenericRefusal": true,
+        "suppliedCitations": true,
+        "noFalseRetirement": true
+      },
+      "automatedPass": true,
+      "sources": [
+        {
+          "title": "Jon Jones",
+          "url": "https://www.ufcalendar.com",
+          "updated_at": "2026-11-19T11:58:15.242+00:00"
+        }
+      ],
+      "answer": "Jon Jones’ official fight record (according to the 2026‑11‑19 data) is:\n\n| Scope | Record | Wins | Losses | Draws | No‑contests |\n|-------|--------|------|--------|-------|------------|\n| **UFC (official stats)** | **22‑1‑0 (1 NC)** | 22 | 1 | 0 | 1 |\n| **Overall professional MMA** | **28‑1‑0** | 28 | 1 | 0 | 0 |\n| **Pro submission grappling** | 1‑0 | 1 | 0 | 0 | 0 |\n\n*The UFC‑only record comes from UFC‑Stats, while the overall pro‑MMA total is from public‑record sources.*"
+    }
+  ]
+}

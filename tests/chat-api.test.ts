@@ -45,6 +45,18 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 describe('chat HTTP boundary and NDJSON streaming', () => {
+  it('accepts longer assistant history while retaining the user-message bound', async () => {
+    const response = await POST(
+      request({
+        messages: [{ role: 'assistant', content: 'A'.repeat(5000) }, ...conversation.messages],
+      }),
+    );
+    expect(response.status).toBe(200);
+    await response.text();
+    expect(
+      (await POST(request({ messages: [{ role: 'user', content: 'A'.repeat(2501) }] }))).status,
+    ).toBe(400);
+  });
   it('preserves sources, text deltas and done ordering', async () => {
     const response = await POST(request(conversation));
     expect(response.headers.get('content-type')).toBe('application/x-ndjson');
@@ -52,7 +64,7 @@ describe('chat HTTP boundary and NDJSON streaming', () => {
       .trim()
       .split('\n')
       .map((s) => JSON.parse(s));
-    expect(frames.map((f) => f.type)).toEqual(['sources', 'text', 'text', 'done']);
+    expect(frames.map((f) => f.type)).toEqual(['sources', 'text', 'done']);
     expect(
       frames
         .filter((f) => f.type === 'text')

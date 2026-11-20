@@ -31,6 +31,7 @@ const schema = z.object({
     .min(1)
     .max(3),
   subject: z.string().max(80).nullable(),
+  subjects: z.array(z.string().min(2).max(80)).max(3).default([]),
   ambiguous: z.boolean(),
 });
 export async function queryPlan(
@@ -45,6 +46,7 @@ export async function queryPlan(
     c.CHAT_MODEL_UNDERSTANDING_ENABLED !== 'true' ||
     plan.ambiguous ||
     isGeneralStatisticsQuestion(query) ||
+    plan.educational ||
     // The latest user-specified fighter inherits the earlier statistics intent.
     // Do not let a second model call lose that conversation context.
     (plan.intent === 'fight_statistics' && plan.contextual && !!plan.subject) ||
@@ -52,7 +54,8 @@ export async function queryPlan(
     // A clear identity + record request has a deterministic structured-data path.
     // Do not spend a model call merely to restate the user's intent.
     (plan.intent === 'fighter_history' &&
-      /\brecords?\s+(?:of|for)\b/i.test(query) && !!plan.subject) ||
+      /\brecords?\s+(?:of|for)\b/i.test(query) &&
+      !!plan.subject) ||
     (!plan.subject &&
       !plan.contextual &&
       ![
@@ -71,7 +74,7 @@ export async function queryPlan(
     query,
     history: history.slice(-4),
     instruction:
-      'Extract a UFC query plan. subject is ONLY a fighter name or nickname mentioned by the user, retaining spelling. Never answer facts or invent identities. Resolve pronouns only from conversation. Latest UFC event means completed_event. Unrelated requests are out_of_scope. Use ambiguous=true for unclear references.',
+      'Extract a UFC query plan. subject and subjects contain ONLY fighter names or nicknames from the user or relevant conversation, retaining spelling. For comparisons retain BOTH the previous subject and newly named participant. Never answer facts or invent identities. Resolve pronouns only from conversation. Latest UFC event means completed_event. Educational definitions are rules. Unrelated requests are out_of_scope. Use ambiguous=true for unclear references.',
   });
   try {
     if (!(await reserveAI(Buffer.byteLength(prompt, 'utf8'), 1))) return plan;
@@ -103,7 +106,19 @@ export async function queryPlan(
       intent: output.intents[0],
       intents: output.intents,
       subject: output.subject || plan.subject,
-      ambiguous: output.ambiguous,
+      subjects: [
+        ...new Set([
+          ...(plan.contextual && output.intents.includes('fighter_comparison')
+            ? plan.subjects
+            : []),
+          ...(output.subjects.length
+            ? output.subjects
+            : output.subject
+              ? [output.subject]
+              : plan.subjects),
+        ]),
+      ].slice(0, 3),
+      ambiguous: output.ambiguous || plan.ambiguous,
     };
   } catch {
     await db(true)

@@ -3,6 +3,9 @@ import { UFCalendar, ProviderError } from './ufcalendar';
 import { db, checked } from './db';
 import { consume } from './security';
 import { retrievalConfig } from './retrieval-config';
+import { cachedProvider } from './provider-cache';
+import { saveFighter } from './ingestion';
+import { fighterSchema } from './schemas';
 
 // One shared account bucket and quota block across ingestion and request-time retrieval.
 export function liveProvider(signal: AbortSignal) {
@@ -17,8 +20,8 @@ export function liveProvider(signal: AbortSignal) {
       UFCALENDAR_ACTIVE_KEY: '1',
     },
     async () => {
-      signal.throwIfAborted();
-      if (!client || attempts >= 3) throw new Error('Retrieval request budget unavailable');
+      if (!client || attempts >= retrievalConfig().CHAT_PROVIDER_REQUEST_LIMIT)
+        throw new Error('Retrieval request budget unavailable');
       const now = new Date(),
         month = now.toISOString().slice(0, 7);
       const expiry = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
@@ -29,11 +32,18 @@ export function liveProvider(signal: AbortSignal) {
         .maybeSingle();
       if (block.error || (block.data && Date.parse(block.data.expires_at) > Date.now()))
         throw new Error('Provider quota blocked');
+      const rateBlock = await client
+        .from('query_cache')
+        .select('expires_at')
+        .eq('key', 'ufcalendar:rate-block')
+        .maybeSingle();
+      if (rateBlock.error || (rateBlock.data && Date.parse(rateBlock.data.expires_at) > Date.now()))
+        throw new ProviderError(429, 'rate_limited');
       const ceiling = z.coerce
         .number()
         .int()
         .min(1)
-        .max(80)
+        .max(100000)
         .parse(process.env.UFCALENDAR_MONTHLY_LOCAL_LIMIT || 80);
       if (
         !(await consume(
@@ -59,9 +69,38 @@ export function liveProvider(signal: AbortSignal) {
   );
   return async <T>(path: string, schema: z.ZodType<T>): Promise<T> => {
     try {
-      return await provider.request(path, schema, signal);
+      return await cachedProvider(
+        path,
+        schema,
+        async () => {
+          const result = await provider.request(path, schema, AbortSignal.timeout(20000));
+          if (
+            /^\/fighters\/[^/?]+$/.test(path) &&
+            result &&
+            typeof result === 'object' &&
+            'data' in result
+          ) {
+            const fighter = fighterSchema.safeParse(result.data);
+            if (fighter.success)
+              await saveFighter(fighter.data, `https://api.ufcalendar.com/v1${path}`).catch(
+                () => undefined,
+              );
+          }
+          return result;
+        },
+        signal,
+      );
     } catch (error) {
-      if (client && error instanceof ProviderError && error.status === 429) {
+      if (client && error instanceof ProviderError && error.code === 'rate_limited') {
+        await client
+          .from('query_cache')
+          .upsert({
+            key: 'ufcalendar:rate-block',
+            response: { reason: 'rate_limited' },
+            expires_at: new Date(Date.now() + (error.retryAfterSeconds || 60) * 1000).toISOString(),
+          });
+      }
+      if (client && error instanceof ProviderError && error.code === 'quota_exceeded') {
         const now = new Date();
         await checked(
           client

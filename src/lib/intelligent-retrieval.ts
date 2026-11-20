@@ -1,13 +1,16 @@
 import { z } from 'zod';
 import { isGeneralStatisticsQuestion, statisticsGuide } from './statistics-guide';
+import { retrieveKnowledge } from './knowledge-retrieval';
+import { localKnowledge } from './knowledge';
+import { synthesisEvidence } from './chat-strategy';
+import { resolveFighterEvidence } from './fighter-resolution';
 import { db, checked } from './db';
 import { fighters, events, news, rankings } from './data';
-import { understand, candidates } from './understanding';
+import { understand } from './understanding';
 import { retrievalConfig } from './retrieval-config';
 import { liveProvider, webSearch } from './live-retrieval';
 import {
   fighterSchema,
-  identitySchema,
   eventSchema,
   rankingSchema,
   historySchema,
@@ -78,13 +81,17 @@ export async function intelligentRetrieve(
   preparedPlan?: ReturnType<typeof understand<Fighter>>,
 ): Promise<Evidence> {
   const plan = preparedPlan || understand(query, history, items);
-  if (isGeneralStatisticsQuestion(query))
+  if (isGeneralStatisticsQuestion(query) || plan.educational) {
+    const docs = await retrieveKnowledge(query, signal);
     return {
-      text: '',
-      citations: [],
-      deterministic: statisticsGuide,
+      text: synthesisEvidence(docs.map((d) => JSON.stringify(d)).join('\n'), true),
+      citations: docs.map((d) => ({ title: d.title, url: d.source_url, updated_at: d.updated_at })),
+      deterministic: isGeneralStatisticsQuestion(query)
+        ? statisticsGuide
+        : localKnowledge(query)[0]?.body || docs[0]?.content,
       cacheTtlMs: 86400000,
     };
+  }
   if (plan.ambiguous)
     return {
       text: '',
@@ -125,98 +132,19 @@ export async function intelligentRetrieve(
   };
   const provider = liveProvider(signal);
   const live = retrievalConfig().CHAT_LIVE_RETRIEVAL_ENABLED === 'true';
-  if (/\bcompare|comparison\b/i.test(query) && selected.length === 1) {
-    const pair = query.match(
-      /compare\s+(.+?)\s+(?:and|versus|vs\.?)\s+(.+?)(?:\s+(?:records?|stats|statistics)\b.*|[?.]|$)/i,
-    );
-    const other = pair
-      ?.slice(1)
-      .find((name) => !candidates(name, selected).length)
-      ?.trim();
-    if (other && live) {
-      try {
-        const list = await provider(
-          `/fighters?org=ufc&q=${encodeURIComponent(other)}&limit=10`,
-          envelope(z.array(identitySchema)),
-        );
-        const found = candidates(other, list.data);
-        if (found.length === 1) {
-          const detail = await provider(
-            `/fighters/${found[0].fighter.id}`,
-            envelope(fighterSchema),
-          );
-          if (detail.data.id !== found[0].fighter.id) throw new Error('Identity mismatch');
-          selected = [
-            ...selected,
-            {
-              ...detail.data,
-              source_url: 'https://www.ufcalendar.com',
-              updated_at: new Date().toISOString(),
-            },
-          ];
-        }
-      } catch {
-        uncertain = true;
-      }
-    }
-    if (selected.length === 1)
-      return {
-        text: '',
-        citations: [],
-        deterministic: `I identified ${selected[0].name}, but couldn’t verify ${other || 'the other fighter'} from the available sources. Please confirm the other fighter’s spelling or share an event.`,
-        cacheTtlMs: 0,
-      };
-  }
-  if (
-    live &&
-    (!selected.length ||
-      selected.some(
-        (f) =>
-          !fresh(f.updated_at, ttl(plan.intent)) ||
-          (plan.intents.includes('fighter_history') && !Object.keys(f.records || {}).length) ||
-          (plan.intents.includes('fight_statistics') && !f.stats),
-      )) &&
-    (plan.subject || selected.length)
-  ) {
-    try {
-      if (!selected.length && plan.subject) {
-        const result = await provider(
-          `/fighters?org=ufc&q=${encodeURIComponent(plan.subject)}&limit=10`,
-          envelope(z.array(identitySchema)),
-        );
-        const found = candidates(plan.subject, result.data);
-        if (found.length === 1)
-          selected = [
-            {
-              ...found[0].fighter,
-              source_url: 'https://www.ufcalendar.com',
-              updated_at: new Date().toISOString(),
-            },
-          ];
-        else if (found.length > 1)
-          return {
-            text: '',
-            citations: [],
-            deterministic: `Which fighter do you mean: ${found.map((f) => f.fighter.name).join(', ')}?`,
-            cacheTtlMs: 0,
-          };
-      }
-      const refreshed: Fighter[] = [];
-      for (const f of selected.slice(0, 2)) {
-        const result = await provider(`/fighters/${f.id}`, envelope(fighterSchema));
-        if (result.data.id !== f.id) throw new Error('Identity mismatch');
-        refreshed.push({
-          ...result.data,
-          source_url: 'https://www.ufcalendar.com',
-          updated_at: new Date().toISOString(),
-        });
-      }
-      if (refreshed.length) selected = refreshed;
-    } catch {
-      uncertain = true;
-      missing.push('Fighter refresh unavailable; retained records are dated snapshots.');
-    }
-  }
+  const resolution = await resolveFighterEvidence(plan, live, provider);
+  selected = resolution.selected;
+  missing.push(...resolution.missing);
+  uncertain = resolution.missing.length > 0;
+  if (resolution.clarification)
+    return { text: '', citations: [], deterministic: resolution.clarification, cacheTtlMs: 0 };
+  if (plan.intent === 'fighter_comparison' && selected.length < 2)
+    return {
+      text: '',
+      citations: [],
+      cacheTtlMs: 0,
+      deterministic: `I ${selected[0] ? `identified ${selected[0].name}, but could not verify the other fighter` : 'could not verify both comparison participants'}. Please confirm the names or share the event.`,
+    };
   selected = selected
     .filter(
       (f) =>
@@ -240,7 +168,13 @@ export async function intelligentRetrieve(
   for (const f of selected)
     add(
       f.name,
-      { ...f, stats: plan.intents.includes('fight_statistics') ? f.stats : undefined },
+      {
+        ...f,
+        stats:
+          plan.intents.includes('fight_statistics') || plan.intent === 'fighter_comparison'
+            ? f.stats
+            : undefined,
+      },
       f.source_url,
       f.updated_at,
       'supabase-or-validated-provider',
@@ -277,10 +211,12 @@ export async function intelligentRetrieve(
       ['td_def', 'Takedown defense'],
       ['sub_avg', 'Submission attempts per 15 minutes'],
     ];
-    const known = stats ? labels.flatMap(([key, title]) => {
-      const value = stats[key];
-      return typeof value === 'string' && value.trim() ? [`- **${title}:** ${value}`] : [];
-    }) : [];
+    const known = stats
+      ? labels.flatMap(([key, title]) => {
+          const value = stats[key];
+          return typeof value === 'string' && value.trim() ? [`- **${title}:** ${value}`] : [];
+        })
+      : [];
     if (known.length)
       return {
         text: pieces.join('\n'),
@@ -490,7 +426,7 @@ export async function intelligentRetrieve(
           list = result.data.map((e) => ({
             ...e,
             source_url: 'https://www.ufcalendar.com',
-            updated_at: new Date().toISOString(),
+            updated_at: result.meta?.fetched_at || new Date().toISOString(),
           }));
           if (list[0] && intent !== 'upcoming_event') {
             const detail = await provider(`/events/${list[0].id}`, envelope(eventSchema));
@@ -540,7 +476,7 @@ export async function intelligentRetrieve(
           r = {
             ...result.data,
             source_url: 'https://www.ufcalendar.com',
-            updated_at: new Date().toISOString(),
+            updated_at: result.meta?.fetched_at || new Date().toISOString(),
           };
         }
         if (r)
@@ -569,36 +505,12 @@ export async function intelligentRetrieve(
     }
   }
   if (['rules', 'historical_context'].includes(plan.intent) || !pieces.length) {
-    try {
-      const client = db();
-      if (client) {
-        const result = await client
-          .rpc('search_knowledge', { query_text: plan.query.slice(0, 2500) })
-          .abortSignal(signal);
-        if (result.error) throw new Error('Knowledge unavailable');
-        for (const r of (result.data || []).slice(0, 6)) {
-          const row = z
-            .object({
-              content: z.string().max(8000),
-              title: z.string(),
-              source_url: z.url(),
-              updated_at: z.string(),
-            })
-            .safeParse(r);
-          if (row.success)
-            add(
-              row.data.title,
-              row.data.content,
-              row.data.source_url,
-              row.data.updated_at,
-              'knowledge-snapshot',
-            );
-        }
-      }
-    } catch {
-      uncertain = true;
-      missing.push('Knowledge search unavailable.');
-    }
+    for (const row of await retrieveKnowledge(
+      plan.query,
+      signal,
+      ['rules', 'historical_context'].includes(plan.intent),
+    ))
+      add(row.title, row.content, row.source_url, row.updated_at, 'knowledge-snapshot');
   }
   if (!pieces.length || missing.length) {
     try {
@@ -631,7 +543,7 @@ export async function intelligentRetrieve(
       cacheTtlMs: 0,
     };
   return {
-    text: `${pieces.join('\n').slice(0, 18000)}\nLIMITATIONS: ${missing.join(' ')}\nNever resolve conflicting facts by guessing. Use source dates; snapshots do not prove current completeness. Cached events and bouts establish only the latest in the available records, not global completeness.`,
+    text: `${pieces.join('\n').slice(0, 18000)}\nMETRIC CONVENTIONS: SLpM and SApM are per minute; TD Avg and Sub Avg are per 15 minutes. Accuracy and defense are percentages out of 100, not rates per fight.\nLIMITATIONS: ${missing.join(' ')}\nNever resolve conflicting facts by guessing. Use source dates; snapshots do not prove current completeness. Cached events and bouts establish only the latest in the available records, not global completeness.`,
     citations: Array.from(new Map(citations.map((c) => [c.url + c.title, c])).values()).slice(
       0,
       12,
