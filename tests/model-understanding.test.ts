@@ -33,19 +33,25 @@ describe('bounded Groq query planning', () => {
   it('preserves deterministic routing when the model fails or emits invalid fields', async () => {
     vi.mocked(generateText).mockRejectedValueOnce(new Error('private provider failure'));
     expect(
-      (await queryPlan('Who is Unknown Fixture?', [], [], new AbortController().signal)).intent,
+      (await queryPlan('Unknown Fixture', [], [], new AbortController().signal)).intent,
     ).toBe('unknown');
     vi.mocked(generateText).mockResolvedValue({
       output: { intents: ['arbitrary_tool'], subject: null, ambiguous: false },
       usage: {},
     } as never);
     expect(
-      (await queryPlan('Who is Unknown Fixture?', [], [], new AbortController().signal)).intent,
+      (await queryPlan('Unknown Fixture', [], [], new AbortController().signal)).intent,
     ).toBe('unknown');
+  });
+  it('preserves named profile requests without an unnecessary model plan', async () => {
+    const p = await queryPlan('Tell me everything about Ilia Tuporia', [], [], new AbortController().signal);
+    expect(p.intent).toBe('fighter_profile');
+    expect(p.subject).toBe('Ilia Tuporia');
+    expect(generateText).not.toHaveBeenCalled();
   });
   it('does not call the model when the budget is unavailable', async () => {
     vi.mocked(reserveAI).mockResolvedValue(false);
-    await queryPlan('Who is Unknown Fixture?', [], [], new AbortController().signal);
+    await queryPlan('Unknown Fixture', [], [], new AbortController().signal);
     expect(generateText).not.toHaveBeenCalled();
   });
 });
