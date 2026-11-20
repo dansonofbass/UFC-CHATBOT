@@ -53,6 +53,9 @@ export async function queryPlan(
     // Do not let a second model call lose that conversation context.
     (plan.intent === 'fight_statistics' && plan.contextual && !!plan.subject) ||
     plan.fighters.length ||
+    // A named profile introduction must reach provider-backed identity resolution.
+    // Do not let a planner recategorize an unimported fighter as out of scope.
+    (plan.intent === 'fighter_profile' && !!plan.subject) ||
     // A clear identity + record request has a deterministic structured-data path.
     // Do not spend a model call merely to restate the user's intent.
     (plan.intent === 'fighter_history' &&
