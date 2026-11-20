@@ -2,39 +2,41 @@ import { streamText, APICallError, type ModelMessage } from 'ai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { env } from './env';
 import { db } from './db';
+import {
+  resolveAI,
+  defaultProviderSettings,
+  resolvedProviders,
+  type ResolvedAI,
+} from './provider-settings';
 export function providers() {
-  const e = env();
-  const list: { name: string; key: string; model: string; url: string }[] = [];
-  if (e.GROQ_API_KEY)
-    list.push({
-      name: 'groq',
-      key: e.GROQ_API_KEY,
-      model: e.GROQ_MODEL,
-      url: 'https://api.groq.com/openai/v1',
-    });
-  if (e.ALLOW_OPENROUTER_FALLBACK === 'true' && e.OPENROUTER_API_KEY) {
-    if (e.OPENROUTER_MODEL !== 'openrouter/free' && !e.OPENROUTER_MODEL.endsWith(':free'))
-      throw new Error('Only free OpenRouter models allowed');
-    list.push({
-      name: 'openrouter',
-      key: e.OPENROUTER_API_KEY,
-      model: e.OPENROUTER_MODEL,
-      url: 'https://openrouter.ai/api/v1',
-    });
-  }
-  return list;
+  return resolveAI(defaultProviderSettings());
 }
+export { resolvedProviders } from './provider-settings';
 export function fallbackAllowed(error: unknown) {
   return APICallError.isInstance(error)
     ? [408, 429, 500, 502, 503, 504].includes(error.statusCode || 0)
     : error instanceof TypeError ||
         (error instanceof DOMException && error.name === 'TimeoutError');
 }
-export async function* answer(messages: ModelMessage[], evidence: string, signal: AbortSignal) {
-  const list = providers();
+export async function* answer(
+  messages: ModelMessage[],
+  evidence: string,
+  signal: AbortSignal,
+  selected?: ResolvedAI[],
+) {
+  const list = selected || (await resolvedProviders());
   if (!list.length) throw new Error('AI provider is not configured');
   for (let i = 0; i < list.length; i++) {
     const p = list[i];
+    console.info(
+      JSON.stringify({
+        component: 'ai-provider',
+        provider: p.name,
+        slot: p.slot,
+        model: p.model,
+        fallback: i > 0,
+      }),
+    );
     let emitted = false;
     try {
       const model = createOpenAICompatible({

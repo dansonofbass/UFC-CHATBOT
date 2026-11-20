@@ -1,6 +1,6 @@
 import { isAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
-import { AdminCredentials } from '@/components/admin-credentials';
+import { AdminProviderSettings } from '@/components/admin-provider-settings';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Admin console', robots: { index: false, follow: false } };
 export default async function Admin({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
@@ -36,13 +36,13 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     </div>
     <div className="status-grid">
       <div className="panel status-card"><strong>Supabase</strong><span>{client ? 'Configured' : 'Not configured'}</span></div>
-      <div className="panel status-card"><strong>Groq</strong><span>{process.env.GROQ_API_KEY ? 'Configured' : 'Missing'}</span></div>
-      <div className="panel status-card"><strong>OpenRouter</strong><span>{process.env.OPENROUTER_API_KEY ? 'Configured' : 'Missing'}</span></div>
+      <div className="panel status-card"><strong>Groq</strong><span>{(process.env.GROQ_API_KEY || process.env.GROQ_API_KEY_2) ? 'Configured' : 'Missing'}</span></div>
+      <div className="panel status-card"><strong>OpenRouter</strong><span>{(process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY_2) ? 'Configured' : 'Missing'}</span></div>
       <div className="panel status-card"><strong>UFCalendar</strong><span>{slots.length} credential slots configured</span></div>
       <div className="panel status-card"><strong>Fighters</strong><span>{fighterCount ?? 'Unknown'} records</span></div>
       <div className="panel status-card"><strong>Events</strong><span>{eventCount ?? 'Unknown'} records</span></div>
     </div>
-    <AdminCredentials slots={slots} />
+    <AdminProviderSettings />
     <section className="panel" style={{ padding: 24, marginTop: 24 }}>
       <h2>Recent synchronization jobs</h2>
       <div style={{ overflowX: 'auto' }}><table className="data-table"><thead><tr><th>Job</th><th>Status</th><th>Requests</th><th>Finished</th></tr></thead><tbody>

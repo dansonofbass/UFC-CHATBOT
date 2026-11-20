@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { answer, providers } from '@/lib/ai';
+import { answer, resolvedProviders } from '@/lib/ai';
 import { clientLimit, reserveAI } from '@/lib/security';
 import { prepareChat, chatDiagnostic } from '@/lib/chat-orchestration';
 import { groundedCitations } from '@/lib/citation-guard';
@@ -66,11 +66,17 @@ export async function POST(request: Request) {
         }),
         { headers: { 'Content-Type': 'application/x-ndjson' } },
       );
-    let generate = !!evidence.text && providers().length > 0;
+    const selectedProviders = evidence.text
+      ? await resolvedProviders().catch(() => {
+          chatDiagnostic(requestId, 'provider_resolution', { status: 'unavailable' });
+          return [];
+        })
+      : [];
+    let generate = !!evidence.text && selectedProviders.length > 0;
     if (generate) {
       const reserved = await reserveAI(
         Buffer.byteLength(evidence.text + JSON.stringify(messages), 'utf8'),
-        (providers().length || 1) * 2,
+        (selectedProviders.length || 1) * 2,
       ).catch(() => false);
       if (!reserved) {
         if (evidence.deterministic) generate = false;
@@ -93,7 +99,7 @@ export async function POST(request: Request) {
             controller.enqueue(record({ type: 'text', text: evidence.deterministic }));
           else
             for await (const text of groundedCitations(
-              answer(messages, evidence.text, signal),
+              answer(messages, evidence.text, signal, selectedProviders),
               evidence.citations.map((c) => c.url),
               evidence.text.includes('ANSWER_MODE: educational') ? undefined : evidence.text,
             )) {

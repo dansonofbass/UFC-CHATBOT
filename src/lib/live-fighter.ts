@@ -1,8 +1,9 @@
+import { selectedDataProvider } from './provider-settings';
 import { z } from 'zod';
 import { db } from './db';
 import { consume } from './security';
 import { saveFighter } from './ingestion';
-import { UFCalendar, ProviderError } from './ufcalendar';
+import { ProviderError } from './ufcalendar';
 import { envelope, fighterSchema, identitySchema, type Fighter } from './schemas';
 
 // Misspellings that should resolve to a canonical fighter, not fabricated answers.
@@ -13,40 +14,55 @@ const aliases: Record<string, string> = {
 };
 function requestedName(query: string): string | undefined {
   const q = query.toLowerCase();
-  for (const [alias, slug] of Object.entries(aliases))
-    if (q.includes(alias)) return slug;
+  for (const [alias, slug] of Object.entries(aliases)) if (q.includes(alias)) return slug;
   // Restrict public live lookups to questions naming a UFC fighter.
-  const explicit = q.match(/(?:who is|tell me about|record(?:s)? of|profile of|about)\s+([a-z]+(?:\s+[a-z]+){1,2})/i);
+  const explicit = q.match(
+    /(?:who is|tell me about|record(?:s)? of|profile of|about)\s+([a-z]+(?:\s+[a-z]+){1,2})/i,
+  );
   if (!explicit) return undefined;
   return explicit[1].replace(/\s+/g, ' ').trim().split(' ').slice(0, 2).join(' ');
 }
 export async function liveFighter(query: string): Promise<Fighter | null> {
   const requested = requestedName(query);
   const client = db(true);
-  if (!requested || !client || !process.env.UFCALENDAR_API_KEY_1) return null;
+  if (
+    !requested ||
+    !client ||
+    ![1, 2, 3].some((slot) => !!process.env[`UFCALENDAR_API_KEY_${slot}`])
+  )
+    return null;
 
   const cacheKey = `ufcalendar:fighter-lookup:${requested.replace(/[^a-z0-9-]/g, '-')}`;
-  const { data: prior, error: cacheError } = await client.from('query_cache')
-    .select('expires_at').eq('key', cacheKey).maybeSingle();
+  const { data: prior, error: cacheError } = await client
+    .from('query_cache')
+    .select('expires_at')
+    .eq('key', cacheKey)
+    .maybeSingle();
   if (cacheError || (prior && Date.parse(prior.expires_at) > Date.now())) return null;
-  const blocked = await client.from('query_cache').select('expires_at')
-    .eq('key', 'ufcalendar:quota-block').maybeSingle();
-  if (blocked.error || (blocked.data && Date.parse(blocked.data.expires_at) > Date.now())) return null;
+  const blocked = await client
+    .from('query_cache')
+    .select('expires_at')
+    .eq('key', 'ufcalendar:quota-block')
+    .maybeSingle();
+  if (blocked.error || (blocked.data && Date.parse(blocked.data.expires_at) > Date.now()))
+    return null;
 
   const now = new Date();
   const reset = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
   const limit = Math.min(80, Math.max(1, Number(process.env.UFCALENDAR_MONTHLY_LOCAL_LIMIT || 80)));
   const monthlyBucket = `ufcalendar:${process.env.UFCALENDAR_ACCOUNT_ID || 'primary'}:${now.toISOString().slice(0, 7)}`;
   // One attempted resolution per slug per 10 minutes across all Vercel functions.
-  if (!(await consume(`ufcalendar:fighter-gate:${requested}`, 1, 1,
-    new Date(Date.now() + 10 * 60 * 1000)))) return null;
+  if (
+    !(await consume(
+      `ufcalendar:fighter-gate:${requested}`,
+      1,
+      1,
+      new Date(Date.now() + 10 * 60 * 1000),
+    ))
+  )
+    return null;
 
-  const provider = new UFCalendar(fetch, {
-    ...process.env,
-    UFCALENDAR_API_KEY_2: undefined,
-    UFCALENDAR_API_KEY_3: undefined,
-    UFCALENDAR_ACTIVE_KEY: '1',
-  }, async () => {
+  const provider = await selectedDataProvider(async () => {
     if (!(await consume(monthlyBucket, 1, limit, reset)))
       throw new Error('UFC monthly request budget exhausted');
   });

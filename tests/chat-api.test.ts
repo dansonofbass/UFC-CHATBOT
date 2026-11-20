@@ -17,7 +17,11 @@ vi.mock('../src/lib/security', async (original) => ({
   clientLimit: vi.fn(),
   reserveAI: vi.fn(),
 }));
-vi.mock('../src/lib/ai', () => ({ answer: vi.fn(), providers: () => [{ name: 'groq' }] }));
+vi.mock('../src/lib/ai', () => ({
+  answer: vi.fn(),
+  providers: () => [{ name: 'groq' }],
+  resolvedProviders: async () => [{ name: 'groq' }],
+}));
 const request = (body: unknown) =>
   new Request('https://fixture.test/api/chat', { method: 'POST', body: JSON.stringify(body) });
 const conversation = {

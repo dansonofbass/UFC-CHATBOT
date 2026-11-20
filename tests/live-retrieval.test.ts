@@ -1,3 +1,7 @@
+vi.mock('../src/lib/provider-settings', async (original) => {
+  const actual = await original<typeof import('../src/lib/provider-settings')>();
+  return { ...actual, loadProviderSettings: async () => actual.defaultProviderSettings() };
+});
 import { clearProviderCache } from '../src/lib/provider-cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
@@ -8,7 +12,10 @@ const state = vi.hoisted(() => ({
   error: null as null | object,
   writes: vi.fn(),
 }));
-vi.mock('../src/lib/security', () => ({ consume: vi.fn().mockResolvedValue(true), internalBudgetScope: () => 'development:' }));
+vi.mock('../src/lib/security', () => ({
+  consume: vi.fn().mockResolvedValue(true),
+  internalBudgetScope: () => 'development:',
+}));
 vi.mock('../src/lib/db', () => ({
   db: () => ({
     from: () => ({
@@ -51,7 +58,7 @@ afterEach(() => {
 describe('live adapters with mocked network and persistent quota controls', () => {
   it('caps each retrieval to three attempted provider calls', async () => {
     const get = liveProvider(signal());
-    for (let i = 0; i < 3; i++) await get(`/events?limit=${i+1}`, schema);
+    for (let i = 0; i < 3; i++) await get(`/events?limit=${i + 1}`, schema);
     await expect(get('/events', schema)).rejects.toThrow('budget');
     expect(fetcher).toHaveBeenCalledTimes(3);
     expect(consume).toHaveBeenCalledWith(

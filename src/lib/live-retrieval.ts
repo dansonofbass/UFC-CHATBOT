@@ -6,74 +6,82 @@ import { retrievalConfig } from './retrieval-config';
 import { cachedProvider } from './provider-cache';
 import { saveFighter } from './ingestion';
 import { fighterSchema } from './schemas';
+import { loadProviderSettings, dataKey } from './provider-settings';
 
 // One shared account bucket and quota block across ingestion and request-time retrieval.
 export function liveProvider(signal: AbortSignal) {
   let attempts = 0;
   const client = db(true);
-  const provider = new UFCalendar(
-    fetch,
-    {
-      ...process.env,
-      UFCALENDAR_API_KEY_2: undefined,
-      UFCALENDAR_API_KEY_3: undefined,
-      UFCALENDAR_ACTIVE_KEY: '1',
-    },
-    async () => {
-      if (!client || attempts >= retrievalConfig().CHAT_PROVIDER_REQUEST_LIMIT)
-        throw new Error('Retrieval request budget unavailable');
-      const now = new Date(),
-        month = now.toISOString().slice(0, 7);
-      const expiry = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
-      const block = await client
-        .from('query_cache')
-        .select('expires_at')
-        .eq('key', 'ufcalendar:quota-block')
-        .maybeSingle();
-      if (block.error || (block.data && Date.parse(block.data.expires_at) > Date.now()))
-        throw new Error('Provider quota blocked');
-      const rateBlock = await client
-        .from('query_cache')
-        .select('expires_at')
-        .eq('key', 'ufcalendar:rate-block')
-        .maybeSingle();
-      if (rateBlock.error || (rateBlock.data && Date.parse(rateBlock.data.expires_at) > Date.now()))
-        throw new ProviderError(429, 'rate_limited');
-      const ceiling = z.coerce
-        .number()
-        .int()
-        .min(1)
-        .max(100000)
-        .parse(process.env.UFCALENDAR_MONTHLY_LOCAL_LIMIT || 80);
-      if (
-        !(await consume(
-          `ufcalendar:${process.env.UFCALENDAR_ACCOUNT_ID || 'primary'}:${month}`,
-          1,
-          ceiling,
-          expiry,
-        ))
-      )
-        throw new Error('Provider monthly limit');
-      const day = now.toISOString().slice(0, 10);
-      if (
-        !(await consume(
-          `chat:retrieval:${internalBudgetScope()}${day}`,
-          1,
-          retrievalConfig().CHAT_RETRIEVAL_DAILY_LIMIT,
-          new Date(`${day}T23:59:59.999Z`),
-        ))
-      )
-        throw new Error('Retrieval daily limit');
-      attempts++;
-    },
-  );
+  let provider: UFCalendar | undefined;
+  const reserve = async () => {
+    if (!client || attempts >= retrievalConfig().CHAT_PROVIDER_REQUEST_LIMIT)
+      throw new Error('Retrieval request budget unavailable');
+    const now = new Date(),
+      month = now.toISOString().slice(0, 7);
+    const expiry = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+    const block = await client
+      .from('query_cache')
+      .select('expires_at')
+      .eq('key', 'ufcalendar:quota-block')
+      .maybeSingle();
+    if (block.error || (block.data && Date.parse(block.data.expires_at) > Date.now()))
+      throw new Error('Provider quota blocked');
+    const rateBlock = await client
+      .from('query_cache')
+      .select('expires_at')
+      .eq('key', 'ufcalendar:rate-block')
+      .maybeSingle();
+    if (rateBlock.error || (rateBlock.data && Date.parse(rateBlock.data.expires_at) > Date.now()))
+      throw new ProviderError(429, 'rate_limited');
+    const ceiling = z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(100000)
+      .parse(process.env.UFCALENDAR_MONTHLY_LOCAL_LIMIT || 80);
+    if (
+      !(await consume(
+        `ufcalendar:${process.env.UFCALENDAR_ACCOUNT_ID || 'primary'}:${month}`,
+        1,
+        ceiling,
+        expiry,
+      ))
+    )
+      throw new Error('Provider monthly limit');
+    const day = now.toISOString().slice(0, 10);
+    if (
+      !(await consume(
+        `chat:retrieval:${internalBudgetScope()}${day}`,
+        1,
+        retrievalConfig().CHAT_RETRIEVAL_DAILY_LIMIT,
+        new Date(`${day}T23:59:59.999Z`),
+      ))
+    )
+      throw new Error('Retrieval daily limit');
+    attempts++;
+  };
+  const selectedProvider = async () => {
+    if (!provider) {
+      const settings = await loadProviderSettings();
+      const slot = settings.data.slot;
+      if (!dataKey(slot)) throw new Error('Selected UFCalendar slot is not configured');
+      provider = new UFCalendar(
+        fetch,
+        { [`UFCALENDAR_API_KEY_${slot}`]: dataKey(slot), UFCALENDAR_ACTIVE_KEY: String(slot) },
+        reserve,
+      );
+    }
+    return provider;
+  };
   return async <T>(path: string, schema: z.ZodType<T>): Promise<T> => {
     try {
       return await cachedProvider(
         path,
         schema,
         async () => {
-          const result = await provider.request(path, schema, AbortSignal.timeout(20000));
+          const result = await (
+            await selectedProvider()
+          ).request(path, schema, AbortSignal.timeout(20000));
           if (
             /^\/fighters\/[^/?]+(?:\?include=credentials)?$/.test(path) &&
             result &&

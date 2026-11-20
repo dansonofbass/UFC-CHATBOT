@@ -1,3 +1,10 @@
+vi.mock('../src/lib/provider-settings', async (original) => {
+  const actual = await original<typeof import('../src/lib/provider-settings')>();
+  return {
+    ...actual,
+    resolvedProviders: async () => actual.resolveAI(actual.defaultProviderSettings()),
+  };
+});
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { APICallError, streamText } from 'ai';
 import { answer } from '../src/lib/ai';

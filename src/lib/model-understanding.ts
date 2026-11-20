@@ -2,7 +2,7 @@ import { generateText, Output } from 'ai';
 import { isGeneralStatisticsQuestion } from './statistics-guide';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { z } from 'zod';
-import { providers } from './ai';
+import { resolvedProviders } from './ai';
 import { reserveAI } from './security';
 import { db } from './db';
 import { understand } from './understanding';
@@ -70,7 +70,7 @@ export async function queryPlan(
     /ignore|reveal|system prompt/i.test(query)
   )
     return plan;
-  const provider = providers().find((p) => p.name === 'groq');
+  const provider = (await resolvedProviders())[0];
   if (!provider) return plan;
   const prompt = JSON.stringify({
     query,
