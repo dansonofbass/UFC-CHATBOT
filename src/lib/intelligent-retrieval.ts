@@ -548,6 +548,21 @@ export async function intelligentRetrieve(
     }
   }
   // A missing database record is an evidence gap, not a claim of nonexistent fighters.
+  // A profile overview is a conversational request, not a database existence check.
+  // If structured providers are offline or return no evidence, still allow the AI
+  // to give a cautious, qualitative explanation based on general MMA knowledge.
+  // No fighter-specific numerical, historical or current-status claims are allowed.
+  if (!pieces.length && plan.intent === 'fighter_profile' && plan.subject) {
+    return {
+      text: `ANSWER_MODE: general_unsourced_fighter_overview.
+USER_SUPPLIED_NAME: ${JSON.stringify(plan.subject)}
+NO_VERIFIED_FIGHTER_EVIDENCE_AVAILABLE.
+If you confidently recognize the person, explain only stable, qualitative fighting style and why the fighter is notable, identifying the response as general background rather than a verified current profile. Do not invent or assert championships, wins, rankings, opponents, fight dates, injuries, affiliations, or numerical stats. If the name looks misspelled, cautiously suggest a possible correction without claiming verification. If you cannot confidently recognize the fighter, say that directly and ask for a corrected name. The missing provider data must not be presented as evidence that the fighter does not exist.`,
+      citations: [],
+      deterministic: undefined,
+      cacheTtlMs: 0,
+    };
+  }
   if (!pieces.length)
     return {
       text: '',
