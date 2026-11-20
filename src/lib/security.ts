@@ -2,6 +2,10 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import { db, checked } from './db';
 import { env } from './env';
 const localClients = new Map<string, { count: number; expires: number }>();
+export const internalBudgetScope = () =>
+  process.env.VERCEL_ENV === 'production'
+    ? ''
+    : `${process.env.VERCEL_ENV === 'preview' ? 'preview' : 'development'}:`;
 export function authorized(header: string | null) {
   const expected = env().INTERNAL_API_TOKEN;
   if (!expected || !header) return false;
@@ -22,7 +26,7 @@ export async function clientLimit(request: Request) {
   const hash = createHash('sha256').update(ip).digest('hex');
   const hour = new Date().toISOString().slice(0, 13);
   return consume(
-    `client:${hour}:${hash}`,
+    `client:${internalBudgetScope()}${hour}:${hash}`,
     1,
     env().CLIENT_HOURLY_LIMIT,
     new Date(Date.now() + 3600000),
@@ -45,10 +49,17 @@ export async function reserveAI(inputBytes = 7000, attempts = 2) {
   const day = new Date().toISOString().slice(0, 10),
     expiry = new Date(`${day}T23:59:59.999Z`),
     e = env();
-  if (!(await consume(`ai:requests:${day}`, attempts, e.AI_DAILY_REQUEST_LIMIT, expiry)))
+  if (
+    !(await consume(
+      `ai:requests:${internalBudgetScope()}${day}`,
+      attempts,
+      e.AI_DAILY_REQUEST_LIMIT,
+      expiry,
+    ))
+  )
     return false;
   return consume(
-    `ai:tokens:${day}`,
+    `ai:tokens:${internalBudgetScope()}${day}`,
     (inputBytes + env().AI_MAX_OUTPUT_TOKENS * 4) * attempts,
     e.AI_DAILY_TOKEN_LIMIT,
     expiry,

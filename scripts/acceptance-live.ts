@@ -113,7 +113,7 @@ async function ask(question: string, history: Message[], group: string) {
   );
   return answer;
 }
-for (const question of (process.argv.includes('--conversations') ? [] : questions))
+for (const question of process.argv.includes('--conversations') ? [] : questions)
   await ask(
     question,
     question === 'islam makhachev'
@@ -122,8 +122,10 @@ for (const question of (process.argv.includes('--conversations') ? [] : question
     'single',
   );
 for (const [index, turns] of conversations.entries()) {
-  const groups = process.argv.filter(arg => arg.startsWith('--group=')).map(arg => Number(arg.split('=')[1]));
-  if (groups.length && !groups.includes(index+1)) continue;
+  const groups = process.argv
+    .filter((arg) => arg.startsWith('--group='))
+    .map((arg) => Number(arg.split('=')[1]));
+  if (groups.length && !groups.includes(index + 1)) continue;
   const history: Message[] = [];
   for (const question of turns) {
     const answer = await ask(question, history, `conversation-${index + 1}`);

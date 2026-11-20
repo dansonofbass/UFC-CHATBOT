@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { safeUrl, eventSchema, rankingSchema } from '../src/lib/schemas';
-import { authorized, consume } from '../src/lib/security';
+import { authorized, consume, internalBudgetScope } from '../src/lib/security';
 import { digest, chunks } from '../src/lib/ingestion';
 import { providers } from '../src/lib/ai';
 afterEach(() => vi.unstubAllEnvs());
 describe('security and validation', () => {
+  it('isolates preview and development budgets while retaining the production ledger', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    expect(internalBudgetScope()).toBe('');
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    expect(internalBudgetScope()).toBe('preview:');
+    vi.stubEnv('VERCEL_ENV', '');
+    expect(internalBudgetScope()).toBe('development:');
+  });
   it('rejects executable citations', () => {
     expect(safeUrl('javascript:alert(1)')).toBeUndefined();
     expect(safeUrl('data:text/html,x')).toBeUndefined();

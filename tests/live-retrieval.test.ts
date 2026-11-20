@@ -8,7 +8,7 @@ const state = vi.hoisted(() => ({
   error: null as null | object,
   writes: vi.fn(),
 }));
-vi.mock('../src/lib/security', () => ({ consume: vi.fn().mockResolvedValue(true) }));
+vi.mock('../src/lib/security', () => ({ consume: vi.fn().mockResolvedValue(true), internalBudgetScope: () => 'development:' }));
 vi.mock('../src/lib/db', () => ({
   db: () => ({
     from: () => ({

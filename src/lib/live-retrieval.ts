@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { UFCalendar, ProviderError } from './ufcalendar';
 import { db, checked } from './db';
-import { consume } from './security';
+import { consume, internalBudgetScope } from './security';
 import { retrievalConfig } from './retrieval-config';
 import { cachedProvider } from './provider-cache';
 import { saveFighter } from './ingestion';
@@ -57,7 +57,7 @@ export function liveProvider(signal: AbortSignal) {
       const day = now.toISOString().slice(0, 10);
       if (
         !(await consume(
-          `chat:retrieval:${day}`,
+          `chat:retrieval:${internalBudgetScope()}${day}`,
           1,
           retrievalConfig().CHAT_RETRIEVAL_DAILY_LIMIT,
           new Date(`${day}T23:59:59.999Z`),
@@ -92,13 +92,11 @@ export function liveProvider(signal: AbortSignal) {
       );
     } catch (error) {
       if (client && error instanceof ProviderError && error.code === 'rate_limited') {
-        await client
-          .from('query_cache')
-          .upsert({
-            key: 'ufcalendar:rate-block',
-            response: { reason: 'rate_limited' },
-            expires_at: new Date(Date.now() + (error.retryAfterSeconds || 60) * 1000).toISOString(),
-          });
+        await client.from('query_cache').upsert({
+          key: 'ufcalendar:rate-block',
+          response: { reason: 'rate_limited' },
+          expires_at: new Date(Date.now() + (error.retryAfterSeconds || 60) * 1000).toISOString(),
+        });
       }
       if (client && error instanceof ProviderError && error.code === 'quota_exceeded') {
         const now = new Date();
