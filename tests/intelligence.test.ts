@@ -249,7 +249,7 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
     const r = await intelligentRetrieve('Tell me about Unknown Fighter', [], [], signal());
     expect(r.deterministic).toBeUndefined();
     expect(r.text).toContain('general_unsourced_fighter_overview');
-    expect(r.text).toContain('Unknown Fighter');
+    expect(r.text).toContain('USER_SUPPLIED_NAME: "Unknown"');
     expect(r.text).not.toContain('does not exist');
     expect(r.citations).toEqual([]);
   });
