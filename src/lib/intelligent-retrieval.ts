@@ -4,6 +4,7 @@ import { retrieveKnowledge } from './knowledge-retrieval';
 import { localKnowledge } from './knowledge';
 import { eventEvidence } from './event-resolution';
 import { historySummary } from './history-summary';
+import { fighterFacts } from './fighter-evidence';
 import { synthesisEvidence } from './chat-strategy';
 import { resolveFighterEvidence } from './fighter-resolution';
 import { db, checked } from './db';
@@ -171,13 +172,7 @@ export async function intelligentRetrieve(
   for (const f of selected)
     add(
       f.name,
-      {
-        ...f,
-        stats:
-          plan.intents.includes('fight_statistics') || plan.intent === 'fighter_comparison'
-            ? f.stats
-            : undefined,
-      },
+      fighterFacts(f, plan),
       f.source_url,
       f.updated_at,
       'supabase-or-validated-provider',

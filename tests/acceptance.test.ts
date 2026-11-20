@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { understand } from '../src/lib/understanding';
+import { fighterFacts } from '../src/lib/fighter-evidence';
 import { intelligentRetrieve } from '../src/lib/intelligent-retrieval';
 import type { Fighter } from '../src/lib/schemas';
 vi.mock('../src/lib/db', () => ({ db: () => null }));
@@ -85,6 +86,19 @@ describe('twenty representative acceptance plans', () => {
   });
 });
 describe('five multi-turn conversations', () => {
+  it('projects a requested metric with its sample and excludes unrelated record counts', () => {
+    const fighter = {
+      ...directory[0],
+      stats: { ...directory[0].stats!, basis: { scope: 'ufc-only', bouts: 22 } },
+    };
+    const plan = understand('What is Islam Makhachev takedown defense?', [], [fighter]);
+    const facts = fighterFacts(fighter, plan);
+    expect(facts).toMatchObject({
+      performance_panel: { td_def: '80%', basis: { scope: 'ufc-only', bouts: 22 } },
+    });
+    expect(JSON.stringify(facts)).not.toContain('SYNTHETIC');
+    expect(JSON.stringify(facts)).not.toContain('slpm');
+  });
   it('uses fight history for contextual method-of-victory counts rather than general rules', () => {
     const plan = understand(
       'How many submissions did he win by?',

@@ -70,7 +70,7 @@ export function understand<T extends Identity>(query: string, history: Message[]
   const names = directory.flatMap((f) => [f.name, f.nickname || '']);
   let matches = candidates(query, directory);
   const explicitMatches = matches.length > 0;
-  const topic = conversationTopic(history);
+  const topic = conversationTopic([{ role: 'user', content: query }]) || conversationTopic(history);
   const contextual =
     /\b(he|she|his|her|they|their|him|them|that|those|both|its|it)\b|^(and|what about|how about)\b/i.test(
       query,

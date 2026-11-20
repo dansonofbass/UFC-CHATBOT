@@ -14,7 +14,7 @@ export async function cachedEvidence(
     createHash('sha256')
       .update(
         JSON.stringify({
-          version: 3,
+          version: 4,
           query,
           history,
           config: {
