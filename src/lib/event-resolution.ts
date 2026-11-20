@@ -3,7 +3,6 @@ import { events } from './data';
 import { liveProvider } from './live-retrieval';
 import { retrievalConfig } from './retrieval-config';
 import { eventSchema, envelope } from './schemas';
-import { saveEvent } from './ingestion';
 import type { Evidence } from './retrieval';
 
 const searchSchema = envelope(
@@ -67,9 +66,6 @@ export async function eventEvidence(subject: string, signal: AbortSignal): Promi
           updated_at: detail.meta?.fetched_at || new Date().toISOString(),
         },
       ];
-      await saveEvent(detail.data, `https://api.ufcalendar.com/v1/events/${id}`).catch(
-        () => undefined,
-      );
     } catch {
       /* A dated cached event can still answer historical questions. */
     }
