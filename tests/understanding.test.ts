@@ -13,6 +13,28 @@ describe('query understanding using directory identities', () => {
     expect(p.fighters.map((f) => f.id)).toEqual([1]);
     expect(p.intent).not.toBe('out_of_scope');
   });
+  it('routes an unimported fighter profile request instead of rejecting its topic', () => {
+    for (const query of [
+      'tell me everything about ilia tuporia',
+      'Tell me about Ilia Topuria',
+      'Who is Ilia Topuria?',
+    ]) {
+      const plan = understand(query, [], []);
+      expect(plan.intent).toBe('fighter_profile');
+      expect(plan.intents[0]).toBe('fighter_profile');
+      expect(plan.subject?.toLowerCase()).toMatch(/ilia (?:tuporia|topuria)/);
+      expect(plan.subjects).toHaveLength(1);
+    }
+  });
+  it('prefers an unambiguous near-exact full name over weak shared forenames', () => {
+    const roster = [
+      { id: 11, name: 'Ilia Topuria', slug: 'ilia-topuria' },
+      { id: 12, name: 'Ilia Another', slug: 'ilia-another' },
+    ];
+    const plan = understand('tell me everything about ilia tuporia', [], roster);
+    expect(plan.ambiguous).toBe(false);
+    expect(plan.fighters.map((f) => f.id)).toEqual([11]);
+  });
   it('treats a record request about a first-name fighter as UFC-related', () => {
     const khabib = { id: 7, name: 'Khabib Nurmagomedov', slug: 'khabib-nurmagomedov', nickname: 'The Eagle' };
     const plan = understand('give me the record of khabib', [], [jon, tom, khabib]);
