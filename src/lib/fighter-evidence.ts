@@ -17,6 +17,17 @@ export function fighterFacts(fighter: Fighter, plan: ReturnType<typeof understan
   if (!statsRequest)
     return {
       ...fighter,
+      credentials: fighter.credentials
+        ? {
+            credentials: [...fighter.credentials.credentials]
+              .sort(
+                (a, b) =>
+                  Number(b.kind === 'professional-title') - Number(a.kind === 'professional-title'),
+              )
+              .slice(0, 12),
+            affiliations: fighter.credentials.affiliations.slice(0, 8),
+          }
+        : undefined,
       stats: plan.intent === 'fighter_comparison' ? fighter.stats : undefined,
       career_stats: undefined,
     };

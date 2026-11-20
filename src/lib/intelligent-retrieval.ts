@@ -169,7 +169,7 @@ export async function intelligentRetrieve(
       }
       return f;
     });
-  for (const f of selected)
+  for (const f of selected) {
     add(
       f.name,
       fighterFacts(f, plan),
@@ -177,6 +177,21 @@ export async function intelligentRetrieve(
       f.updated_at,
       'supabase-or-validated-provider',
     );
+    if (plan.intent === 'fighter_profile')
+      for (const row of [
+        ...(f.credentials?.credentials || []),
+        ...(f.credentials?.affiliations || []),
+      ]) {
+        for (const url of row.sources) {
+          const citation = publicCitation({
+            title: `${f.name} ${row.kind} (${row.confidence})`,
+            url,
+            updated_at: f.updated_at,
+          });
+          if (citation) citations.push(citation);
+        }
+      }
+  }
   if (
     plan.intent === 'fighter_profile' &&
     plan.intents.length === 1 &&

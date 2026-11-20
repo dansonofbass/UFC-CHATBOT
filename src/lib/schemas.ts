@@ -16,6 +16,42 @@ export const recordSchema = z.object({
   scope: z.string(),
 });
 export const fighterSchema = identitySchema.extend({
+  credentials: z
+    .object({
+      credentials: z.array(
+        z.object({
+          kind: z.string(),
+          discipline: z.string().nullable(),
+          competition: z.string().nullable(),
+          placement: z.string().nullable(),
+          rank: z.string().nullable(),
+          year: z.number().int().nullable(),
+          detail: z.unknown(),
+          note: z.string().nullable(),
+          sources: z.array(z.url()),
+          confidence: z.enum(['confirmed', 'reported']),
+        }),
+      ),
+      affiliations: z.array(
+        z.object({
+          kind: z.string(),
+          name: z.string(),
+          role: z.string().nullable(),
+          status: z.string().nullable(),
+          is_primary: z.boolean(),
+          location: z.string().nullable(),
+          gym: z.string().nullable(),
+          discipline: z.string().nullable(),
+          relationship: z.string().nullable(),
+          as_of: z.string().nullable(),
+          period: z.string().nullable(),
+          note: z.string().nullable(),
+          sources: z.array(z.url()),
+          confidence: z.enum(['confirmed', 'reported']),
+        }),
+      ),
+    })
+    .optional(),
   height_inches: z.number().nullable().optional(),
   weight_lbs: z.number().nullable().optional(),
   reach_inches: z.number().nullable().optional(),

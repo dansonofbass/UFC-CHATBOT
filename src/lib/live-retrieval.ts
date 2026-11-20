@@ -75,7 +75,7 @@ export function liveProvider(signal: AbortSignal) {
         async () => {
           const result = await provider.request(path, schema, AbortSignal.timeout(20000));
           if (
-            /^\/fighters\/[^/?]+$/.test(path) &&
+            /^\/fighters\/[^/?]+(?:\?include=credentials)?$/.test(path) &&
             result &&
             typeof result === 'object' &&
             'data' in result

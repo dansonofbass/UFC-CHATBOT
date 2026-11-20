@@ -20,6 +20,25 @@ export async function resolveFighterEvidence(
   const missing: string[] = [];
   let clarification: string | undefined;
   if (!live) return { selected, missing, clarification };
+  const enriched = plan.intent === 'fighter_profile';
+  const loaded = new Set<number>();
+  const profile = async (id: number, hasSnapshot = false) => {
+    try {
+      return await get(
+        `/fighters/${id}${enriched ? '?include=credentials' : ''}`,
+        envelope(fighterSchema),
+      );
+    } catch (error) {
+      if (
+        enriched &&
+        !hasSnapshot &&
+        error instanceof ProviderError &&
+        [400, 403].includes(error.status)
+      )
+        return get(`/fighters/${id}`, envelope(fighterSchema));
+      throw error;
+    }
+  };
   const names = plan.subjects.length ? plan.subjects : plan.subject ? [plan.subject] : [];
   for (const name of names.slice(0, 3)) {
     if (candidates(name, selected).length) continue;
@@ -39,26 +58,29 @@ export async function resolveFighterEvidence(
         missing.push(`No verified provider identity match for ${name}.`);
         continue;
       }
-      const detail = await get(`/fighters/${matches[0].fighter.id}`, envelope(fighterSchema));
+      const detail = await profile(matches[0].fighter.id);
       if (detail.data.id !== matches[0].fighter.id) throw new Error('Identity mismatch');
       selected.push({
         ...detail.data,
         source_url: 'https://www.ufcalendar.com',
         updated_at: detail.meta?.fetched_at || new Date().toISOString(),
       });
+      loaded.add(detail.data.id);
     } catch (error) {
       missing.push(`Fighter lookup ${failureCategory(error)}; no facts inferred.`);
     }
   }
   for (const fighter of [...selected]) {
+    if (loaded.has(fighter.id)) continue;
     if (
       Date.now() - Date.parse(fighter.updated_at) < 86400000 &&
       (!plan.intents.includes('fight_statistics') || fighter.stats) &&
-      (!plan.intents.includes('fighter_history') || Object.keys(fighter.records || {}).length)
+      (!plan.intents.includes('fighter_history') || Object.keys(fighter.records || {}).length) &&
+      (!enriched || !!fighter.credentials)
     )
       continue;
     try {
-      const result = await get(`/fighters/${fighter.id}`, envelope(fighterSchema));
+      const result = await profile(fighter.id, true);
       if (result.data.id !== fighter.id) throw new Error('Identity mismatch');
       selected = selected.map((f) =>
         f.id === fighter.id

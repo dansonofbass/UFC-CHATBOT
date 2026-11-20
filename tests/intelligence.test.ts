@@ -58,6 +58,34 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe('intelligent evidence pipeline — synthetic integrations', () => {
+  it('uses documented credential enrichment for sourced profile background', async () => {
+    vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
+    const enriched = {
+      ...jon,
+      credentials: {
+        credentials: [
+          {
+            kind: 'professional-title',
+            discipline: 'MMA',
+            competition: 'Synthetic promotion',
+            placement: 'champion',
+            rank: null,
+            year: 2020,
+            detail: null,
+            note: null,
+            sources: ['https://www.ufc.com/fixture-title'],
+            confidence: 'confirmed',
+          },
+        ],
+        affiliations: [],
+      },
+    };
+    request.mockImplementation(async (_path, schema) => schema.parse({ data: enriched, meta: {} }));
+    const result = await intelligentRetrieve('Tell me about Jon Jones', [], [jon], signal());
+    expect(request.mock.calls[0][0]).toBe('/fighters/1?include=credentials');
+    expect(result.text).toContain('Synthetic promotion');
+    expect(result.citations.some((c) => c.url === 'https://www.ufc.com/fixture-title')).toBe(true);
+  });
   it('explains general UFC statistics with no roster, model or live requests', async () => {
     const result = await intelligentRetrieve('Explain UFC fight statistics', [], [], signal());
     expect(result.deterministic).toContain('SLpM');
@@ -73,8 +101,14 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
       name: 'Islam Makhachev',
       slug: 'islam-makhachev',
       stats: {
-        slpm: '2.72', sapm: '1.41', str_acc: '58%', str_def: '64%',
-        td_avg: '3.10', td_acc: '49%', td_def: '87%', sub_avg: '1.0',
+        slpm: '2.72',
+        sapm: '1.41',
+        str_acc: '58%',
+        str_def: '64%',
+        td_avg: '3.10',
+        td_acc: '49%',
+        td_def: '87%',
+        sub_avg: '1.0',
         basis: {},
       },
     };
@@ -94,7 +128,13 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
     const tom = { ...jon, id: 2, name: 'Tom Aspinall', slug: 'tom-aspinall', nickname: null };
     // List endpoint provides identities, not full records. Parse the real contract.
-    const roster = { id: tom.id, name: tom.name, slug: tom.slug, nickname: null, nationality: null };
+    const roster = {
+      id: tom.id,
+      name: tom.name,
+      slug: tom.slug,
+      nickname: null,
+      nationality: null,
+    };
     request
       .mockImplementationOnce(async (_path, schema) => schema.parse({ data: [roster], meta: {} }))
       .mockResolvedValueOnce({ data: tom });
@@ -138,7 +178,13 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
   });
   it('continues from a missing local record to validated provider evidence', async () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
-    const roster = { id: jon.id, name: jon.name, slug: jon.slug, nickname: jon.nickname, nationality: null };
+    const roster = {
+      id: jon.id,
+      name: jon.name,
+      slug: jon.slug,
+      nickname: jon.nickname,
+      nationality: null,
+    };
     request
       .mockImplementationOnce(async (_path, schema) => schema.parse({ data: [roster], meta: {} }))
       .mockResolvedValueOnce({ data: jon });
