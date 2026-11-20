@@ -191,7 +191,7 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
     const r = await intelligentRetrieve('Who is Jon Jons?', [], [], signal());
     expect(r.text).toContain('Jon Jones');
     expect(request.mock.calls[0][0]).toContain('/fighters?org=ufc&q=Jon%20Jons');
-    expect(request.mock.calls[1][0]).toBe('/fighters/1');
+    expect(request.mock.calls[1][0]).toBe('/fighters/1?include=credentials');
   });
   it('resolves a typo in an unimported fighter by a verified secondary provider lookup', async () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
