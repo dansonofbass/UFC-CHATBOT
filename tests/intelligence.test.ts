@@ -193,6 +193,21 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
     expect(request.mock.calls[0][0]).toContain('/fighters?org=ufc&q=Jon%20Jons');
     expect(request.mock.calls[1][0]).toBe('/fighters/1');
   });
+  it('resolves a typo in an unimported fighter by a verified secondary provider lookup', async () => {
+    vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
+    const ilia = { ...jon, id: 111, name: 'Ilia Topuria', slug: 'ilia-topuria' };
+    request
+      .mockResolvedValueOnce({ data: [] })
+      .mockResolvedValueOnce({ data: [{ id: ilia.id, name: ilia.name, slug: ilia.slug }] })
+      .mockResolvedValueOnce({ data: ilia });
+    const result = await intelligentRetrieve('tell me everything about ilia tuporia', [], [], signal());
+    expect(result.text).toContain('Ilia Topuria');
+    expect(request.mock.calls.map((call) => call[0])).toEqual([
+      '/fighters?org=ufc&q=ilia%20tuporia&limit=10',
+      '/fighters?org=ufc&q=ilia&limit=10',
+      '/fighters/111?include=credentials',
+    ]);
+  });
   it('uses completed event details for recent results', async () => {
     vi.stubEnv('CHAT_LIVE_RETRIEVAL_ENABLED', 'true');
     request
