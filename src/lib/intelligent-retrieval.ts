@@ -3,6 +3,7 @@ import { isGeneralStatisticsQuestion, statisticsGuide } from './statistics-guide
 import { retrieveKnowledge } from './knowledge-retrieval';
 import { localKnowledge } from './knowledge';
 import { eventEvidence } from './event-resolution';
+import { historySummary } from './history-summary';
 import { synthesisEvidence } from './chat-strategy';
 import { resolveFighterEvidence } from './fighter-resolution';
 import { db, checked } from './db';
@@ -82,7 +83,7 @@ export async function intelligentRetrieve(
   preparedPlan?: ReturnType<typeof understand<Fighter>>,
 ): Promise<Evidence> {
   const plan = preparedPlan || understand(query, history, items);
-  if (plan.eventSubject) return eventEvidence(plan.eventSubject,signal);
+  if (plan.eventSubject) return eventEvidence(plan.eventSubject, signal);
   if (isGeneralStatisticsQuestion(query) || plan.educational) {
     const docs = await retrieveKnowledge(query, signal);
     return {
@@ -324,6 +325,22 @@ export async function intelligentRetrieve(
                 fresh(r.updated_at, /last|latest|recent/i.test(query) ? 900000 : 86400000);
             }
           }
+          for (const f of selected) {
+            const histories = rows
+              .filter((r) => r.fighter_id === f.id)
+              .flatMap((r) => {
+                const h = historySchema.safeParse(r.payload);
+                return h.success ? [h.data] : [];
+              });
+            if (histories.length)
+              add(
+                `${f.name} supplied-history summary`,
+                { fighter_id: f.id, ...historySummary(histories) },
+                'https://www.ufcalendar.com',
+                rows.find((r) => r.fighter_id === f.id)!.updated_at,
+                'computed-from-validated-history',
+              );
+          }
           const bouts = await checked(
             client
               .from('fights')
@@ -392,7 +409,7 @@ export async function intelligentRetrieve(
             );
             add(
               `${f.name} career history`,
-              result.data,
+              { rows: result.data, summary: historySummary(result.data) },
               'https://www.ufcalendar.com',
               new Date().toISOString(),
               'ufcalendar',

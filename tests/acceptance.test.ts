@@ -85,6 +85,18 @@ describe('twenty representative acceptance plans', () => {
   });
 });
 describe('five multi-turn conversations', () => {
+  it('uses fight history for contextual method-of-victory counts rather than general rules', () => {
+    const plan = understand(
+      'How many submissions did he win by?',
+      [
+        { role: 'user', content: 'Tell me about Khabib.' },
+        { role: 'user', content: 'What was his record?' },
+      ],
+      directory,
+    );
+    expect(plan.intent).toBe('fighter_history');
+    expect(plan.fighters.map((f) => f.id)).toEqual([2]);
+  });
   it('keeps a numbered event across a follow-up without carrying it into a new fighter question', () => {
     expect(
       understand(

@@ -146,6 +146,12 @@ export function understand<T extends Identity>(query: string, history: Message[]
     intent = 'completed_event';
   if (/\bwho did\b.*\bfight\b|\blast (fight|opponent)\b/i.test(query)) intent = 'fighter_history';
   if (statsFollowup) intent = 'fight_statistics';
+  if (
+    selected.length &&
+    /\b(win|wins|won|loss|losses|lost|victories|victory|opponents?|finished)\b/i.test(query) &&
+    /submission|knockout|\btko\b|\bko\b|decision|method/i.test(query)
+  )
+    intent = 'fighter_history';
   if (eventSubject)
     intent = /\b(next|upcoming)\b/i.test(query) ? 'upcoming_event' : 'completed_event';
   const educational = educationalQuestion(query, explicitMatches || !!eventSubject);
