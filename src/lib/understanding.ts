@@ -127,6 +127,10 @@ export function understand<T extends Identity>(query: string, history: Message[]
   // An exact full identity outranks incidental shared-name tokens. Keep ties ambiguous.
   if (!multiple && matches[0]?.confidence === 1)
     matches = matches.filter((m) => m.confidence === 1);
+  // Prefer a unique near-exact full-name match over weak shared first-name/surname matches.
+  // Keep genuinely tied or close candidates ambiguous rather than guessing.
+  if (!multiple && matches[0] && matches[0].confidence >= 0.9)
+    matches = matches.filter((m) => matches[0].confidence - m.confidence < 0.06);
   const ambiguous = matches.length > 1 && !multiple;
   const selected = ambiguous ? [] : matches.slice(0, 3).map((m) => m.fighter);
   const eventSubject =
@@ -188,7 +192,7 @@ export function understand<T extends Identity>(query: string, history: Message[]
   const subject =
     query
       .match(
-        /(?:who is|tell me about|about|records? of|records? for|records? does|profile of|stats of|stats for)\s+([\p{L}'’ -]{3,65})/iu,
+        /(?:who is|tell me (?:everything |all |more )?about|information about|about|records? of|records? for|records? does|profile of|stats of|stats for)\s+([\p{L}'’ -]{3,65})/iu,
       )?.[1]
       ?.replace(/\b(mma record|record|ufc|fighter|have|has|and|what|his|her|their)\b.*$/i, '')
       .trim() ||
@@ -220,6 +224,16 @@ export function understand<T extends Identity>(query: string, history: Message[]
         break;
       }
     }
+  }
+  // Explicit profile introductions may name fighters absent from the local roster.
+  // Preserve their supplied names for verified provider search instead of relying on a
+  // small whitelist of known UFC surnames or on a fallible model planner.
+  const profileIntroduction =
+    /\b(?:who is|tell me (?:everything |all |more )?about|give me (?:a |an )?(?:overview|profile|bio|biography) (?:of|for)|information about)\b/i.test(query);
+  if (intent === 'out_of_scope' && subject && profileIntroduction &&
+      !/ignore|reveal|system prompt/i.test(query)) {
+    intent = 'fighter_profile';
+    intents.splice(0, intents.length, intent, ...intents.filter((i) => i !== 'out_of_scope'));
   }
   // A name-shaped question is unresolved, not automatically outside UFC scope.
   // Provider matching still has to establish an actual identity before any facts are used.
