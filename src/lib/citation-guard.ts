@@ -19,6 +19,14 @@ export async function* groundedCitations(
       .replace(/https?:\/\/[^\s)\]>]+/g, (url) => (allowed.has(url) ? url : ''));
   const validate = (line: string) => {
     const cleaned = clean(line);
+    if (
+      evidence &&
+      /\b(?:is|has|was)\s+(?:an?\s+)?(?:retired|active)\b|\b(?:currently\s+)?competes\s+(?:at|in)\b/i.test(
+        cleaned,
+      ) &&
+      !/"(?:career_status|current_status|retired|active_division)"\s*:/.test(evidence)
+    )
+      return '';
     const prose = cleaned.replace(/https?:\/\/[^\s)\]>]+/g, '').replace(/^\s*\d+[.)]\s/, '');
     // Never stream a new exact figure merely because the model supplied it.
     // This is a numeric consistency gate, not a proof of semantic correctness.

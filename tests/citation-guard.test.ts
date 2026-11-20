@@ -21,3 +21,13 @@ it('withholds new numerical claims while retaining source-backed values', async 
   expect(text).toContain('58%');
   expect(text).not.toContain('65%');
 });
+it('does not convert body weight or inactivity into current competitive status', async () => {
+  async function* parts() {
+    yield 'Weight class: Competes at 155 pounds.\nJones is retired.\nNationality: United States.\n';
+  }
+  let text = '';
+  for await (const chunk of groundedCitations(parts(), [], '{"weight_lbs":155}')) text += chunk;
+  expect(text).not.toContain('Competes');
+  expect(text).not.toContain('retired');
+  expect(text).toContain('Nationality');
+});
