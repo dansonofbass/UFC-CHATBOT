@@ -192,23 +192,9 @@ export async function intelligentRetrieve(
         }
       }
   }
-  if (
-    plan.intent === 'fighter_profile' &&
-    plan.intents.length === 1 &&
-    selected.length === 1 &&
-    /^(who is|tell me about)\b/i.test(query)
-  ) {
-    const f = selected[0];
-    const records = Object.values(f.records || {}).filter(
-      (r) => r.value && r.scope && !/grappling/i.test(r.scope),
-    );
-    return {
-      text: pieces.join('\n'),
-      citations,
-      deterministic: `${f.name}${f.nickname ? ` (“${f.nickname}”)` : ''}${f.nationality ? ` · ${f.nationality}` : ''}.${records.length ? `\n\n${records.map((r) => `${r.scope}: ${r.value}`).join('; ')}.` : '\n\nA verified record is not available in this profile.'}\n\nSource: [UFCalendar](https://www.ufcalendar.com). Snapshot: ${f.updated_at.slice(0, 10)} (UTC).`,
-      cacheTtlMs: uncertain ? 0 : 60000,
-    };
-  }
+  // Fighter overviews should be synthesized by the AI from validated evidence.
+  // Do not replace ordinary profile questions with a two-line database template.
+  // Exact records and statistics are still restricted to provider-backed values.
   // Source-backed profile statistics can be rendered directly, avoiding a
   // costly synthesis call and remaining usable when the AI budget is exhausted.
   if (plan.intent === 'fight_statistics' && plan.intents.length === 1 && selected.length === 1) {
