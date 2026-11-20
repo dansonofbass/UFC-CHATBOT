@@ -28,11 +28,11 @@ Configure secrets privately in Vercel and `.env.local`. After adding/changing en
 
 1. Configure `OPENROUTER_API_KEY_2` or `GROQ_API_KEY_2` server-side and deploy/restart as above.
 2. In Admin, select **OpenRouter** or **Groq** under **Active AI Provider**.
-3. Set that provider's **Active … key slot** to **Key 2** and choose a configured model.
+3. Set that provider's **Active â€¦ key slot** to **Key 2** and choose a configured model.
 4. Click **Save provider settings**. Subsequent generation/planning requests resolve the saved provider, slot and model from Supabase.
 5. Optionally click **Test OpenRouter Key 2** or **Test Groq Key 2**. A draft selection can be tested before saving; testing does not change the active selection.
 
-Use the UFCalendar credential selector to choose an existing slot, save, then test explicitly if desired. With one configured credential, it is shown as active and the selector is disabled.
+Use the UFCalendar credential selector to choose an existing slot, save, then test explicitly if desired. With one configured credential already selected, it is shown as active and the selector is disabled. If a previously saved slot has been removed, the selector stays available so the Admin can choose the remaining configured credential.
 
 ## Storage, security and runtime
 

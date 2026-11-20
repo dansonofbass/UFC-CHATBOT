@@ -174,7 +174,12 @@ export function AdminProviderSettings() {
               style={{ maxWidth: '100%' }}
               aria-label="Active UFCalendar credential"
               value={draft.data.slot}
-              disabled={busy || view.data.slots.filter((s) => s.configured).length < 2}
+              disabled={
+                busy ||
+                !view.data.slots.some((s) => s.configured) ||
+                (view.data.slots.filter((s) => s.configured).length === 1 &&
+                  view.data.slots.some((s) => s.configured && s.slot === draft.data.slot))
+              }
               onChange={(e) =>
                 setDraft({
                   ...draft,

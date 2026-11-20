@@ -5,7 +5,7 @@ export default defineConfig({
   testMatch: '**/admin-provider-settings.spec.ts',
   use: { ...base.use, baseURL: 'http://localhost:3120' },
   webServer: {
-    command: 'npm run start -- --port 3120',
+    command: 'node node_modules/next/dist/bin/next start --port 3120',
     url: 'http://localhost:3120',
     reuseExistingServer: false,
     timeout: 60000,

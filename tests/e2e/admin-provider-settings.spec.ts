@@ -25,6 +25,7 @@ test('Admin switches providers, secondary slots and configured models without ex
     openrouter: { slot: 1, model: 'openrouter/free' },
     data: { provider: 'ufcalendar', slot: 1 },
   };
+  let availableDataSlots = [1, 2];
   const view = () => ({
     settings,
     ai: {
@@ -39,7 +40,11 @@ test('Admin switches providers, secondary slots and configured models without ex
     },
     data: {
       provider: 'ufcalendar',
-      slots: [1, 2, 3].map((slot) => ({ slot, configured: slot < 3, label: '****' })),
+      slots: [1, 2, 3].map((slot) => ({
+        slot,
+        configured: availableDataSlots.includes(slot),
+        label: '****',
+      })),
     },
     fallback: 'Groq → free OpenRouter on recoverable errors; no key rotation.',
   });
@@ -97,4 +102,13 @@ test('Admin switches providers, secondary slots and configured models without ex
     true,
   );
   expect(await page.locator('input[type=password],input[name=apiKey]').count()).toBe(0);
+  availableDataSlots = [2];
+  settings = { ...settings, data: { provider: 'ufcalendar', slot: 1 } };
+  await page.reload();
+  await expect(page.getByLabel('Active UFCalendar credential', { exact: true })).toBeEnabled();
+  await page.getByLabel('Active UFCalendar credential', { exact: true }).selectOption('2');
+  await page.getByRole('button', { name: 'Save provider settings' }).click();
+  await expect(
+    page.getByText('Provider settings saved. Subsequent requests use this selection.'),
+  ).toBeVisible();
 });
