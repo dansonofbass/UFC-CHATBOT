@@ -4,7 +4,15 @@ export async function* groundedCitations(
   sources: string[],
   evidence?: string,
 ) {
-  const allowed = new Set(sources);
+  const canonical = (value: string) => {
+    try {
+      return new URL(value).href;
+    } catch {
+      return '';
+    }
+  };
+  const allowed = new Map(sources.map((source) => [canonical(source), source]));
+  const supplied = (value: string) => allowed.get(canonical(value));
   const metricConventions = [15, 100];
   const numbers = evidence
     ? new Set((evidence.match(/\d+(?:\.\d+)?/g) || []).map((n) => Number(n)))
@@ -12,11 +20,12 @@ export async function* groundedCitations(
   for (const number of metricConventions) numbers?.add(number);
   const clean = (line: string) =>
     line
+      .replace(/【([^\]】]+)\]\(/g, '[$1](')
       .replace(/【[^】]*】/g, '')
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_match, label, url) =>
-        allowed.has(url) ? `[${label}](${url})` : label,
+        supplied(url) ? `[${label}](${supplied(url)})` : label,
       )
-      .replace(/https?:\/\/[^\s)\]>]+/g, (url) => (allowed.has(url) ? url : ''));
+      .replace(/https?:\/\/[^\s)\]>]+/g, (url) => supplied(url) || '');
   const validate = (line: string) => {
     const cleaned = clean(line);
     if (

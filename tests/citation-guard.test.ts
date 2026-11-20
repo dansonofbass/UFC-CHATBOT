@@ -31,3 +31,12 @@ it('does not convert body weight or inactivity into current competitive status',
   expect(text).not.toContain('retired');
   expect(text).toContain('Nationality');
 });
+it('normalizes provider root URLs and repairs malformed source-link brackets', async () => {
+  async function* parts() {
+    yield 'Verified 【source](https://good.test/)\n';
+  }
+  let output = '';
+  for await (const chunk of groundedCitations(parts(), ['https://good.test'])) output += chunk;
+  expect(output).toContain('[source](https://good.test)');
+  expect(output).not.toContain('【');
+});
