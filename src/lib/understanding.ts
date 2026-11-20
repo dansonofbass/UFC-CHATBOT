@@ -58,7 +58,9 @@ export function candidates<T extends Identity>(text: string, directory: T[]) {
           if (edits <= 2)
             confidence = Math.max(
               confidence,
-              1 - edits / Math.max(name.length, window.join(' ').length),
+              // A close multi-word match is stronger than an incidental shared
+              // first name, even when the surname contains two small typos.
+              edits === 0 ? 1 : edits === 1 ? 0.96 : 0.92,
             );
         }
       }
