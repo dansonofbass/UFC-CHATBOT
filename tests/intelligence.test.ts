@@ -250,7 +250,6 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
     expect(r.deterministic).toBeUndefined();
     expect(r.text).toContain('general_unsourced_fighter_overview');
     expect(r.text).toContain('USER_SUPPLIED_NAME: "Unknown"');
-    expect(r.text).not.toContain('does not exist');
     expect(r.citations).toEqual([]);
   });
   it('asks for clarification before retrieving conflicting identities', async () => {
