@@ -247,8 +247,11 @@ describe('intelligent evidence pipeline — synthetic integrations', () => {
   });
   it('does not mistake missing data for fighter nonexistence', async () => {
     const r = await intelligentRetrieve('Tell me about Unknown Fighter', [], [], signal());
-    expect(r.deterministic).toContain('confirm the spelling');
-    expect(r.deterministic).not.toContain('does not exist');
+    expect(r.deterministic).toBeUndefined();
+    expect(r.text).toContain('general_unsourced_fighter_overview');
+    expect(r.text).toContain('Unknown Fighter');
+    expect(r.text).not.toContain('does not exist');
+    expect(r.citations).toEqual([]);
   });
   it('asks for clarification before retrieving conflicting identities', async () => {
     const r = await intelligentRetrieve(
